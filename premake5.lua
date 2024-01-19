@@ -29,6 +29,7 @@ project "main"
     }
 
     links {
+        "imgui",
         "glfw",
         "obj",
         "glad",

@@ -16,6 +16,7 @@ project "obj"
     }
 
     links {
+        "imgui",
         "glad",
         "glfw",
         "assimp",

@@ -86,9 +86,9 @@ void Drawer::update(const std::vector<DirLight> &dirLights, const std::vector<Po
     {
         ModelLoader loader = m_Queue.front();
         std::vector<ShaderElem> shaderElems({
-            ShaderElem("res/shaders/basicLight/shader.vert", GL_VERTEX_SHADER),
-            // ShaderElem("res/shaders/basicLight/shader.geom", GL_GEOMETRY_SHADER),
-            ShaderElem("res/shaders/basicLight/shader.frag", GL_FRAGMENT_SHADER)
+            ShaderElem("res/shaders/default/shader.vert", GL_VERTEX_SHADER),
+            ShaderElem("res/shaders/default/shader.geom", GL_GEOMETRY_SHADER),
+            ShaderElem("res/shaders/default/shader.frag", GL_FRAGMENT_SHADER)
         });
         Shader *shader = new Shader(shaderElems);
         ModelElem modelElem = ModelElem(loader.modelPath, shader, loader.mode);

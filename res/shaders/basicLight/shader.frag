@@ -61,7 +61,7 @@ vec3 spotLightIllumination(SpotLight spotLight, vec3 normal, vec3 viewDir, vec3 
 #define N_DIRECTIONAL_LIGHTS 1
 #define N_SPOT_LIGHTS 5
 
-in VS_OUT
+in GS_OUT
 {
     vec3 pos;
     vec3 norm;
