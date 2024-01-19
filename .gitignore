@@ -1,0 +1,10 @@
+Makefile
+*.make
+main
+engine
+premake5
+
+res/models/
+lib/
+objects/
+.vscode/
