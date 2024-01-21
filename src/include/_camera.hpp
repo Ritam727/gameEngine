@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <GLFW/glfw3.h>
+#include <imgui/imgui.h>
 
 #include <iostream>
 
@@ -22,24 +22,26 @@ private:
     static float m_Yaw;
     static float m_Pitch;
     static float m_Sensitivity;
-    static float m_FOV;
+    static float m_Zoom;
 
     static int m_FPSCamera;
-    
+
     static bool m_FirstMouse;
     static bool m_KeyHeldDown;
 
     Camera() = delete;
-    Camera(const Camera& camera) = delete;
+    Camera(const Camera &camera) = delete;
 
 public:
-    static glm::vec3 getCameraPos();
+    static glm::vec3 &getCameraPos();
     static glm::vec3 getCameraFront();
     static glm::vec3 getCameraUp();
     static glm::vec3 getCameraForward();
     static glm::vec3 getCameraRight();
-    
-    static float getFOV();
+
+    static float &getZoom();
+    static float &getPitch();
+    static float &getYaw();
 
     static void setCameraPos(const glm::vec3 pos);
     static void setCameraFront(const glm::vec3 front);
@@ -51,12 +53,11 @@ public:
     static void updateCameraFront(const glm::vec3 diff);
     static void updateCameraUp(const glm::vec3 diff);
 
+    static void drawCameraControlsGui();
+
     static void invertCameraY();
     static void revertCameraY();
-
-    static void keyboardCallback(GLFWwindow *window, const float deltaTime);
-    static void mouseCallback(GLFWwindow *window, double xPos, double yPos);
-    static void scrollCallback(GLFWwindow *window, double xOffset, double yOffset);
+    static void updateDirection();
 
     static glm::mat4 getViewMatrix();
 };

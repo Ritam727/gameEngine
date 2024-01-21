@@ -3,6 +3,8 @@ Makefile
 main
 engine
 premake5
+imgui.ini
+imgui_demo.cpp
 
 res/models/
 lib/

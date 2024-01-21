@@ -15,12 +15,12 @@ RenderBuffer::~RenderBuffer()
 void RenderBuffer::createBufferStorage(const unsigned int type)
 {
     m_Type = type;
-    GLCall(glRenderbufferStorage(GL_RENDERBUFFER, type, Screen::getScreenWidth(), Screen::getScreenHeight()));
+    GLCall(glRenderbufferStorage(GL_RENDERBUFFER, m_Type, Screen::getScreenWidth(), Screen::getScreenHeight()));
 }
 
-void RenderBuffer::adjustDimensions()
+void RenderBuffer::adjustDimensions(const unsigned int width, const unsigned int height)
 {
-    GLCall(glRenderbufferStorage(GL_RENDERBUFFER, m_Type, Screen::getScreenWidth(), Screen::getScreenHeight()));
+    GLCall(glRenderbufferStorage(GL_RENDERBUFFER, m_Type, width, height));
 }
 
 const unsigned int &RenderBuffer::getID() const

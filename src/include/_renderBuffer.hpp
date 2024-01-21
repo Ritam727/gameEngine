@@ -16,7 +16,7 @@ public:
     ~RenderBuffer();
 
     void createBufferStorage(const unsigned int type);
-    void adjustDimensions();
+    void adjustDimensions(const unsigned int width, const unsigned int height);
 
     const unsigned int& getID() const;
 };

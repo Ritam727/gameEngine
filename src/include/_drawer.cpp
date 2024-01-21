@@ -27,7 +27,8 @@ void Drawer::clearMeshes()
         for (unsigned int j = 0; j < m_Meshes[i].size(); j++)
         {
             delete m_Meshes[i][j].mesh;
-            if (m_Meshes[i][j].shader) delete m_Meshes[i][j].shader;
+            if (m_Meshes[i][j].shader)
+                delete m_Meshes[i][j].shader;
         }
     }
 }
@@ -59,9 +60,6 @@ void Drawer::render()
     {
         for (unsigned int j = 0; j < m_Models[i].size(); j++)
         {
-            m_Models[i][j].model->setTrans(m_Models[i][j].trans);
-            m_Models[i][j].model->setRot(m_Models[i][j].rot);
-            m_Models[i][j].model->setScale(m_Models[i][j].scale);
             m_Models[i][j].shader->use();
             m_Models[i][j].shader->setVec3f("cameraPos", Camera::getCameraPos());
             m_Models[i][j].shader->setFloat("time", glfwGetTime());
@@ -69,34 +67,30 @@ void Drawer::render()
         }
         for (unsigned int j = 0; j < m_Meshes[i].size(); j++)
         {
-            m_Meshes[i][j].mesh->setTrans(m_Meshes[i][j].trans);
-            m_Meshes[i][j].mesh->setRot(m_Meshes[i][j].rot);
-            m_Meshes[i][j].mesh->setScale(m_Meshes[i][j].scale);
             m_Meshes[i][j].shader->use();
             m_Meshes[i][j].shader->setVec3f("cameraPos", Camera::getCameraPos());
             m_Meshes[i][j].shader->setFloat("time", glfwGetTime());
+            m_Meshes[i][j].mesh->drawSelectButton();
             m_Meshes[i][j].mesh->draw(*m_Meshes[i][j].shader, m_Meshes[i][j].mode);
         }
     }
 }
 
-void Drawer::update(const std::vector<DirLight> &dirLights, const std::vector<PointLight> &pointLights, const std::vector<SpotLight> &spotLights)
+void Drawer::update(const unsigned int width, const unsigned int height, const std::vector<DirLight> &dirLights, const std::vector<PointLight> &pointLights, const std::vector<SpotLight> &spotLights)
 {
     while (!m_Queue.empty())
     {
         ModelLoader loader = m_Queue.front();
-        std::vector<ShaderElem> shaderElems({
-            ShaderElem("res/shaders/default/shader.vert", GL_VERTEX_SHADER),
-            ShaderElem("res/shaders/default/shader.geom", GL_GEOMETRY_SHADER),
-            ShaderElem("res/shaders/default/shader.frag", GL_FRAGMENT_SHADER)
-        });
+        std::vector<ShaderElem> shaderElems({ShaderElem("res/shaders/default/shader.vert", GL_VERTEX_SHADER),
+                                             ShaderElem("res/shaders/default/shader.geom", GL_GEOMETRY_SHADER),
+                                             ShaderElem("res/shaders/default/shader.frag", GL_FRAGMENT_SHADER)});
         Shader *shader = new Shader(shaderElems);
         ModelElem modelElem = ModelElem(loader.modelPath, shader, loader.mode);
         Drawer::addModel(modelElem, loader.priority);
         m_Queue.pop();
     }
 
-    glm::mat4 proj = glm::perspective(glm::radians(Camera::getFOV()), (float) Screen::getScreenWidth() / (float) Screen::getScreenHeight(), 0.1f, 100.0f);
+    glm::mat4 proj = glm::perspective(glm::radians(45.0f - Camera::getZoom() * 10.0f), (float)width / (float)height, 0.1f, 100.0f);
     glm::mat4 view = Camera::getViewMatrix();
     m_Matrices->subData(0, sizeof(glm::mat4), glm::value_ptr(proj));
     m_Matrices->subData(sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(view));
@@ -125,7 +119,7 @@ std::unordered_map<std::string, Model *> &Drawer::getLoadedModels()
     return m_LoadedModels;
 }
 
-std::unordered_map<std::string, Model*> Drawer::m_LoadedModels;
+std::unordered_map<std::string, Model *> Drawer::m_LoadedModels;
 std::vector<std::vector<ModelElem>> Drawer::m_Models(3, std::vector<ModelElem>());
 std::vector<std::vector<MeshElem>> Drawer::m_Meshes(3, std::vector<MeshElem>());
 std::vector<DirLight> Drawer::m_DirLights;

@@ -80,3 +80,8 @@ void Renderer::viewportCallback(GLFWwindow *window, int width, int height)
 {
     GLCall(glViewport(0, 0, width, height));
 }
+
+void Renderer::adjustViewport(const unsigned int st, const unsigned int en, const unsigned int width, const unsigned int height)
+{
+    GLCall(glViewport(st, en, width, height));
+}

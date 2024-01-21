@@ -1,10 +1,11 @@
 #include <_internals.hpp>
+#include <imgui/imgui_impl_glfw.h>
+#include <imgui/imgui_impl_opengl3.h>
 
 static void processInput(GLFWwindow *window, float deltaTime)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-    Camera::keyboardCallback(window, deltaTime);
 }
 
 static void handleInput()
@@ -45,10 +46,10 @@ int main(void)
     }
 
     glfwMakeContextCurrent(window);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    glfwSetCursorPos(window, (float)Screen::getScreenWidth() / 2.0f, (float)Screen::getScreenHeight() / 2.0f);
-    glfwSetCursorPosCallback(window, Camera::mouseCallback);
-    glfwSetScrollCallback(window, Camera::scrollCallback);
+    // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    // glfwSetCursorPos(window, (float)Screen::getScreenWidth() / 2.0f, (float)Screen::getScreenHeight() / 2.0f);
+    // glfwSetCursorPosCallback(window, Camera::mouseCallback);
+    // glfwSetScrollCallback(window, Camera::scrollCallback);
     glfwSetFramebufferSizeCallback(window, Renderer::viewportCallback);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -58,6 +59,17 @@ int main(void)
     }
 
     {
+        ImGui::CreateContext();
+        ImGuiIO &io = ImGui::GetIO();
+        (void)io;
+        io.ConfigFlags != ImGuiConfigFlags_NavEnableKeyboard;
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
+        ImGui::StyleColorsDark();
+
+        ImGui_ImplGlfw_InitForOpenGL(window, true);
+        ImGui_ImplOpenGL3_Init("#version 450");
+
         Renderer::clearDepth();
         Renderer::blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         Renderer::enable(GL_BLEND);
@@ -72,41 +84,71 @@ int main(void)
         float lastFrame = 0.0f;
         float deltaTime = 0.0f;
 
-        std::vector<DirLight> dirLights; // ({ DirLight().setDirection({ -0.2f, -1.0f, -0.3f }) });
+        std::vector<DirLight> dirLights; // ({DirLight().setDirection({-0.2f, -1.0f, -0.3f})});
         std::vector<PointLight> pointLights; // ({ PointLight().setPosition({ 1.5f, 1.2f, 2.0f }) });
 
         std::future<void> *inputThread = new std::future<void>(std::async(std::launch::async, handleInput));
 
+        FrameBuffer frameBuffer;
+        frameBuffer.attachTexture(0);
+        frameBuffer.attachRenderBuffer(GL_DEPTH_STENCIL_ATTACHMENT, GL_DEPTH24_STENCIL8);
+        frameBuffer.validate();
+
         while (!glfwWindowShouldClose(window))
         {
+            glfwPollEvents();
+            ImGui_ImplOpenGL3_NewFrame();
+            ImGui_ImplGlfw_NewFrame();
+            ImGui::NewFrame();
+
             Renderer::clearColor({0.5f, 0.5f, 0.5f, 1.0f});
+            Renderer::enable(GL_DEPTH_TEST);
+            Renderer::stencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
             Renderer::clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
             glfwGetWindowSize(window, &Screen::getScreenWidth(), &Screen::getScreenHeight());
             float currentTime = glfwGetTime();
             deltaTime = currentTime - lastFrame;
             lastFrame = currentTime;
-            std::vector<SpotLight> spotLights({
-                SpotLight()
-                .setPosition(Camera::getCameraPos())
-                .setDirection(Camera::getCameraFront())
-            });
+            std::vector<SpotLight> spotLights({SpotLight()
+                                                .setPosition(Camera::getCameraPos())
+                                               .setDirection(Camera::getCameraFront())});
+
+            ImGui::Begin("Camera");
+            Camera::drawCameraControlsGui();
+            ImGui::End();
+
+            int width_ = Screen::getScreenWidth();
+            int height_ = Screen::getScreenHeight();
+
+            ImGui::Begin("Objects");
+            Drawer::update(width_, height_, dirLights, pointLights, spotLights);
+            Drawer::render();
+            ImGui::End();
+
+            ImGui::Render();
+            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+            if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+            {
+                GLFWwindow *backup_current_context = glfwGetCurrentContext();
+                ImGui::UpdatePlatformWindows();
+                ImGui::RenderPlatformWindowsDefault();
+                glfwMakeContextCurrent(backup_current_context);
+            }
 
             processInput(window, deltaTime);
-            glfwPollEvents();
-            // cubemaps
-            
-            // objects
-            Drawer::update(dirLights, pointLights, spotLights);
-            Drawer::render();
-            
             glfwSwapBuffers(window);
         }
-        
+
         if (inputThread->wait_for(std::chrono::milliseconds(200)) == std::future_status::timeout)
             Logger::logWarn("Closing input thread");
         else
             delete inputThread;
+
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplGlfw_Shutdown();
+        ImGui::DestroyContext();
 
         Drawer::clearModels();
         Drawer::clearMeshes();

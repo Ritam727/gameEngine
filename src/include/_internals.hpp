@@ -8,7 +8,6 @@
 #include <_renderer.hpp>
 #include <_rotation.hpp>
 #include <_camera.hpp>
-#include <_cursor.hpp>
 #include <_model.hpp>
 #include <_frameBuffer.hpp>
 #include <_cubeMap.hpp>

@@ -1,6 +1,6 @@
 #include "_camera.hpp"
 
-glm::vec3 Camera::getCameraPos()
+glm::vec3 &Camera::getCameraPos()
 {
     return m_CameraPos;
 }
@@ -25,9 +25,19 @@ glm::vec3 Camera::getCameraRight()
     return m_CameraRight;
 }
 
-float Camera::getFOV()
+float &Camera::getZoom()
 {
-    return m_FOV;
+    return m_Zoom;
+}
+
+float &Camera::getPitch()
+{
+    return m_Pitch;
+}
+
+float &Camera::getYaw()
+{
+    return m_Yaw;
 }
 
 void Camera::setCameraPos(const glm::vec3 pos)
@@ -79,73 +89,43 @@ void Camera::updateCameraUp(const glm::vec3 diff)
     setCameraUp(up);
 }
 
+void Camera::drawCameraControlsGui()
+{
+    if (ImGui::TreeNode("Translation"))
+    {
+        ImGui::SliderFloat("X", &getCameraPos().x, std::min(getCameraPos().x, -10.0f), std::max(getCameraPos().x, 10.0f));
+        ImGui::SliderFloat("Y", &getCameraPos().y, std::min(getCameraPos().y, -10.0f), std::max(getCameraPos().y, 10.0f));
+        ImGui::SliderFloat("Z", &getCameraPos().z, std::min(getCameraPos().z, -10.0f), std::max(getCameraPos().z, 10.0f));
+        ImGui::TreePop();
+    }
+    if (ImGui::TreeNode("Rotation"))
+    {
+        ImGui::SliderFloat("X", &getYaw(), std::min(getYaw(), -360.0f), std::max(getYaw(), 360.0f));
+        ImGui::SliderFloat("Y", &getPitch(), std::min(getPitch(), -360.0f), std::max(getPitch(), 360.0f));
+        ImGui::TreePop();
+    }
+    ImGui::SliderFloat("Camera Zoom", &getZoom(), -2.0f, 2.0f);
+}
+
 void Camera::revertCameraY()
 {
     m_Yaw -= 180.0f;
+    updateDirection();
+}
+
+void Camera::updateDirection()
+{
     glm::vec3 direction;
-    direction.x = cos(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));
-    direction.y = sin(glm::radians(m_Pitch));
-    direction.z = sin(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));
+    direction.x = cos(glm::radians(getYaw() - 90.0f)) * cos(glm::radians(getPitch()));
+    direction.y = sin(glm::radians(getPitch()));
+    direction.z = sin(glm::radians(getYaw() - 90.0f)) * cos(glm::radians(getPitch()));
     setCameraFront(glm::normalize(direction));
 }
 
 void Camera::invertCameraY()
 {
     m_Yaw += 180.0f;
-    glm::vec3 direction;
-    direction.x = cos(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));
-    direction.y = sin(glm::radians(m_Pitch));
-    direction.z = sin(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));
-    setCameraFront(glm::normalize(direction));
-}
-
-void Camera::keyboardCallback(GLFWwindow *window, const float deltaTime)
-{
-    const float cameraSpeed = 2.5f * deltaTime;
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        updateCameraPos(cameraSpeed * ((float) m_FPSCamera * getCameraForward() + (float) (1 - m_FPSCamera) * getCameraFront()));
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        updateCameraPos(-cameraSpeed * ((float) m_FPSCamera * getCameraForward() + (float) (1 - m_FPSCamera) * getCameraFront()));
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        updateCameraPos(-cameraSpeed * ((float) m_FPSCamera * getCameraRight() + (float) (1 - m_FPSCamera) * glm::normalize(glm::cross(m_CameraFront, m_CameraUp))));
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        updateCameraPos(cameraSpeed * ((float) m_FPSCamera * getCameraRight() + (float) (1 - m_FPSCamera) * glm::normalize(glm::cross(m_CameraFront, m_CameraUp))));
-    if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS && !m_KeyHeldDown)
-        m_FPSCamera = 1 - m_FPSCamera, m_KeyHeldDown = true;
-    if (glfwGetKey(window, GLFW_KEY_F) == GLFW_RELEASE)
-        m_KeyHeldDown = false;
-}
-
-void Camera::mouseCallback(GLFWwindow *window, double xPos, double yPos)
-{
-    if (m_FirstMouse)
-    {
-        m_LastX = xPos;
-        m_LastY = yPos;
-        m_FirstMouse = false;
-    }
-
-    float xOffset = xPos - m_LastX;
-    float yOffset = yPos - m_LastY;
-    m_LastX = xPos;
-    m_LastY = yPos;
-
-    xOffset *= m_Sensitivity;
-    yOffset *= m_Sensitivity;
-
-    m_Yaw += xOffset;
-    m_Pitch = std::min(std::max(m_Pitch - yOffset, -89.0f), 89.0f);
-
-    glm::vec3 direction;
-    direction.x = cos(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));
-    direction.y = sin(glm::radians(m_Pitch));
-    direction.z = sin(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));
-    setCameraFront(glm::normalize(direction));
-}
-
-void Camera::scrollCallback(GLFWwindow *window, double xOffset, double yOffset)
-{
-    m_FOV = std::min(std::max(m_FOV - (float) yOffset, 1.0f), 45.0f);
+    updateDirection();
 }
 
 glm::mat4 Camera::getViewMatrix()
@@ -153,7 +133,7 @@ glm::mat4 Camera::getViewMatrix()
     return glm::lookAt(getCameraPos(), getCameraFront() + getCameraPos(), getCameraUp());
 }
 
-glm::vec3 Camera::m_CameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 Camera::m_CameraPos = glm::vec3(0.0f, 0.0f, 5.0f);
 glm::vec3 Camera::m_CameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 Camera::m_CameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 glm::vec3 Camera::m_CameraFoward = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -162,9 +142,9 @@ glm::vec3 Camera::m_CameraRight = glm::vec3(1.0f, 0.0f, 0.0f);
 float Camera::m_LastX = 400.0f;
 float Camera::m_LastY = 300.0f;
 float Camera::m_Sensitivity = 0.1f;
-float Camera::m_Yaw = -90.0f;
+float Camera::m_Yaw = 0.0f;
 float Camera::m_Pitch = 0.0f;
-float Camera::m_FOV = 45.0f;
+float Camera::m_Zoom = 0.0f;
 
 int Camera::m_FPSCamera = 0.0f;
 

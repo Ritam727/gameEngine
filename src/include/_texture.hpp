@@ -64,7 +64,7 @@ public:
     void bind(unsigned int slot);
     static Image *loadImage(const std::string &path, const bool flip = true);
     void attachData(Image *image);
-    void adjustDimensions();
+    void adjustDimensions(const unsigned int width, const unsigned int height);
 
     const unsigned int& getSlot() const;
     const std::string &getFile() const;

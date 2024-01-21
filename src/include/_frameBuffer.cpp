@@ -1,6 +1,7 @@
 #include "_frameBuffer.hpp"
 
 FrameBuffer::FrameBuffer()
+    : m_TextureSlot(0)
 {
     GLCall(glGenFramebuffers(1, &m_ID));
     GLCall(glBindFramebuffer(GL_FRAMEBUFFER, m_ID));
@@ -16,9 +17,10 @@ FrameBuffer::~FrameBuffer()
 void FrameBuffer::attachTexture(const unsigned int slot)
 {
     this->bind();
+    m_TextureSlot = slot;
     m_Texture = new Texture();
-    m_Texture->bind(31);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + slot, GL_TEXTURE_2D, m_Texture->getID(), 0);
+    m_Texture->bind(slot);
+    GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + slot, GL_TEXTURE_2D, m_Texture->getID(), 0));
     this->unbind();
 }
 
@@ -31,11 +33,16 @@ void FrameBuffer::attachRenderBuffer(const unsigned int type, const unsigned int
     this->unbind();
 }
 
-void FrameBuffer::forwardBuffers()
+void FrameBuffer::adjustDimensions(const unsigned int width, const unsigned int height)
 {
-    m_Texture->adjustDimensions();
-    m_Texture->bind(31);
-    m_RenderBuffer->adjustDimensions();
+    m_RenderBuffer->adjustDimensions(width, height);
+}
+
+void FrameBuffer::forwardBuffers(const unsigned int width, const unsigned int height)
+{
+    m_Texture->adjustDimensions(width, height);
+    m_Texture->bind(m_TextureSlot);
+    m_RenderBuffer->adjustDimensions(width, height);
 }
 
 void FrameBuffer::validate() const

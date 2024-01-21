@@ -6,7 +6,7 @@ Texture::Texture()
     GLCall(glBindTexture(GL_TEXTURE_2D, m_ID));
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-    this->adjustDimensions();
+    this->adjustDimensions(Screen::getScreenWidth(), Screen::getScreenHeight());
     GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
@@ -49,10 +49,10 @@ void Texture::attachData(Image *image)
     GLCall(glGenerateMipmap(GL_TEXTURE_2D));
 }
 
-void Texture::adjustDimensions()
+void Texture::adjustDimensions(const unsigned int width, const unsigned int height)
 {
     GLCall(glBindTexture(GL_TEXTURE_2D, m_ID));
-    GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Screen::getScreenWidth(), Screen::getScreenHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
+    GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
 }
 
 const unsigned int &Texture::getSlot() const

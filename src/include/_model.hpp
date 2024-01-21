@@ -31,10 +31,6 @@ public:
     ~Model();
 
     void draw(const Shader &shader, unsigned int mode = 0) const;
-
-    void setTrans(const glm::vec3 trans);
-    void setRot(const glm::vec3 rot);
-    void setScale(const glm::vec3 scale);
 };
 
 #endif

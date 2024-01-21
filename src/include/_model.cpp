@@ -43,11 +43,11 @@ Mesh *Model::processMesh(aiMesh *mesh, const aiScene *scene, const bool skipText
     if (mesh->mMaterialIndex >= 0 && !skipTextures)
     {
         aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
-        
+
         loadTextureImages(material, aiTextureType_DIFFUSE, "diffuse", _images, _paths, _types);
         loadTextureImages(material, aiTextureType_SPECULAR, "specular", _images, _paths, _types);
         loadTextureImages(material, aiTextureType_HEIGHT, "normal", _images, _paths, _types);
-        
+
         for (Image *img : _images)
             _threads.push_back(std::thread(&Image::get, Texture::getLoadedImages()[img->path]));
     }
@@ -73,7 +73,7 @@ Mesh *Model::processMesh(aiMesh *mesh, const aiScene *scene, const bool skipText
             }
         }
     }
-    
+
     return new Mesh(vertices, indices, textures);
 }
 
@@ -96,7 +96,7 @@ void Model::loadTextureImages(aiMaterial *mat, aiTextureType type, const std::st
     }
 }
 
-void Model::loadVertices(aiMesh *mesh, std::vector<Vertex> &vertices) 
+void Model::loadVertices(aiMesh *mesh, std::vector<Vertex> &vertices)
 {
     for (unsigned int i = 0; i < mesh->mNumVertices; i++)
     {
@@ -113,7 +113,7 @@ void Model::loadVertices(aiMesh *mesh, std::vector<Vertex> &vertices)
     }
 }
 
-void Model::loadIndices(aiMesh *mesh, std::vector<unsigned int> &indices) 
+void Model::loadIndices(aiMesh *mesh, std::vector<unsigned int> &indices)
 {
     for (unsigned int i = 0; i < mesh->mNumFaces; i++)
     {
@@ -141,23 +141,39 @@ Model::~Model()
 void Model::draw(const Shader &shader, unsigned int mode) const
 {
     for (unsigned int i = 0; i < m_Meshes.size(); i++)
-        m_Meshes[i]->draw(shader, mode);
-}
+    {
+        m_Meshes[i]->drawSelectButton();
+        if (Mesh::getSelectedMesh() != m_Meshes[i])
+        {
+            Renderer::stencilMask(0x00);
+            m_Meshes[i]->draw(shader, mode);
+        }
+    }
+    if (Mesh::getSelectedMesh() != NULL)
+    {
+        Renderer::stencilFunc(GL_ALWAYS, 1, 0xFF);
+        Renderer::stencilMask(0xFF);
+        
+        Mesh::getSelectedMesh()->draw(shader, mode);
+        
+        Renderer::stencilFunc(GL_NOTEQUAL, 1, 0xFF);
+        Renderer::stencilMask(0x00);
+        Renderer::disable(GL_DEPTH_TEST);
 
-void Model::setTrans(const glm::vec3 trans)
-{
-    for (unsigned int i = 0; i < m_Meshes.size(); i++)
-        m_Meshes[i]->setTrans(trans);
-}
+        std::vector<ShaderElem> shaderElems({
+            ShaderElem("res/shaders/border/shader.vert", GL_VERTEX_SHADER),
+            ShaderElem("res/shaders/border/shader.geom", GL_GEOMETRY_SHADER),
+            ShaderElem("res/shaders/border/shader.frag", GL_FRAGMENT_SHADER),
+        });
+        Shader *shader_ = new Shader(shaderElems);
 
-void Model::setRot(const glm::vec3 rot)
-{
-    for (unsigned int i = 0; i < m_Meshes.size(); i++)
-        m_Meshes[i]->setRot(rot);
-}
+        Mesh::getSelectedMesh()->setScale({1.01f, 1.01f, 1.01f});
+        Mesh::getSelectedMesh()->draw(*shader_, mode);
+        Mesh::getSelectedMesh()->setScale({1.0f, 1.0f, 1.0f});
 
-void Model::setScale(const glm::vec3 scale)
-{
-    for (unsigned int i = 0; i < m_Meshes.size(); i++)
-        m_Meshes[i]->setScale(scale);
+        Renderer::stencilMask(0xFF);
+        Renderer::stencilFunc(GL_ALWAYS, 1, 0xFF);
+        Renderer::enable(GL_DEPTH_TEST);
+        delete shader_;
+    }
 }

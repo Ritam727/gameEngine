@@ -8,6 +8,7 @@ class FrameBuffer
 {
 private:
     unsigned int m_ID;
+    unsigned int m_TextureSlot;
     Texture *m_Texture;
     RenderBuffer *m_RenderBuffer;
 
@@ -17,7 +18,8 @@ public:
 
     void attachTexture(const unsigned int slot);
     void attachRenderBuffer(const unsigned int type, const unsigned int renderBufferType);
-    void forwardBuffers();
+    void adjustDimensions(const unsigned int width, const unsigned int height);
+    void forwardBuffers(const unsigned int width, const unsigned int height);
     void validate() const;
     void bind() const;
     void unbind() const;

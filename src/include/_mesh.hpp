@@ -10,6 +10,7 @@
 #include <_renderer.hpp>
 #include <_rotation.hpp>
 #include <_camera.hpp>
+#include <imgui/imgui.h>
 
 #include <vector>
 #include <string>
@@ -33,16 +34,27 @@ private:
     Material *m_Material;
     BasicMaterial *m_BasicMaterial;
 
+    static unsigned int m_Count;
+    unsigned int m_ID;
+
+    static Mesh *m_CurMesh;
+
 public:
     Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices, const std::vector<Texture*> &textures);
     ~Mesh();
 
     const glm::mat4 getModelMatrix() const;
+    const unsigned int getID() const;
+    static Mesh *getSelectedMesh();
 
     void activateTextures();
     void useShader(const Shader &shader);
+    void drawSelectButton();
+    void drawTransformGui();
     void draw(const Shader &shader, unsigned int mode = 0);
     void addTexture(const std::string &texture, const std::string &type);
+    void selectMesh();
+    static void deselectMesh();
 
     void setTrans(const glm::vec3 trans);
     void setRot(const glm::vec3 rot);

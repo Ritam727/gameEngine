@@ -40,6 +40,7 @@ public:
     static void frontFace(unsigned int val);
 
     static void viewportCallback(GLFWwindow *window, int width, int height);
+    static void adjustViewport(const unsigned int st, const unsigned int en, const unsigned int width, const unsigned int height);
 };
 
 #endif
