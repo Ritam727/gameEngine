@@ -1,4 +1,6 @@
-Makefile
+Makefile*
+*.cmake
+CMakeCache.txt
 *.make
 main
 engine
@@ -10,3 +12,4 @@ res/models/
 lib/
 objects/
 .vscode/
+CMakeFiles/
