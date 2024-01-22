@@ -1,10 +1,11 @@
 #include "_mesh.hpp"
 
-Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices, const std::vector<Texture*> &textures)
-    : m_Buffer(VertexBuffer(vertices.size(), sizeof(Vertex), vertices.data())),
-      m_Array(VertexArray()), m_Index(IndexBuffer(indices.size(), indices.data())),
-      m_Layout(Vertex::getVertexLayout()), m_Trans({ 0.0f, 0.0f, 0.0f }), m_Rot({ 0.0f, 0.0f, 0.0f }), m_Scale({ 1.0f, 1.0f, 1.0f }),
-      m_Material(NULL), m_BasicMaterial(NULL), m_ID(m_Count)
+Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices, const std::vector<Texture *> &textures)
+    : m_Buffer(VertexBuffer(vertices.size(), sizeof(Vertex), vertices.data())), m_Array(VertexArray()),
+      m_Index(IndexBuffer(indices.size(), indices.data())), m_Layout(Vertex::getVertexLayout()), m_Trans({0.0f, 0.0f, 0.0f}),
+      m_Rot({0.0f, 0.0f, 0.0f}), m_Scale({1.0f, 1.0f, 1.0f}), m_Material(NULL), m_BasicMaterial(NULL), m_ID(m_Count),
+      m_PrevRot({0.0f, 0.0f, 0.0f}), m_RotMat(1.0f), m_X({1.0f, 0.0f, 0.0f}), m_Y({0.0f, 1.0f, 0.0f}), m_Z({0.0f, 0.0f, 1.0f}),
+      m_GlobalRot({0.0f, 0.0f, 0.0f}), m_PrevGlobalRot({0.0f, 0.0f, 0.0f})
 {
     m_Array.addBuffer(m_Buffer, m_Layout);
     for (Texture *texture : textures)
@@ -25,13 +26,13 @@ Mesh::~Mesh()
     delete m_Material;
 }
 
-const glm::mat4 Mesh::getModelMatrix() const
+const glm::mat4 Mesh::getModelMatrix()
 {
-    glm::mat4 _model(1.0f);
-    _model = glm::translate(_model, this->m_Trans);
-    _model = glm::rotation(_model, { glm::radians(this->m_Rot.x), glm::radians(this->m_Rot.y), glm::radians(this->m_Rot.z) });
-    _model = glm::scale(_model, this->m_Scale);
-    return _model;
+    updateRot();
+    updateGlobalRot();
+    glm::mat4 _trans = glm::translate(glm::mat4(1.0f), this->m_Trans);
+    glm::mat4 _scale = glm::scale(glm::mat4(1.0f), this->m_Scale);
+    return _trans * m_RotMat * _scale;
 }
 
 const unsigned int Mesh::getID() const
@@ -73,16 +74,27 @@ void Mesh::drawTransformGui()
 {
     std::string t = "Translation##" + std::to_string(m_ID);
     std::string r = "Rotation##" + std::to_string(m_ID);
+    std::string g = "Global Rotation##" + std::to_string(m_ID);
     std::string s = "Scale##" + std::to_string(m_ID);
     std::string b = "Select Mesh##" + std::to_string(m_ID);
     std::string u = "Unselect Mesh##" + std::to_string(m_ID);
 
     ImGui::Text("Object (%d)", m_ID);
+    float X, Y, Z;
+    glm::extractEulerAngleXYZ(m_RotMat, X, Y, Z);
+    ImGui::Text("Actual angles : %.10g, %.10g, %.10g", glm::degrees(X), glm::degrees(Y), glm::degrees(Z));
     if (ImGui::TreeNode(t.c_str()))
     {
         ImGui::SliderFloat("X", &this->m_Trans.x, std::min(this->m_Trans.x, -20.0f), std::max(this->m_Trans.x, 20.0f));
         ImGui::SliderFloat("Y", &this->m_Trans.y, std::min(this->m_Trans.y, -20.0f), std::max(this->m_Trans.y, 20.0f));
         ImGui::SliderFloat("Z", &this->m_Trans.z, std::min(this->m_Trans.z, -20.0f), std::max(this->m_Trans.z, 20.0f));
+        ImGui::TreePop();
+    }
+    if (ImGui::TreeNode(g.c_str()))
+    {
+        ImGui::SliderFloat("X", &this->m_GlobalRot.x, std::min(this->m_GlobalRot.x, -360.0f), std::max(this->m_GlobalRot.x, 360.0f));
+        ImGui::SliderFloat("Y", &this->m_GlobalRot.y, std::min(this->m_GlobalRot.y, -360.0f), std::max(this->m_GlobalRot.y, 360.0f));
+        ImGui::SliderFloat("Z", &this->m_GlobalRot.z, std::min(this->m_GlobalRot.z, -360.0f), std::max(this->m_GlobalRot.z, 360.0f));
         ImGui::TreePop();
     }
     if (ImGui::TreeNode(r.c_str()))
@@ -156,6 +168,45 @@ void Mesh::setRot(const glm::vec3 rot)
 void Mesh::setScale(const glm::vec3 scale)
 {
     m_Scale = scale;
+}
+
+void Mesh::updateRot()
+{
+    glm::vec3 _delta = m_Rot - m_PrevRot;
+    glm::quat _q = glm::quat(glm::radians(_delta));
+    m_X = glm::rotate(glm::inverse(_q), m_X);
+    m_Y = glm::rotate(glm::inverse(_q), m_Y);
+    m_Z = glm::rotate(glm::inverse(_q), m_Z);
+    m_RotMat = glm::rotation(m_RotMat, glm::radians(_delta));
+    m_PrevRot += _delta;
+}
+
+void Mesh::updateGlobalRot()
+{
+    glm::vec3 _delta = m_GlobalRot - m_PrevGlobalRot;
+    glm::quat _q;
+    if (_delta.x != 0)
+    {
+        _q = glm::angleAxis(glm::radians(_delta.x), m_X);
+        m_Y = glm::rotate(glm::inverse(_q), m_Y);
+        m_Z = glm::rotate(glm::inverse(_q), m_Z);
+        m_RotMat = glm::rotation(m_RotMat, glm::radians(_delta.x), m_X);
+    }
+    if (_delta.y != 0)
+    {
+        _q = glm::angleAxis(glm::radians(_delta.y), m_Y);
+        m_X = glm::rotate(glm::inverse(_q), m_X);
+        m_Z = glm::rotate(glm::inverse(_q), m_Z);
+        m_RotMat = glm::rotation(m_RotMat, glm::radians(_delta.y), m_Y);
+    }
+    if (_delta.z != 0)
+    {
+        _q = glm::angleAxis(glm::radians(_delta.z), m_Z);
+        m_Y = glm::rotate(glm::inverse(_q), m_Y);
+        m_X = glm::rotate(glm::inverse(_q), m_X);
+        m_RotMat = glm::rotation(m_RotMat, glm::radians(_delta.z), m_Z);
+    }
+    m_PrevGlobalRot += _delta;
 }
 
 unsigned int Mesh::m_Count = 0;

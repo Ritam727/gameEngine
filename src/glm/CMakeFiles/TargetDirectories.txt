@@ -1,0 +1,2 @@
+/mnt/DATA/C_C++_Work/glm/CMakeFiles/edit_cache.dir
+/mnt/DATA/C_C++_Work/glm/CMakeFiles/rebuild_cache.dir

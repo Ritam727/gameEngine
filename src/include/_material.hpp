@@ -8,10 +8,10 @@
 
 struct Material
 {
-    unsigned int diffuse[32];
-    unsigned int specular[32];
-    unsigned int emission[32];
-    unsigned int normal[32];
+    unsigned int diffuse[8];
+    unsigned int specular[8];
+    unsigned int emission[8];
+    unsigned int normal[8];
 
     float shininess;
 

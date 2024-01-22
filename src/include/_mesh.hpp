@@ -27,7 +27,14 @@ private:
     
     glm::vec3 m_Trans;
     glm::vec3 m_Rot;
+    glm::vec3 m_PrevRot;
     glm::vec3 m_Scale;
+    glm::mat4 m_RotMat;
+    glm::vec3 m_X;
+    glm::vec3 m_Y;
+    glm::vec3 m_Z;
+    glm::vec3 m_GlobalRot;
+    glm::vec3 m_PrevGlobalRot;
     
     std::vector<std::string> m_Textures;
 
@@ -43,7 +50,7 @@ public:
     Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices, const std::vector<Texture*> &textures);
     ~Mesh();
 
-    const glm::mat4 getModelMatrix() const;
+    const glm::mat4 getModelMatrix();
     const unsigned int getID() const;
     static Mesh *getSelectedMesh();
 
@@ -59,6 +66,8 @@ public:
     void setTrans(const glm::vec3 trans);
     void setRot(const glm::vec3 rot);
     void setScale(const glm::vec3 scale);
+    void updateRot();
+    void updateGlobalRot();
 };
 
 #endif
