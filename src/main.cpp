@@ -59,6 +59,7 @@ void dockSpace(bool *p_open)
 int main(void)
 {
     Logger::init();
+    Camera::init();
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
@@ -108,7 +109,7 @@ int main(void)
         float lastFrame = 0.0f;
         float deltaTime = 0.0f;
 
-        std::vector<DirLight> dirLights;     // ({DirLight().setDirection({-0.2f, -1.0f, -0.3f})});
+        std::vector<DirLight> dirLights({DirLight().setDirection({-0.2f, -1.0f, -0.3f})});
         std::vector<PointLight> pointLights; // ({ PointLight().setPosition({ 1.5f, 1.2f, 2.0f }) });
 
         std::future<void> *inputThread = new std::future<void>(std::async(std::launch::async, handleInput));
@@ -134,9 +135,9 @@ int main(void)
             float currentTime = glfwGetTime();
             deltaTime = currentTime - lastFrame;
             lastFrame = currentTime;
-            std::vector<SpotLight> spotLights({SpotLight()
-                                                   .setPosition(Camera::getCameraPos())
-                                                   .setDirection(Camera::getCameraFront())});
+            std::vector<SpotLight> spotLights; //({SpotLight()
+                                               //  .setPosition(Camera::getCameraPos())
+                                               //.setDirection(Camera::getCameraFront())});
 
             dockSpace(NULL);
             ImGui::Begin("Camera");

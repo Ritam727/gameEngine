@@ -74,6 +74,33 @@ void Drawer::render()
             m_Meshes[i][j].mesh->draw(*m_Meshes[i][j].shader, m_Meshes[i][j].mode);
         }
     }
+    if (Mesh::getSelectedMesh() != NULL)
+    {
+        Renderer::stencilFunc(GL_ALWAYS, 1, 0xFF);
+        Renderer::stencilMask(0xFF);
+        
+        Mesh::getSelectedMesh()->draw(*Mesh::getSelectedMeshShader(), Mesh::getSelectedMeshMode());
+        
+        Renderer::stencilFunc(GL_NOTEQUAL, 1, 0xFF);
+        Renderer::stencilMask(0x00);
+        Renderer::disable(GL_DEPTH_TEST);
+
+        std::vector<ShaderElem> shaderElems({
+            ShaderElem("res/shaders/border/shader.vert", GL_VERTEX_SHADER),
+            ShaderElem("res/shaders/border/shader.geom", GL_GEOMETRY_SHADER),
+            ShaderElem("res/shaders/border/shader.frag", GL_FRAGMENT_SHADER),
+        });
+        Shader *shader_ = new Shader(shaderElems);
+
+        Mesh::getSelectedMesh()->setScale({1.01f, 1.01f, 1.01f});
+        Mesh::getSelectedMesh()->draw(*shader_, Mesh::getSelectedMeshMode());
+        Mesh::getSelectedMesh()->setScale({1.0f, 1.0f, 1.0f});
+
+        Renderer::stencilMask(0xFF);
+        Renderer::stencilFunc(GL_ALWAYS, 1, 0xFF);
+        Renderer::enable(GL_DEPTH_TEST);
+        delete shader_;
+    }
 }
 
 void Drawer::update(const unsigned int width, const unsigned int height, const std::vector<DirLight> &dirLights, const std::vector<PointLight> &pointLights, const std::vector<SpotLight> &spotLights)

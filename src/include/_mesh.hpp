@@ -45,6 +45,8 @@ private:
     unsigned int m_ID;
 
     static Mesh *m_CurMesh;
+    static Shader *m_CurMeshShader;
+    static unsigned int m_CurMeshMode;
 
 public:
     Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices, const std::vector<Texture*> &textures);
@@ -53,6 +55,8 @@ public:
     const glm::mat4 getModelMatrix();
     const unsigned int getID() const;
     static Mesh *getSelectedMesh();
+    static Shader *getSelectedMeshShader();
+    static unsigned int getSelectedMeshMode();
 
     void activateTextures();
     void useShader(const Shader &shader);
@@ -62,6 +66,8 @@ public:
     void addTexture(const std::string &texture, const std::string &type);
     void selectMesh();
     static void deselectMesh();
+    static void setCurMeshShader(Shader *shader);
+    static void setCurMeshMode(unsigned int mode);
 
     void setTrans(const glm::vec3 trans);
     void setRot(const glm::vec3 rot);

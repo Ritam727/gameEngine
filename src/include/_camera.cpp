@@ -1,5 +1,12 @@
 #include "_camera.hpp"
 
+void Camera::init()
+{
+    m_CameraFront = glm::normalize(m_CameraFront);
+    m_Pitch = glm::degrees(asin(m_CameraFront.y));
+    m_Yaw = 90.0f + glm::degrees(atan2(m_CameraFront.x, m_CameraFront.z));
+}
+
 glm::vec3 &Camera::getCameraPos()
 {
     return m_CameraPos;
@@ -93,18 +100,19 @@ void Camera::drawCameraControlsGui()
 {
     if (ImGui::TreeNode("Translation"))
     {
-        ImGui::SliderFloat("X", &getCameraPos().x, std::min(getCameraPos().x, -10.0f), std::max(getCameraPos().x, 10.0f));
-        ImGui::SliderFloat("Y", &getCameraPos().y, std::min(getCameraPos().y, -10.0f), std::max(getCameraPos().y, 10.0f));
-        ImGui::SliderFloat("Z", &getCameraPos().z, std::min(getCameraPos().z, -10.0f), std::max(getCameraPos().z, 10.0f));
+        ImGui::DragFloat("X", &getCameraPos().x, 0.1);
+        ImGui::DragFloat("Y", &getCameraPos().y, 0.1);
+        ImGui::DragFloat("Z", &getCameraPos().z, 0.1);
         ImGui::TreePop();
     }
     if (ImGui::TreeNode("Rotation"))
     {
-        ImGui::SliderFloat("X", &getYaw(), std::min(getYaw(), -360.0f), std::max(getYaw(), 360.0f));
-        ImGui::SliderFloat("Y", &getPitch(), std::min(getPitch(), -360.0f), std::max(getPitch(), 360.0f));
+        ImGui::DragFloat("X", &getYaw(), 0.1);
+        ImGui::DragFloat("Y", &getPitch(), 0.1);
         ImGui::TreePop();
     }
-    ImGui::SliderFloat("Camera Zoom", &getZoom(), -2.0f, 2.0f);
+    ImGui::DragFloat("Camera Zoom", &getZoom());
+    updateDirection();
 }
 
 void Camera::revertCameraY()
@@ -133,8 +141,8 @@ glm::mat4 Camera::getViewMatrix()
     return glm::lookAt(getCameraPos(), getCameraFront() + getCameraPos(), getCameraUp());
 }
 
-glm::vec3 Camera::m_CameraPos = glm::vec3(0.0f, 0.0f, 5.0f);
-glm::vec3 Camera::m_CameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 Camera::m_CameraPos = glm::vec3(10.0f, 10.0f, 10.0f);
+glm::vec3 Camera::m_CameraFront = glm::vec3(-1.0f, -1.0f, -1.0f);
 glm::vec3 Camera::m_CameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 glm::vec3 Camera::m_CameraFoward = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 Camera::m_CameraRight = glm::vec3(1.0f, 0.0f, 0.0f);

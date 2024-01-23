@@ -45,6 +45,16 @@ Mesh *Mesh::getSelectedMesh()
     return m_CurMesh;
 }
 
+Shader *Mesh::getSelectedMeshShader()
+{
+    return m_CurMeshShader;
+}
+
+unsigned int Mesh::getSelectedMeshMode()
+{
+    return m_CurMeshMode;
+}
+
 void Mesh::activateTextures()
 {
     for (unsigned int i = 0; i < m_Textures.size(); i++)
@@ -82,33 +92,33 @@ void Mesh::drawTransformGui()
     ImGui::Text("Object (%d)", m_ID);
     float X, Y, Z;
     glm::extractEulerAngleXYZ(m_RotMat, X, Y, Z);
-    ImGui::Text("Actual angles : %.10g, %.10g, %.10g", glm::degrees(X), glm::degrees(Y), glm::degrees(Z));
+    ImGui::Text("Actual angles : %3.2f, %3.2f, %3.2f", glm::degrees(X), glm::degrees(Y), glm::degrees(Z));
     if (ImGui::TreeNode(t.c_str()))
     {
-        ImGui::SliderFloat("X", &this->m_Trans.x, std::min(this->m_Trans.x, -20.0f), std::max(this->m_Trans.x, 20.0f));
-        ImGui::SliderFloat("Y", &this->m_Trans.y, std::min(this->m_Trans.y, -20.0f), std::max(this->m_Trans.y, 20.0f));
-        ImGui::SliderFloat("Z", &this->m_Trans.z, std::min(this->m_Trans.z, -20.0f), std::max(this->m_Trans.z, 20.0f));
+        ImGui::DragFloat("X", &this->m_Trans.x, 0.1);
+        ImGui::DragFloat("Y", &this->m_Trans.y, 0.1);
+        ImGui::DragFloat("Z", &this->m_Trans.z, 0.1);
         ImGui::TreePop();
     }
     if (ImGui::TreeNode(g.c_str()))
     {
-        ImGui::SliderFloat("X", &this->m_GlobalRot.x, std::min(this->m_GlobalRot.x, -360.0f), std::max(this->m_GlobalRot.x, 360.0f));
-        ImGui::SliderFloat("Y", &this->m_GlobalRot.y, std::min(this->m_GlobalRot.y, -360.0f), std::max(this->m_GlobalRot.y, 360.0f));
-        ImGui::SliderFloat("Z", &this->m_GlobalRot.z, std::min(this->m_GlobalRot.z, -360.0f), std::max(this->m_GlobalRot.z, 360.0f));
+        ImGui::DragFloat("X", &this->m_GlobalRot.x, 0.1);
+        ImGui::DragFloat("Y", &this->m_GlobalRot.y, 0.1);
+        ImGui::DragFloat("Z", &this->m_GlobalRot.z, 0.1);
         ImGui::TreePop();
     }
     if (ImGui::TreeNode(r.c_str()))
     {
-        ImGui::SliderFloat("X", &this->m_Rot.x, std::min(this->m_Rot.x, -360.0f), std::max(this->m_Rot.x, 360.0f));
-        ImGui::SliderFloat("Y", &this->m_Rot.y, std::min(this->m_Rot.y, -360.0f), std::max(this->m_Rot.y, 360.0f));
-        ImGui::SliderFloat("Z", &this->m_Rot.z, std::min(this->m_Rot.z, -360.0f), std::max(this->m_Rot.z, 360.0f));
+        ImGui::DragFloat("X", &this->m_Rot.x, 0.1);
+        ImGui::DragFloat("Y", &this->m_Rot.y, 0.1);
+        ImGui::DragFloat("Z", &this->m_Rot.z, 0.1);
         ImGui::TreePop();
     }
     if (ImGui::TreeNode(s.c_str()))
     {
-        ImGui::SliderFloat("X", &this->m_Scale.x, std::min(this->m_Scale.x, 0.0f), std::max(this->m_Scale.x, 20.0f));
-        ImGui::SliderFloat("Y", &this->m_Scale.y, std::min(this->m_Scale.y, 0.0f), std::max(this->m_Scale.y, 20.0f));
-        ImGui::SliderFloat("Z", &this->m_Scale.z, std::min(this->m_Scale.z, 0.0f), std::max(this->m_Scale.z, 20.0f));
+        ImGui::DragFloat("X", &this->m_Scale.x, 0.1);
+        ImGui::DragFloat("Y", &this->m_Scale.y, 0.1);
+        ImGui::DragFloat("Z", &this->m_Scale.z, 0.1);
         ImGui::TreePop();
     }
     if (ImGui::Button(b.c_str()))
@@ -153,6 +163,18 @@ void Mesh::selectMesh()
 void Mesh::deselectMesh()
 {
     m_CurMesh = NULL;
+    m_CurMeshShader = NULL;
+    m_CurMeshMode = -1;
+}
+
+void Mesh::setCurMeshMode(unsigned int mode)
+{
+    m_CurMeshMode = mode;
+}
+
+void Mesh::setCurMeshShader(Shader *shader)
+{
+    m_CurMeshShader = shader;
 }
 
 void Mesh::setTrans(const glm::vec3 trans)
@@ -211,3 +233,5 @@ void Mesh::updateGlobalRot()
 
 unsigned int Mesh::m_Count = 0;
 Mesh *Mesh::m_CurMesh = NULL;
+Shader *Mesh::m_CurMeshShader = NULL;
+unsigned int Mesh::m_CurMeshMode = -1;

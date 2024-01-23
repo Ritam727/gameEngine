@@ -138,7 +138,7 @@ Model::~Model()
         delete m_Meshes[i];
 }
 
-void Model::draw(const Shader &shader, unsigned int mode) const
+void Model::draw(Shader &shader, unsigned int mode) const
 {
     for (unsigned int i = 0; i < m_Meshes.size(); i++)
     {
@@ -148,32 +148,10 @@ void Model::draw(const Shader &shader, unsigned int mode) const
             Renderer::stencilMask(0x00);
             m_Meshes[i]->draw(shader, mode);
         }
-    }
-    if (Mesh::getSelectedMesh() != NULL)
-    {
-        Renderer::stencilFunc(GL_ALWAYS, 1, 0xFF);
-        Renderer::stencilMask(0xFF);
-        
-        Mesh::getSelectedMesh()->draw(shader, mode);
-        
-        Renderer::stencilFunc(GL_NOTEQUAL, 1, 0xFF);
-        Renderer::stencilMask(0x00);
-        Renderer::disable(GL_DEPTH_TEST);
-
-        std::vector<ShaderElem> shaderElems({
-            ShaderElem("res/shaders/border/shader.vert", GL_VERTEX_SHADER),
-            ShaderElem("res/shaders/border/shader.geom", GL_GEOMETRY_SHADER),
-            ShaderElem("res/shaders/border/shader.frag", GL_FRAGMENT_SHADER),
-        });
-        Shader *shader_ = new Shader(shaderElems);
-
-        Mesh::getSelectedMesh()->setScale({1.01f, 1.01f, 1.01f});
-        Mesh::getSelectedMesh()->draw(*shader_, mode);
-        Mesh::getSelectedMesh()->setScale({1.0f, 1.0f, 1.0f});
-
-        Renderer::stencilMask(0xFF);
-        Renderer::stencilFunc(GL_ALWAYS, 1, 0xFF);
-        Renderer::enable(GL_DEPTH_TEST);
-        delete shader_;
+        else
+        {
+            Mesh::setCurMeshShader(&shader);
+            Mesh::setCurMeshMode(mode);
+        }
     }
 }
