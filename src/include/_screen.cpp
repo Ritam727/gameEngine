@@ -11,4 +11,4 @@ int &Screen::getScreenHeight()
 }
 
 int Screen::m_ScreenWidth = 1920;
-int Screen::m_ScreenHeight = 1080;
+int Screen::m_ScreenHeight = 1016;

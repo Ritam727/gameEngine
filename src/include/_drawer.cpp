@@ -83,8 +83,8 @@ void Drawer::render()
     {
         Renderer::stencilFunc(GL_ALWAYS, 1, 0xFF);
         Renderer::stencilMask(0xFF);
-        Mesh *curMesh = Mesh::getSelectedMesh();
-        curMesh->draw(*Mesh::getSelectedMeshShader(), Mesh::getSelectedMeshMode());
+
+        Mesh::getSelectedMesh()->draw(*Mesh::getSelectedMeshShader(), Mesh::getSelectedMeshMode());
 
         Renderer::stencilFunc(GL_NOTEQUAL, 1, 0xFF);
         Renderer::stencilMask(0x00);
@@ -105,6 +105,50 @@ void Drawer::render()
         Renderer::stencilMask(0xFF);
         Renderer::stencilFunc(GL_ALWAYS, 1, 0xFF);
         Renderer::enable(GL_DEPTH_TEST);
+
+        glm::mat4 proj = glm::perspective(glm::radians(45.0f - Camera::getZoom() * 10.0f), (float)Screen::getScreenWidth() / (float)Screen::getScreenHeight(), 0.1f, 100.0f);
+        glm::mat4 view = Camera::getViewMatrix();
+        std::vector<glm::vec2> _vertices;
+        for (const Vertex &vertex : Mesh::getSelectedMesh()->getVertices())
+        {
+            glm::vec4 cur = proj * view * Mesh::getSelectedMesh()->getModelMatrix() * glm::vec4(vertex.pos, 1.0f);
+            _vertices.push_back(glm::vec2(Screen::getScreenWidth() / 2 * (1.0f + cur.x / cur.w), Screen::getScreenHeight() / 2 * (1.0f - cur.y / cur.w)));
+        }
+        std::set<glm::vec2, Vec2Sort> _hull = Helper::getConvexHull(_vertices);
+
+        glm::vec2 centre(0.0f);
+        for (glm::vec2 v : _hull)
+            centre += v;
+        centre = { centre.x / (float) _hull.size(), centre.y / (float) _hull.size() };
+        float value = 0;
+        for (glm::vec2 v : _hull)
+            value = std::max(value, (float) glm::distance(v, centre));
+
+        ImGui::SetNextWindowPos(ImVec2(centre.x - value - 50.0f, centre.y - value - 50.0f));
+        ImGuiIO &io = ImGui::GetIO();
+        ImGui::Begin("FX", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBringToFrontOnFocus);
+        ImVec2 size(2 * value + 100.0f, 2 * value + 100.0f);
+        ImGui::InvisibleButton("canvas", size);
+        ImVec2 p0 = ImGui::GetItemRectMin();
+        ImVec2 p1 = ImGui::GetItemRectMax();
+        ImDrawList *draw_list = ImGui::GetWindowDrawList();
+        draw_list->PushClipRect(p0, p1);
+
+        ImVec4 mouse_data;
+        mouse_data.x = io.MousePos.x;
+        mouse_data.y = io.MousePos.y;
+        mouse_data.z = io.MouseDownDuration[0];
+        mouse_data.w = io.MouseDownDuration[1];
+
+        FX(draw_list, p0, p1, size, mouse_data, value, ImVec2(centre.x, centre.y));
+        draw_list->PopClipRect();
+        ImGui::End();
+        ImGui::Begin("Mouse");
+        ImGui::Text("Screen %d, %d", Screen::getScreenWidth(), Screen::getScreenHeight());
+        ImGui::Text("Centre %f, %f", centre.x, centre.y);
+        ImGui::Text("Radius, %f", value);
+        ImGui::Text("Mouse pos %f, %f", mouse_data.x, mouse_data.y);
+        ImGui::End();
     }
 }
 

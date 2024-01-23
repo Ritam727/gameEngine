@@ -4,6 +4,8 @@
 #include <_model.hpp>
 #include <_camera.hpp>
 #include <_screen.hpp>
+#include <_helper.hpp>
+#include <fx.inl>
 
 #include <queue>
 
