@@ -78,9 +78,9 @@ void Drawer::render()
     {
         Renderer::stencilFunc(GL_ALWAYS, 1, 0xFF);
         Renderer::stencilMask(0xFF);
-        
-        Mesh::getSelectedMesh()->draw(*Mesh::getSelectedMeshShader(), Mesh::getSelectedMeshMode());
-        
+        Mesh *curMesh = Mesh::getSelectedMesh();
+        curMesh->draw(*Mesh::getSelectedMeshShader(), Mesh::getSelectedMeshMode());
+
         Renderer::stencilFunc(GL_NOTEQUAL, 1, 0xFF);
         Renderer::stencilMask(0x00);
         Renderer::disable(GL_DEPTH_TEST);
@@ -100,6 +100,43 @@ void Drawer::render()
         Renderer::stencilFunc(GL_ALWAYS, 1, 0xFF);
         Renderer::enable(GL_DEPTH_TEST);
         delete shader_;
+    }
+}
+
+void Drawer::renderForMousePicking()
+{
+    std::vector<ShaderElem> shaderElems({ShaderElem("res/shaders/mousePicking/shader.vert", GL_VERTEX_SHADER),
+                                         ShaderElem("res/shaders/mousePicking/shader.frag", GL_FRAGMENT_SHADER)});
+    Shader mousePicking(shaderElems);
+    for (int i = 2; i >= 0; i--)
+    {
+        for (unsigned int j = 0; j < m_Models[i].size(); j++)
+        {
+            m_Models[i][j].shader->use();
+            m_Models[i][j].shader->setVec3f("cameraPos", Camera::getCameraPos());
+            m_Models[i][j].shader->setFloat("time", glfwGetTime());
+            m_Models[i][j].model->draw(mousePicking, m_Models[i][j].mode);
+        }
+        for (unsigned int j = 0; j < m_Meshes[i].size(); j++)
+        {
+            m_Meshes[i][j].shader->use();
+            m_Meshes[i][j].shader->setVec3f("cameraPos", Camera::getCameraPos());
+            m_Meshes[i][j].shader->setFloat("time", glfwGetTime());
+            m_Meshes[i][j].mesh->drawSelectButton();
+            m_Meshes[i][j].mesh->draw(mousePicking, m_Meshes[i][j].mode);
+        }
+    }
+    ImGuiIO &io = ImGui::GetIO();
+    (void)io;
+    unsigned char pixels[3];
+    glm::vec2 mousePos = {io.MousePos.x, io.MousePos.y};
+    float pressed = io.MouseDownDuration[0];
+    GLCall(glReadPixels((int)mousePos.x, Screen::getScreenHeight() - (int)mousePos.y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixels));
+    int r = pixels[0], g = pixels[1], b = pixels[2];
+    if (pressed > -1)
+    {
+        std::cout << r << " " << g << " " << b << std::endl;
+        Mesh::setCurPickedColor(glm::vec3(r, g, b));
     }
 }
 

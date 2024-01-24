@@ -18,6 +18,7 @@ Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> 
         m_Material = new Material(m_Textures);
     m_BasicMaterial = new BasicMaterial();
     m_Count++;
+    m_PickerColor = glm::vec3(m_Count % 256, (m_Count / 256) % 256, ((m_Count / 256) / 256) % 256);
 }
 
 Mesh::~Mesh()
@@ -33,6 +34,11 @@ const glm::mat4 Mesh::getModelMatrix()
     glm::mat4 _trans = glm::translate(glm::mat4(1.0f), this->m_Trans);
     glm::mat4 _scale = glm::scale(glm::mat4(1.0f), this->m_Scale);
     return _trans * m_RotMat * _scale;
+}
+
+const glm::vec3 Mesh::getPickerColor()
+{
+    return m_PickerColor;
 }
 
 const unsigned int Mesh::getID() const
@@ -127,10 +133,20 @@ void Mesh::drawTransformGui()
         deselectMesh();
 }
 
+void Mesh::update()
+{
+    if (m_PickerColor == m_CurrentPickedColor)
+        this->selectMesh();
+    else
+        this->deselectMesh();
+}
+
 void Mesh::draw(const Shader &shader, unsigned int mode)
 {
     this->useShader(shader);
     glm::mat4 model = this->getModelMatrix();
+    glm::vec3 pickerColor = 1.0f / 255.0f * m_PickerColor;
+    shader.setVec3f("u_Color", pickerColor);
     if (mode)
         Renderer::drawElem(m_Array, shader, m_Index, model);
     else
@@ -170,6 +186,11 @@ void Mesh::deselectMesh()
 void Mesh::setCurMeshMode(unsigned int mode)
 {
     m_CurMeshMode = mode;
+}
+
+void Mesh::setCurPickedColor(glm::vec3 color)
+{
+    m_CurrentPickedColor = color;
 }
 
 void Mesh::setCurMeshShader(Shader *shader)
@@ -235,3 +256,4 @@ unsigned int Mesh::m_Count = 0;
 Mesh *Mesh::m_CurMesh = NULL;
 Shader *Mesh::m_CurMeshShader = NULL;
 unsigned int Mesh::m_CurMeshMode = -1;
+glm::vec3 Mesh::m_CurrentPickedColor = glm::vec3(0);

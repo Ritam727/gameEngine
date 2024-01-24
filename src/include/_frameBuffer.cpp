@@ -20,7 +20,7 @@ void FrameBuffer::attachTexture(const unsigned int slot)
     m_TextureSlot = slot;
     m_Texture = new Texture();
     m_Texture->bind(slot);
-    GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + slot, GL_TEXTURE_2D, m_Texture->getID(), 0));
+    GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_Texture->getID(), 0));
     this->unbind();
 }
 

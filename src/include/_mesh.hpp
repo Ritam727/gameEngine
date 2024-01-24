@@ -35,24 +35,27 @@ private:
     glm::vec3 m_Z;
     glm::vec3 m_GlobalRot;
     glm::vec3 m_PrevGlobalRot;
+    glm::vec3 m_PickerColor;
     
     std::vector<std::string> m_Textures;
 
     Material *m_Material;
     BasicMaterial *m_BasicMaterial;
 
-    static unsigned int m_Count;
     unsigned int m_ID;
 
+    static unsigned int m_Count;
     static Mesh *m_CurMesh;
     static Shader *m_CurMeshShader;
     static unsigned int m_CurMeshMode;
+    static glm::vec3 m_CurrentPickedColor;
 
 public:
     Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices, const std::vector<Texture*> &textures);
     ~Mesh();
 
     const glm::mat4 getModelMatrix();
+    const glm::vec3 getPickerColor();
     const unsigned int getID() const;
     static Mesh *getSelectedMesh();
     static Shader *getSelectedMeshShader();
@@ -62,12 +65,14 @@ public:
     void useShader(const Shader &shader);
     void drawSelectButton();
     void drawTransformGui();
+    void update();
     void draw(const Shader &shader, unsigned int mode = 0);
     void addTexture(const std::string &texture, const std::string &type);
     void selectMesh();
     static void deselectMesh();
     static void setCurMeshShader(Shader *shader);
     static void setCurMeshMode(unsigned int mode);
+    static void setCurPickedColor(glm::vec3 color);
 
     void setTrans(const glm::vec3 trans);
     void setRot(const glm::vec3 rot);

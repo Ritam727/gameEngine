@@ -111,6 +111,7 @@ private:
 public:
     static void init();
     static void render();
+    static void renderForMousePicking();
     static void update(const unsigned int width, const unsigned int height, const std::vector<DirLight> &dirLights, const std::vector<PointLight> &pointLights, const std::vector<SpotLight> &spotLights);
     static void enqueue(const ModelLoader &loader);
 

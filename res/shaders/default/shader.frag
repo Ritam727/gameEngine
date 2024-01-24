@@ -89,6 +89,7 @@ out vec4 FragColor;
 uniform vec3 cameraPos;
 uniform Material material;
 uniform BasicMaterial basicMaterial;
+uniform vec3 u_Color;
 layout (std140, binding = 0) uniform Lights
 {
     DirLight dirLight[N_DIRECTIONAL_LIGHTS];                        // 64 * 6

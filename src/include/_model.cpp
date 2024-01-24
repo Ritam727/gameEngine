@@ -143,6 +143,7 @@ void Model::draw(Shader &shader, unsigned int mode) const
     for (unsigned int i = 0; i < m_Meshes.size(); i++)
     {
         m_Meshes[i]->drawSelectButton();
+        m_Meshes[i]->update();
         if (Mesh::getSelectedMesh() != m_Meshes[i])
         {
             Renderer::stencilMask(0x00);

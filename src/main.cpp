@@ -115,8 +115,7 @@ int main(void)
         std::future<void> *inputThread = new std::future<void>(std::async(std::launch::async, handleInput));
 
         FrameBuffer frameBuffer;
-        frameBuffer.attachTexture(0);
-        frameBuffer.attachRenderBuffer(GL_DEPTH_STENCIL_ATTACHMENT, GL_DEPTH24_STENCIL8);
+        frameBuffer.attachTexture(7);
         frameBuffer.validate();
 
         while (!glfwWindowShouldClose(window))
@@ -126,7 +125,6 @@ int main(void)
             ImGui_ImplGlfw_NewFrame();
             ImGui::NewFrame();
 
-            Renderer::clearColor({0.5f, 0.5f, 0.5f, 1.0f});
             Renderer::enable(GL_DEPTH_TEST);
             Renderer::stencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
             Renderer::clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -138,14 +136,22 @@ int main(void)
             std::vector<SpotLight> spotLights; //({SpotLight()
                                                //  .setPosition(Camera::getCameraPos())
                                                //.setDirection(Camera::getCameraFront())});
+            int width_ = Screen::getScreenWidth();
+            int height_ = Screen::getScreenHeight();
+            
+            Renderer::clearColor({0.0f, 0.0f, 0.0f, 1.0f});
+            frameBuffer.bind();
+            Drawer::update(width_, height_, dirLights, pointLights, spotLights);
+            Drawer::renderForMousePicking();
+            frameBuffer.unbind();
+            Renderer::clearColor({0.5f, 0.5f, 0.5f, 1.0f});
+
 
             dockSpace(NULL);
             ImGui::Begin("Camera");
             Camera::drawCameraControlsGui();
             ImGui::End();
 
-            int width_ = Screen::getScreenWidth();
-            int height_ = Screen::getScreenHeight();
 
             ImGui::Begin("Objects");
             Drawer::update(width_, height_, dirLights, pointLights, spotLights);
