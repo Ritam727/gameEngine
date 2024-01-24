@@ -56,6 +56,9 @@ public:
 
     const glm::mat4 getModelMatrix();
     const glm::vec3 getPickerColor();
+    const glm::vec3 getTrans();
+    const glm::vec3 getRot();
+    const glm::vec3 getScale();
     const unsigned int getID() const;
     static Mesh *getSelectedMesh();
     static Shader *getSelectedMeshShader();
@@ -63,7 +66,7 @@ public:
 
     void activateTextures();
     void useShader(const Shader &shader);
-    void drawSelectButton();
+    void drawSelectButton(unsigned int drawGui = 1);
     void drawTransformGui();
     void update();
     void draw(const Shader &shader, unsigned int mode = 0);

@@ -41,6 +41,21 @@ const glm::vec3 Mesh::getPickerColor()
     return m_PickerColor;
 }
 
+const glm::vec3 Mesh::getTrans()
+{
+    return m_Trans;
+}
+
+const glm::vec3 Mesh::getRot()
+{
+    return m_Rot;
+}
+
+const glm::vec3 Mesh::getScale()
+{
+    return m_Scale;
+}
+
 const unsigned int Mesh::getID() const
 {
     return m_ID;
@@ -76,9 +91,11 @@ void Mesh::useShader(const Shader &shader)
     shader.setBasicMaterial("basicMaterial", *m_BasicMaterial);
 }
 
-void Mesh::drawSelectButton()
+void Mesh::drawSelectButton(unsigned int drawGui)
 {
-    std::string o = "Object (" + std::to_string(m_ID) + ")";
+    if (!drawGui)
+        return;
+    std::string o = "Object (" + std::to_string(m_ID) + ")##" + std::to_string(drawGui);
     if (ImGui::TreeNode(o.c_str()))
     {
         this->drawTransformGui();
@@ -96,35 +113,32 @@ void Mesh::drawTransformGui()
     std::string u = "Unselect Mesh##" + std::to_string(m_ID);
 
     ImGui::Text("Object (%d)", m_ID);
-    float X, Y, Z;
-    glm::extractEulerAngleXYZ(m_RotMat, X, Y, Z);
-    ImGui::Text("Actual angles : %3.2f, %3.2f, %3.2f", glm::degrees(X), glm::degrees(Y), glm::degrees(Z));
     if (ImGui::TreeNode(t.c_str()))
     {
-        ImGui::DragFloat("X", &this->m_Trans.x, 0.1);
-        ImGui::DragFloat("Y", &this->m_Trans.y, 0.1);
-        ImGui::DragFloat("Z", &this->m_Trans.z, 0.1);
+        ImGui::DragFloat("X", &m_Trans.x, 0.1);
+        ImGui::DragFloat("Y", &m_Trans.y, 0.1);
+        ImGui::DragFloat("Z", &m_Trans.z, 0.1);
         ImGui::TreePop();
     }
     if (ImGui::TreeNode(g.c_str()))
     {
-        ImGui::DragFloat("X", &this->m_GlobalRot.x, 0.1);
-        ImGui::DragFloat("Y", &this->m_GlobalRot.y, 0.1);
-        ImGui::DragFloat("Z", &this->m_GlobalRot.z, 0.1);
+        ImGui::DragFloat("X", &m_GlobalRot.x, 0.1);
+        ImGui::DragFloat("Y", &m_GlobalRot.y, 0.1);
+        ImGui::DragFloat("Z", &m_GlobalRot.z, 0.1);
         ImGui::TreePop();
     }
     if (ImGui::TreeNode(r.c_str()))
     {
-        ImGui::DragFloat("X", &this->m_Rot.x, 0.1);
-        ImGui::DragFloat("Y", &this->m_Rot.y, 0.1);
-        ImGui::DragFloat("Z", &this->m_Rot.z, 0.1);
+        ImGui::DragFloat("X", &m_Rot.x, 0.1);
+        ImGui::DragFloat("Y", &m_Rot.y, 0.1);
+        ImGui::DragFloat("Z", &m_Rot.z, 0.1);
         ImGui::TreePop();
     }
     if (ImGui::TreeNode(s.c_str()))
     {
-        ImGui::DragFloat("X", &this->m_Scale.x, 0.1);
-        ImGui::DragFloat("Y", &this->m_Scale.y, 0.1);
-        ImGui::DragFloat("Z", &this->m_Scale.z, 0.1);
+        ImGui::DragFloat("X", &m_Scale.x, 0.1);
+        ImGui::DragFloat("Y", &m_Scale.y, 0.1);
+        ImGui::DragFloat("Z", &m_Scale.z, 0.1);
         ImGui::TreePop();
     }
     if (ImGui::Button(b.c_str()))
@@ -136,9 +150,13 @@ void Mesh::drawTransformGui()
 void Mesh::update()
 {
     if (m_PickerColor == m_CurrentPickedColor)
+    {
         this->selectMesh();
-    else
+    }
+    else if (m_CurrentPickedColor == glm::vec3(0))
+    {
         this->deselectMesh();
+    }
 }
 
 void Mesh::draw(const Shader &shader, unsigned int mode)
@@ -248,6 +266,13 @@ void Mesh::updateGlobalRot()
         m_Y = glm::rotate(glm::inverse(_q), m_Y);
         m_X = glm::rotate(glm::inverse(_q), m_X);
         m_RotMat = glm::rotation(m_RotMat, glm::radians(_delta.z), m_Z);
+    }
+    if (glm::length(_delta) > 0)
+    {
+        float X, Y, Z;
+        glm::extractEulerAngleXYZ(m_RotMat, X, Y, Z);
+        m_PrevRot = glm::degrees(glm::vec3(X, Y, Z));
+        m_Rot = glm::degrees(glm::vec3(X, Y, Z));
     }
     m_PrevGlobalRot += _delta;
 }

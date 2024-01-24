@@ -138,11 +138,11 @@ Model::~Model()
         delete m_Meshes[i];
 }
 
-void Model::draw(Shader &shader, unsigned int mode) const
+void Model::draw(Shader &shader, unsigned int mode, unsigned int drawGui) const
 {
     for (unsigned int i = 0; i < m_Meshes.size(); i++)
     {
-        m_Meshes[i]->drawSelectButton();
+        m_Meshes[i]->drawSelectButton(drawGui);
         m_Meshes[i]->update();
         if (Mesh::getSelectedMesh() != m_Meshes[i])
         {

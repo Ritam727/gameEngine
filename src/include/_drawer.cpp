@@ -90,16 +90,16 @@ void Drawer::render()
             ShaderElem("res/shaders/border/shader.geom", GL_GEOMETRY_SHADER),
             ShaderElem("res/shaders/border/shader.frag", GL_FRAGMENT_SHADER),
         });
-        Shader *shader_ = new Shader(shaderElems);
+        Shader shader_(shaderElems);
 
-        Mesh::getSelectedMesh()->setScale({1.01f, 1.01f, 1.01f});
-        Mesh::getSelectedMesh()->draw(*shader_, Mesh::getSelectedMeshMode());
-        Mesh::getSelectedMesh()->setScale({1.0f, 1.0f, 1.0f});
+        glm::vec3 _scale = Mesh::getSelectedMesh()->getScale();
+        Mesh::getSelectedMesh()->setScale(_scale * 1.01f);
+        Mesh::getSelectedMesh()->draw(shader_, Mesh::getSelectedMeshMode());
+        Mesh::getSelectedMesh()->setScale(_scale);
 
         Renderer::stencilMask(0xFF);
         Renderer::stencilFunc(GL_ALWAYS, 1, 0xFF);
         Renderer::enable(GL_DEPTH_TEST);
-        delete shader_;
     }
 }
 
@@ -115,14 +115,14 @@ void Drawer::renderForMousePicking()
             m_Models[i][j].shader->use();
             m_Models[i][j].shader->setVec3f("cameraPos", Camera::getCameraPos());
             m_Models[i][j].shader->setFloat("time", glfwGetTime());
-            m_Models[i][j].model->draw(mousePicking, m_Models[i][j].mode);
+            m_Models[i][j].model->draw(mousePicking, m_Models[i][j].mode, 0);
         }
         for (unsigned int j = 0; j < m_Meshes[i].size(); j++)
         {
             m_Meshes[i][j].shader->use();
             m_Meshes[i][j].shader->setVec3f("cameraPos", Camera::getCameraPos());
             m_Meshes[i][j].shader->setFloat("time", glfwGetTime());
-            m_Meshes[i][j].mesh->drawSelectButton();
+            m_Meshes[i][j].mesh->drawSelectButton(0);
             m_Meshes[i][j].mesh->draw(mousePicking, m_Meshes[i][j].mode);
         }
     }
@@ -134,10 +134,7 @@ void Drawer::renderForMousePicking()
     GLCall(glReadPixels((int)mousePos.x, Screen::getScreenHeight() - (int)mousePos.y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixels));
     int r = pixels[0], g = pixels[1], b = pixels[2];
     if (pressed > -1)
-    {
-        std::cout << r << " " << g << " " << b << std::endl;
         Mesh::setCurPickedColor(glm::vec3(r, g, b));
-    }
 }
 
 void Drawer::update(const unsigned int width, const unsigned int height, const std::vector<DirLight> &dirLights, const std::vector<PointLight> &pointLights, const std::vector<SpotLight> &spotLights)

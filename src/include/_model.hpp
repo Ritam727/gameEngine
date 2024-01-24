@@ -30,7 +30,7 @@ public:
     Model(const Mesh &mesh);
     ~Model();
 
-    void draw(Shader &shader, unsigned int mode = 0) const;
+    void draw(Shader &shader, unsigned int mode = 0, unsigned int drawGui = 1) const;
 };
 
 #endif
