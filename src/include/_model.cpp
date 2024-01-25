@@ -144,7 +144,7 @@ void Model::draw(Shader &shader, unsigned int mode, unsigned int drawGui) const
     {
         m_Meshes[i]->drawSelectButton(drawGui);
         m_Meshes[i]->update();
-        if (Mesh::getSelectedMesh() != m_Meshes[i])
+        if (!drawGui || Mesh::getSelectedMesh() != m_Meshes[i])
         {
             Renderer::stencilMask(0x00);
             m_Meshes[i]->draw(shader, mode);

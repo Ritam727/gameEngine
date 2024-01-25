@@ -116,8 +116,9 @@ int main(void)
 
         FrameBuffer frameBuffer;
         frameBuffer.attachTexture(7);
-        frameBuffer.attachRenderBuffer(GL_DEPTH_STENCIL_ATTACHMENT, GL_DEPTH24_STENCIL8);
+        frameBuffer.attachDepthBuffer(6);
         frameBuffer.validate();
+        frameBuffer.unbind();
 
         while (!glfwWindowShouldClose(window))
         {
@@ -126,10 +127,9 @@ int main(void)
             ImGui_ImplGlfw_NewFrame();
             ImGui::NewFrame();
 
-            Renderer::clearColor({0.5f, 0.5f, 0.5f, 1.0f});
+            // Renderer::clearColor({0.5f, 0.5f, 0.5f, 1.0f});
             Renderer::enable(GL_DEPTH_TEST);
             Renderer::stencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-            Renderer::clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
             glfwGetWindowSize(window, &Screen::getScreenWidth(), &Screen::getScreenHeight());
             float currentTime = glfwGetTime();
@@ -140,22 +140,49 @@ int main(void)
                                                //.setDirection(Camera::getCameraFront())});
             int width_ = Screen::getScreenWidth();
             int height_ = Screen::getScreenHeight();
-            
+
+            ImGui::SetNextWindowSize(ImVec2(width_ / 2, height_ / 2));
+            ImGui::Begin("Render");
+            ImVec2 pos = ImGui::GetCursorScreenPos();
+            float window_width = ImGui::GetContentRegionAvail().x;
+            float window_height = ImGui::GetContentRegionAvail().y;
+
             frameBuffer.bind();
-            Renderer::clearColor({0.0f, 0.0f, 0.0f, 1.0f});
-            Drawer::renderForMousePicking();
+            Renderer::stencilMask(0x00);
+            Renderer::clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+            Drawer::update(width_, height_, dirLights, pointLights, spotLights);
+            bool onWindow = Drawer::getOnWindow();
+            Drawer::renderForMousePicking(onWindow);
+            // frameBuffer.forwardBuffers(width_, height_);
+
+            ImGui::GetWindowDrawList()->AddImage(
+                (void *)(size_t)frameBuffer.getTexture()->getID(),
+                ImVec2(pos.x, pos.y),
+                ImVec2(pos.x + window_width, pos.y + window_height),
+                ImVec2(0, 1),
+                ImVec2(1, 0));
+
+            Renderer::stencilMask(0xFF);
             frameBuffer.unbind();
+            ImGui::End();
+
+            Renderer::clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
             dockSpace(NULL);
             ImGui::Begin("Camera");
             Camera::drawCameraControlsGui();
             ImGui::Text("FrameRate %.3f", io.Framerate);
+            bool onCameraWindow = ImGui::IsWindowHovered() | ImGui::IsAnyItemHovered() | ImGui::IsWindowFocused() | ImGui::IsAnyItemFocused() | ImGui::IsAnyItemActive();
             ImGui::End();
 
             ImGui::Begin("Objects");
             Drawer::update(width_, height_, dirLights, pointLights, spotLights);
             Drawer::render();
+            bool onObjectWindow = ImGui::IsWindowHovered() | ImGui::IsAnyItemHovered() | ImGui::IsWindowFocused() | ImGui::IsAnyItemFocused() | ImGui::IsAnyItemActive();
             ImGui::End();
+
+            Drawer::setOnWindow(onCameraWindow | onObjectWindow);
 
             ImGui::Render();
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -167,7 +194,6 @@ int main(void)
                 ImGui::RenderPlatformWindowsDefault();
                 glfwMakeContextCurrent(backup_current_context);
             }
-
             processInput(window, deltaTime);
             glfwSwapBuffers(window);
         }

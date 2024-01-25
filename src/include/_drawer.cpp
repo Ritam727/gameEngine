@@ -20,6 +20,11 @@ void Drawer::addMesh(Mesh *mesh, Shader *shader, unsigned int mode, unsigned int
     m_Meshes[priority].push_back(MeshElem(mesh, shader, mode).setTranslation(trans).setRotation(rot).setScale(scale));
 }
 
+void Drawer::setOnWindow(bool value)
+{
+    m_IsOnWindow = value;
+}
+
 void Drawer::clearMeshes()
 {
     for (unsigned int i = 0; i < 3; i++)
@@ -103,7 +108,7 @@ void Drawer::render()
     }
 }
 
-void Drawer::renderForMousePicking()
+void Drawer::renderForMousePicking(bool onWindow)
 {
     std::vector<ShaderElem> shaderElems({ShaderElem("res/shaders/mousePicking/shader.vert", GL_VERTEX_SHADER),
                                          ShaderElem("res/shaders/mousePicking/shader.frag", GL_FRAGMENT_SHADER)});
@@ -128,13 +133,15 @@ void Drawer::renderForMousePicking()
     }
     ImGuiIO &io = ImGui::GetIO();
     (void)io;
-    unsigned char pixels[3];
     glm::vec2 mousePos = {io.MousePos.x, io.MousePos.y};
     float pressed = io.MouseDownDuration[0];
-    GLCall(glReadPixels((int)mousePos.x, Screen::getScreenHeight() - (int)mousePos.y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixels));
-    int r = pixels[0], g = pixels[1], b = pixels[2];
-    if (pressed > -1)
+    if (pressed > -1 && !onWindow)
+    {
+        unsigned char pixels[3];
+        GLCall(glReadPixels((int)mousePos.x, Screen::getScreenHeight() - (int)mousePos.y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixels));
+        int r = pixels[0], g = pixels[1], b = pixels[2];
         Mesh::setCurPickedColor(glm::vec3(r, g, b));
+    }
 }
 
 void Drawer::update(const unsigned int width, const unsigned int height, const std::vector<DirLight> &dirLights, const std::vector<PointLight> &pointLights, const std::vector<SpotLight> &spotLights)
@@ -180,6 +187,11 @@ std::unordered_map<std::string, Model *> &Drawer::getLoadedModels()
     return m_LoadedModels;
 }
 
+bool Drawer::getOnWindow()
+{
+    return m_IsOnWindow;
+}
+
 std::unordered_map<std::string, Model *> Drawer::m_LoadedModels;
 std::vector<std::vector<ModelElem>> Drawer::m_Models(3, std::vector<ModelElem>());
 std::vector<std::vector<MeshElem>> Drawer::m_Meshes(3, std::vector<MeshElem>());
@@ -189,3 +201,4 @@ std::vector<PointLight> Drawer::m_PointLights;
 std::queue<ModelLoader> Drawer::m_Queue;
 UniformBuffer *Drawer::m_Matrices;
 UniformBuffer *Drawer::m_Lights;
+bool Drawer::m_IsOnWindow = false;

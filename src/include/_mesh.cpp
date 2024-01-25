@@ -96,7 +96,7 @@ void Mesh::drawSelectButton(unsigned int drawGui)
     if (!drawGui)
         return;
     std::string o = "Object (" + std::to_string(m_ID) + ")##" + std::to_string(drawGui);
-    if (ImGui::TreeNode(o.c_str()))
+    if (ImGui::TreeNodeEx(o.c_str(), (m_CurMesh == this) * ImGuiTreeNodeFlags_DefaultOpen))
     {
         this->drawTransformGui();
         ImGui::TreePop();

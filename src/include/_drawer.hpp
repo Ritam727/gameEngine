@@ -107,22 +107,25 @@ private:
     static UniformBuffer *m_Matrices;
     static UniformBuffer *m_Lights;
     static std::unordered_map<std::string, Model*> m_LoadedModels;
+    static bool m_IsOnWindow;
 
 public:
     static void init();
     static void render();
-    static void renderForMousePicking();
+    static void renderForMousePicking(bool onWindow);
     static void update(const unsigned int width, const unsigned int height, const std::vector<DirLight> &dirLights, const std::vector<PointLight> &pointLights, const std::vector<SpotLight> &spotLights);
     static void enqueue(const ModelLoader &loader);
 
     static void addModel(ModelElem &modelElem, unsigned int priority, bool skipTextures = false);
     static void addMesh(Mesh *mesh, Shader *shader, unsigned int mode, unsigned int priority, const glm::vec3 &trans, const glm::vec3 &rot, const glm::vec3 &scale);
+    static void setOnWindow(bool value);
 
     static void clearMeshes();
     static void clearModels();
     static void clearUniformBuffers();
 
     static std::unordered_map<std::string, Model*> &getLoadedModels();
+    static bool getOnWindow();
 };
 
 #endif

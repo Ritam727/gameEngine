@@ -1,12 +1,12 @@
 #include "_texture.hpp"
 
-Texture::Texture()
+Texture::Texture(unsigned int format, unsigned int internalFormat, unsigned int storeFormat)
 {
     GLCall(glGenTextures(1, &m_ID));
     GLCall(glBindTexture(GL_TEXTURE_2D, m_ID));
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-    this->adjustDimensions(Screen::getScreenWidth(), Screen::getScreenHeight());
+    this->adjustDimensions(Screen::getScreenWidth(), Screen::getScreenHeight(), format, internalFormat, storeFormat);
     GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
@@ -30,6 +30,11 @@ void Texture::bind(unsigned int slot)
     GLCall(glBindTextureUnit(slot, m_ID));
 }
 
+void Texture::unbind()
+{
+    GLCall(glBindTexture(GL_TEXTURE_2D, 0));
+}
+
 Image *Texture::loadImage(const std::string &path, const bool flip)
 {
     stbi_set_flip_vertically_on_load(flip);
@@ -49,10 +54,10 @@ void Texture::attachData(Image *image)
     GLCall(glGenerateMipmap(GL_TEXTURE_2D));
 }
 
-void Texture::adjustDimensions(const unsigned int width, const unsigned int height)
+void Texture::adjustDimensions(const unsigned int width, const unsigned int height, unsigned int format, unsigned int internalFormat, unsigned int storeFormat)
 {
     GLCall(glBindTexture(GL_TEXTURE_2D, m_ID));
-    GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
+    GLCall(glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, storeFormat, internalFormat, NULL));
 }
 
 const unsigned int &Texture::getSlot() const

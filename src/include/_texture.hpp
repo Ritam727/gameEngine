@@ -57,14 +57,15 @@ private:
     static std::unordered_map<std::string, Texture*> m_LoadedTextures;
 
 public:
-    Texture();
+    Texture(unsigned int format = GL_RGB32F, unsigned int internalFormat = GL_FLOAT, unsigned int storeFormat = GL_RGB);
     Texture(Image *image, const std::string &type);
     ~Texture();
 
     void bind(unsigned int slot);
+    void unbind();
     static Image *loadImage(const std::string &path, const bool flip = true);
     void attachData(Image *image);
-    void adjustDimensions(const unsigned int width, const unsigned int height);
+    void adjustDimensions(const unsigned int width, const unsigned int height, unsigned int format = GL_RGB32F, unsigned int internalFormat = GL_FLOAT, unsigned int storeFormat = GL_RGB);
 
     const unsigned int& getSlot() const;
     const std::string &getFile() const;
