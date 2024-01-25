@@ -142,7 +142,7 @@ void Mesh::drawTransformGui()
         ImGui::TreePop();
     }
     if (ImGui::Button(b.c_str()))
-        this->selectMesh();
+        Mesh::setCurPickedColor(this->m_PickerColor);
     if (ImGui::Button(u.c_str()))
         deselectMesh();
 }

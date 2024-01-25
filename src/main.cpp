@@ -127,7 +127,6 @@ int main(void)
             ImGui_ImplGlfw_NewFrame();
             ImGui::NewFrame();
 
-            // Renderer::clearColor({0.5f, 0.5f, 0.5f, 1.0f});
             Renderer::enable(GL_DEPTH_TEST);
             Renderer::stencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
@@ -141,32 +140,19 @@ int main(void)
             int width_ = Screen::getScreenWidth();
             int height_ = Screen::getScreenHeight();
 
-            ImGui::SetNextWindowSize(ImVec2(width_ / 2, height_ / 2));
-            ImGui::Begin("Render");
-            ImVec2 pos = ImGui::GetCursorScreenPos();
-            float window_width = ImGui::GetContentRegionAvail().x;
-            float window_height = ImGui::GetContentRegionAvail().y;
-
             frameBuffer.bind();
             Renderer::stencilMask(0x00);
+            Renderer::clearColor({0.0f, 0.0f, 0.0f, 1.0f});
             Renderer::clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
             Drawer::update(width_, height_, dirLights, pointLights, spotLights);
             bool onWindow = Drawer::getOnWindow();
             Drawer::renderForMousePicking(onWindow);
-            // frameBuffer.forwardBuffers(width_, height_);
-
-            ImGui::GetWindowDrawList()->AddImage(
-                (void *)(size_t)frameBuffer.getTexture()->getID(),
-                ImVec2(pos.x, pos.y),
-                ImVec2(pos.x + window_width, pos.y + window_height),
-                ImVec2(0, 1),
-                ImVec2(1, 0));
 
             Renderer::stencilMask(0xFF);
             frameBuffer.unbind();
-            ImGui::End();
 
+            Renderer::clearColor({0.5f, 0.5f, 0.5f, 1.0f});
             Renderer::clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
             dockSpace(NULL);
