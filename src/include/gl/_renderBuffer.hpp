@@ -1,9 +1,7 @@
 #ifndef RENDER_BUFFER_HPP
 #define RENDER_BUFFER_HPP
 
-#include <_debug.hpp>
-#include <_renderer.hpp>
-#include <_screen.hpp>
+#include <common/_debug.hpp>
 
 class RenderBuffer
 {
@@ -15,7 +13,7 @@ public:
     RenderBuffer();
     ~RenderBuffer();
 
-    void createBufferStorage(const unsigned int type);
+    void createBufferStorage(const unsigned int type, const unsigned int width, const unsigned int height);
     void adjustDimensions(const unsigned int width, const unsigned int height);
 
     const unsigned int& getID() const;

@@ -1,17 +1,17 @@
 #ifndef MATERIAL_HPP
 #define MATERIAL_HPP
 
-#include <_texture.hpp>
+#include <gl/_texture.hpp>
 
 #include <vector>
 #include <memory>
 
 struct Material
 {
-    unsigned int diffuse[8];
-    unsigned int specular[8];
-    unsigned int emission[8];
-    unsigned int normal[8];
+    unsigned int diffuse[32];
+    unsigned int specular[32];
+    unsigned int emission[32];
+    unsigned int normal[32];
 
     float shininess;
 

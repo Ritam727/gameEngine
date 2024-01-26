@@ -4,7 +4,7 @@
 #include <glad/glad.h>
 #include <iostream>
 #include <stb_image/stb_image.h>
-#include <_logger.hpp>
+#include <common/_logger.hpp>
 
 #if defined ENVIRONMENT_DEBUG
 #if defined PLATFORM_LINUX

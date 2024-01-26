@@ -15,19 +15,19 @@ FrameBuffer::~FrameBuffer()
     delete m_DepthBuffer;
 }
 
-void FrameBuffer::attachTexture(const unsigned int slot)
+void FrameBuffer::attachTexture(const unsigned int width, const unsigned int height, const unsigned int slot)
 {
     m_TextureSlot = slot;
-    m_Texture = new Texture();
+    m_Texture = new Texture(width, height);
     m_Texture->bind(slot);
     GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_Texture->getID(), 0));
     GLCall(glDrawBuffer(GL_COLOR_ATTACHMENT0));
 }
 
-void FrameBuffer::attachDepthBuffer(const unsigned int slot)
+void FrameBuffer::attachDepthBuffer(const unsigned int width, const unsigned int height, const unsigned int slot)
 {
     m_DepthSlot = slot;
-    m_DepthBuffer = new Texture(GL_DEPTH_COMPONENT, GL_FLOAT, GL_DEPTH_COMPONENT);
+    m_DepthBuffer = new Texture(width, height, GL_DEPTH_COMPONENT, GL_FLOAT, GL_DEPTH_COMPONENT);
     m_DepthBuffer->bind(slot);
     GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_DepthBuffer->getID(), 0));
 }
@@ -61,7 +61,6 @@ void FrameBuffer::unbind() const
     GLCall(glReadBuffer(GL_NONE));
     GLCall(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0));
     GLCall(glBindFramebuffer(GL_READ_FRAMEBUFFER, 0));
-
 }
 
 Texture *FrameBuffer::getTexture()

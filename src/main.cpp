@@ -113,10 +113,11 @@ int main(void)
         std::vector<PointLight> pointLights; // ({ PointLight().setPosition({ 1.5f, 1.2f, 2.0f }) });
 
         std::future<void> *inputThread = new std::future<void>(std::async(std::launch::async, handleInput));
+        glfwGetWindowSize(window, &Screen::getScreenWidth(), &Screen::getScreenHeight());
 
         FrameBuffer frameBuffer;
-        frameBuffer.attachTexture(7);
-        frameBuffer.attachDepthBuffer(6);
+        frameBuffer.attachTexture(Screen::getScreenWidth(), Screen::getScreenHeight(), 7);
+        frameBuffer.attachDepthBuffer(Screen::getScreenWidth(), Screen::getScreenHeight(), 6);
         frameBuffer.validate();
         frameBuffer.unbind();
 

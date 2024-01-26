@@ -1,12 +1,12 @@
 #ifndef SHADER_HPP
 #define SHADER_HPP
 
-#include <_debug.hpp>
+#include <common/_debug.hpp>
 #include <_spotLight.hpp>
 #include <_dirLight.hpp>
 #include <_pointLight.hpp>
-#include <_material.hpp>
-#include <_basicMaterial.hpp>
+#include <props/_material.hpp>
+#include <props/_basicMaterial.hpp>
 
 #include <string>
 #include <sstream>

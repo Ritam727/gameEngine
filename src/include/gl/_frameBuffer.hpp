@@ -17,8 +17,8 @@ public:
     FrameBuffer();
     ~FrameBuffer();
 
-    void attachTexture(const unsigned int slot);
-    void attachDepthBuffer(const unsigned int slot);
+    void attachTexture(const unsigned int width, const unsigned int height, const unsigned int slot);
+    void attachDepthBuffer(const unsigned int width, const unsigned int height, const unsigned int slot);
     void adjustDimensions(const unsigned int width, const unsigned int height);
     void forwardBuffers(const unsigned int width, const unsigned int height);
     void validate() const;

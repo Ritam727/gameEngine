@@ -2,10 +2,10 @@
 
 struct Material
 {
-    sampler2D diffuse[8];
-    sampler2D specular[8];
-    sampler2D emission[8];
-    sampler2D normal[8];
+    sampler2D diffuse[32];
+    sampler2D specular[32];
+    sampler2D emission[32];
+    sampler2D normal[32];
 
     float shininess;
 

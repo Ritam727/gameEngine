@@ -143,12 +143,6 @@ void Drawer::render()
         FX(draw_list, p0, p1, size, mouse_data, value, ImVec2(centre.x, centre.y));
         draw_list->PopClipRect();
         ImGui::End();
-        ImGui::Begin("Mouse");
-        ImGui::Text("Screen %d, %d", Screen::getScreenWidth(), Screen::getScreenHeight());
-        ImGui::Text("Centre %f, %f", centre.x, centre.y);
-        ImGui::Text("Radius, %f", value);
-        ImGui::Text("Mouse pos %f, %f", mouse_data.x, mouse_data.y);
-        ImGui::End();
     }
 }
 

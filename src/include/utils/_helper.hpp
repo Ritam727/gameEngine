@@ -1,8 +1,6 @@
 #ifndef HELPER_CPP
 #define HELPER_CPP
 
-#include <_vertex.hpp>
-
 #include <set>
 #include <vector>
 #include <glm/glm.hpp>

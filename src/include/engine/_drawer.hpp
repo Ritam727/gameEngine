@@ -2,9 +2,10 @@
 #define DRAWER_HPP
 
 #include <_model.hpp>
-#include <_camera.hpp>
-#include <_screen.hpp>
-#include <_helper.hpp>
+#include <common/_camera.hpp>
+#include <common/_screen.hpp>
+#include <utils/_helper.hpp>
+#include <gl/_uniformBuffer.hpp>
 #include <fx.inl>
 
 #include <queue>

@@ -2,7 +2,7 @@
 #define VERTEX_HPP
 
 #include <glm/glm.hpp>
-#include <_vertexLayout.hpp>
+#include <gl/_vertexLayout.hpp>
 
 struct Vertex
 {

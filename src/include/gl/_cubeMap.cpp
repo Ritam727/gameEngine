@@ -10,13 +10,11 @@ CubeMap::CubeMap(std::string &name, std::vector<std::string> &faces)
     for (unsigned int i = 0; i < faces.size(); i++)
         _images.push_back(Texture::loadImage(faces[i], false));
 
-    float tt = glfwGetTime();
     std::vector<std::thread> _threads;
     for (Image *img : _images)
         _threads.push_back(std::thread(&Image::get, img));
     for (std::thread &th : _threads)
         th.join();
-    Logger::logInfo("Took {:05.5f} ms to load textures", (glfwGetTime() - tt) * 1000.0f);
 
     for (unsigned int i = 0; i < faces.size(); i++)
     {

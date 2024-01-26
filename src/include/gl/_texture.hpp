@@ -1,8 +1,7 @@
 #ifndef TEXTURE_HPP
 #define TEXTURE_HPP
 
-#include <_debug.hpp>
-#include <_screen.hpp>
+#include <common/_debug.hpp>
 
 #include <string>
 #include <iostream>
@@ -57,7 +56,7 @@ private:
     static std::unordered_map<std::string, Texture*> m_LoadedTextures;
 
 public:
-    Texture(unsigned int format = GL_RGB32F, unsigned int internalFormat = GL_FLOAT, unsigned int storeFormat = GL_RGB);
+    Texture(const unsigned int width, const unsigned int height, unsigned int format = GL_RGB32F, unsigned int internalFormat = GL_FLOAT, unsigned int storeFormat = GL_RGB);
     Texture(Image *image, const std::string &type);
     ~Texture();
 

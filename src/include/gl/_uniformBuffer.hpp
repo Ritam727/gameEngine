@@ -1,7 +1,7 @@
 #ifndef UNIFORM_BUFFER_HPP
 #define UNIFORM_BUFFER_HPP
 
-#include <_debug.hpp>
+#include <common/_debug.hpp>
 
 class UniformBuffer
 {

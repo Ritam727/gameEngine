@@ -1,8 +1,8 @@
 #ifndef VERTEX_ARRAY_HPP
 #define VERTEX_ARRAY_HPP
 
-#include <_vertexBuffer.hpp>
-#include <_vertexLayout.hpp>
+#include <gl/_vertexBuffer.hpp>
+#include <gl/_vertexLayout.hpp>
 
 class VertexArray
 {

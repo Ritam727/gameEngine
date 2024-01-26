@@ -1,15 +1,15 @@
 #ifndef MESH_HPP
 #define MESH_HPP
 
-#include <_vertexArray.hpp>
-#include <_vertexBuffer.hpp>
-#include <_indexBuffer.hpp>
-#include <_texture.hpp>
+#include <gl/_vertexArray.hpp>
+#include <gl/_vertexBuffer.hpp>
+#include <gl/_indexBuffer.hpp>
+#include <gl/_texture.hpp>
 #include <_vertex.hpp>
 #include <_shader.hpp>
 #include <_renderer.hpp>
-#include <_rotation.hpp>
-#include <_camera.hpp>
+#include <utils/_rotation.hpp>
+#include <common/_camera.hpp>
 #include <imgui/imgui.h>
 
 #include <vector>
