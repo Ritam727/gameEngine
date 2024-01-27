@@ -111,7 +111,7 @@ void Camera::drawCameraControlsGui()
         ImGui::DragFloat("Y", &getPitch(), 0.1);
         ImGui::TreePop();
     }
-    ImGui::DragFloat("Camera Zoom", &getZoom());
+    ImGui::DragFloat("Camera Zoom", &getZoom(), 0.1, -3.0f, 3.0f);
     updateDirection();
 }
 

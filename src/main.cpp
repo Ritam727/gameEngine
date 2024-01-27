@@ -42,7 +42,7 @@ void dockSpace(bool *p_open)
     window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoBackground;
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-    ImGui::Begin("DockSpace Demo", p_open, window_flags);
+    ImGui::Begin("DockSpace", p_open, window_flags);
     ImGui::PopStyleVar(3);
 
     // Submit the DockSpace
@@ -90,6 +90,7 @@ int main(void)
         (void)io;
         io.ConfigFlags != ImGuiConfigFlags_NavEnableKeyboard;
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+        io.Fonts->AddFontFromFileTTF("res/fonts/single_day.ttf", 18.0f);
 
         ImGui::StyleColorsDark();
 
@@ -116,12 +117,6 @@ int main(void)
         std::future<void> *inputThread = new std::future<void>(std::async(std::launch::async, handleInput));
         glfwGetWindowSize(window, &Screen::getScreenWidth(), &Screen::getScreenHeight());
 
-        FrameBuffer frameBuffer;
-        frameBuffer.attachTexture(Screen::getScreenWidth(), Screen::getScreenHeight(), 7);
-        frameBuffer.attachDepthBuffer(Screen::getScreenWidth(), Screen::getScreenHeight(), 6);
-        frameBuffer.validate();
-        frameBuffer.unbind();
-
         while (!glfwWindowShouldClose(window))
         {
             glfwPollEvents();
@@ -142,17 +137,8 @@ int main(void)
             int width_ = Screen::getScreenWidth();
             int height_ = Screen::getScreenHeight();
 
-            frameBuffer.bind();
-            Renderer::stencilMask(0x00);
-            Renderer::clearColor({0.0f, 0.0f, 0.0f, 1.0f});
-            Renderer::clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
             Drawer::update(width_, height_, dirLights, pointLights, spotLights);
-            bool onWindow = Drawer::getOnWindow();
-            Drawer::renderForMousePicking(onWindow);
-
-            Renderer::stencilMask(0xFF);
-            frameBuffer.unbind();
+            Drawer::renderForMousePicking();
 
             Renderer::clearColor({0.5f, 0.5f, 0.5f, 1.0f});
             Renderer::clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -165,12 +151,11 @@ int main(void)
             ImGui::End();
 
             ImGui::Begin("Objects");
-            Drawer::update(width_, height_, dirLights, pointLights, spotLights);
             Drawer::render();
             bool onObjectWindow = ImGui::IsWindowHovered() | ImGui::IsAnyItemHovered() | ImGui::IsWindowFocused() | ImGui::IsAnyItemFocused() | ImGui::IsAnyItemActive();
             ImGui::End();
 
-            Drawer::setOnWindow(false);
+            Drawer::setOnWindow(onCameraWindow | onObjectWindow);
 
             ImGui::Render();
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

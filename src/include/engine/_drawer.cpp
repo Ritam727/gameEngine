@@ -57,6 +57,12 @@ void Drawer::init()
 
     m_Lights = new UniformBuffer(2506);
     m_Lights->bindBufferBase(0);
+
+    m_MousePickingBuffer = new FrameBuffer();
+    m_MousePickingBuffer->attachTexture(Screen::getScreenWidth(), Screen::getScreenHeight(), 31);
+    m_MousePickingBuffer->attachTexture(Screen::getScreenWidth(), Screen::getScreenHeight(), 30);
+    m_MousePickingBuffer->validate();
+    m_MousePickingBuffer->unbind();
 }
 
 void Drawer::render()
@@ -119,10 +125,10 @@ void Drawer::render()
         glm::vec2 centre(0.0f);
         for (glm::vec2 v : _hull)
             centre += v;
-        centre = { centre.x / (float) _hull.size(), centre.y / (float) _hull.size() };
+        centre = {centre.x / (float)_hull.size(), centre.y / (float)_hull.size()};
         float value = 0;
         for (glm::vec2 v : _hull)
-            value = std::max(value, (float) glm::distance(v, centre));
+            value = std::max(value, (float)glm::distance(v, centre));
 
         ImGui::SetNextWindowPos(ImVec2(centre.x - value - 50.0f, centre.y - value - 50.0f));
         ImGuiIO &io = ImGui::GetIO();
@@ -146,8 +152,13 @@ void Drawer::render()
     }
 }
 
-void Drawer::renderForMousePicking(bool onWindow)
+void Drawer::renderForMousePicking()
 {
+    m_MousePickingBuffer->bind();
+    Renderer::stencilMask(0x00);
+    Renderer::clearColor({0.0f, 0.0f, 0.0f, 1.0f});
+    Renderer::clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    
     std::vector<ShaderElem> shaderElems({ShaderElem("res/shaders/mousePicking/shader.vert", GL_VERTEX_SHADER),
                                          ShaderElem("res/shaders/mousePicking/shader.frag", GL_FRAGMENT_SHADER)});
     Shader mousePicking(shaderElems);
@@ -169,17 +180,20 @@ void Drawer::renderForMousePicking(bool onWindow)
             m_Meshes[i][j].mesh->draw(mousePicking, m_Meshes[i][j].mode);
         }
     }
+    
     ImGuiIO &io = ImGui::GetIO();
     (void)io;
     glm::vec2 mousePos = {io.MousePos.x, io.MousePos.y};
     float pressed = io.MouseDownDuration[0];
-    if (pressed > -1 && !onWindow)
+    if (pressed > -1 && !m_IsOnWindow)
     {
         unsigned char pixels[3];
         GLCall(glReadPixels((int)mousePos.x, Screen::getScreenHeight() - (int)mousePos.y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixels));
         int r = pixels[0], g = pixels[1], b = pixels[2];
         Mesh::setCurPickedColor(glm::vec3(r, g, b));
     }
+
+    m_MousePickingBuffer->unbind();
 }
 
 void Drawer::update(const unsigned int width, const unsigned int height, const std::vector<DirLight> &dirLights, const std::vector<PointLight> &pointLights, const std::vector<SpotLight> &spotLights)
@@ -239,4 +253,5 @@ std::vector<PointLight> Drawer::m_PointLights;
 std::queue<ModelLoader> Drawer::m_Queue;
 UniformBuffer *Drawer::m_Matrices;
 UniformBuffer *Drawer::m_Lights;
+FrameBuffer *Drawer::m_MousePickingBuffer;
 bool Drawer::m_IsOnWindow = false;

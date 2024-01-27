@@ -11,6 +11,7 @@
 #include <engine/_pointLight.hpp>
 #include <utils/_helper.hpp>
 #include <gl/_uniformBuffer.hpp>
+#include <gl/_frameBuffer.hpp>
 
 #include <queue>
 
@@ -113,13 +114,14 @@ private:
     static std::queue<ModelLoader> m_Queue;
     static UniformBuffer *m_Matrices;
     static UniformBuffer *m_Lights;
+    static FrameBuffer *m_MousePickingBuffer;
     static std::unordered_map<std::string, Model*> m_LoadedModels;
     static bool m_IsOnWindow;
 
 public:
     static void init();
     static void render();
-    static void renderForMousePicking(bool onWindow);
+    static void renderForMousePicking();
     static void update(const unsigned int width, const unsigned int height, const std::vector<DirLight> &dirLights, const std::vector<PointLight> &pointLights, const std::vector<SpotLight> &spotLights);
     static void enqueue(const ModelLoader &loader);
 
