@@ -28,6 +28,7 @@ void VertexArray::addBuffer(const VertexBuffer &buffer, const VertexLayout &layo
     {
         GLCall(glVertexAttribPointer(i, elements[i].count, elements[i].type, elements[i].normalized, layout.getStride(), (const void *) (std::size_t) offset));
         GLCall(glEnableVertexAttribArray(i));
+        GLCall(glVertexAttribDivisor(i, elements[i].interval));
         offset += elements[i].count * VertexLayoutElement::getSizeOfElement(elements[i].type);
     }
 }

@@ -54,6 +54,7 @@ private:
 
 public:
     Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices, const std::vector<Texture*> &textures);
+    Mesh(const Mesh &mesh);
     ~Mesh();
 
     const glm::mat4 getModelMatrix();
@@ -61,8 +62,16 @@ public:
     const glm::vec3 getTrans();
     const glm::vec3 getRot();
     const glm::vec3 getScale();
-    const std::vector<Vertex> &getVertices();
+    const std::vector<Vertex> &getVertices() const;
     const unsigned int getID() const;
+    const VertexArray &getArray() const;
+    const VertexBuffer &getBuffer() const;
+    const VertexLayout &getLayout() const;
+    const IndexBuffer &getIndex() const;
+    const std::vector<std::string> getTextures() const;
+    const Material *getMaterial() const;
+    const BasicMaterial *getBasicMaterial() const;
+    
     static Mesh *getSelectedMesh();
     static Shader *getSelectedMeshShader();
     static unsigned int getSelectedMeshMode();

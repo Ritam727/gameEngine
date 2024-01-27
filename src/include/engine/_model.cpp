@@ -132,6 +132,12 @@ Model::Model(const Mesh &mesh)
 {
 }
 
+Model::Model(const Model &model)
+{
+    for (const Mesh *mesh : model.getMeshes())
+        this->m_Meshes.push_back(new Mesh(*mesh));
+}
+
 Model::~Model()
 {
     for (unsigned int i = 0; i < m_Meshes.size(); i++)
@@ -155,4 +161,9 @@ void Model::draw(Shader &shader, unsigned int mode, unsigned int drawGui) const
             Mesh::setCurMeshMode(mode);
         }
     }
+}
+
+const std::vector<Mesh *> Model::getMeshes() const
+{
+    return m_Meshes;
 }

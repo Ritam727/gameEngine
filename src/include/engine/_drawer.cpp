@@ -5,7 +5,7 @@ void Drawer::addModel(ModelElem &modelElem, unsigned int priority, bool skipText
     if (Drawer::getLoadedModels().find(modelElem.path) != Drawer::getLoadedModels().end())
     {
         Logger::logInfo("Model already exists in system, not reloading");
-        modelElem.model = Drawer::getLoadedModels()[modelElem.path];
+        modelElem.model = new Model(*Drawer::getLoadedModels()[modelElem.path]);
     }
     else
     {
@@ -192,6 +192,7 @@ void Drawer::renderForMousePicking()
         int r = pixels[0], g = pixels[1], b = pixels[2];
         Mesh::setCurPickedColor(glm::vec3(r, g, b));
     }
+    Renderer::stencilMask(0xFF);
 
     m_MousePickingBuffer->unbind();
 }

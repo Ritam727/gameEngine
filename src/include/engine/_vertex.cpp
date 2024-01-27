@@ -29,6 +29,12 @@ Vertex Vertex::setNorm(const glm::vec3 _norm)
     return *this;
 }
 
+Vertex Vertex::setModel(const glm::mat4 _model)
+{
+    this->model = _model;
+    return *this;
+}
+
 VertexLayout Vertex::getVertexLayout()
 {
     VertexLayout _layout;
@@ -36,5 +42,6 @@ VertexLayout Vertex::getVertexLayout()
     _layout.push<float>(3);
     _layout.push<float>(3);
     _layout.push<float>(2);
+    _layout.push<glm::mat4>(1, 1);
     return _layout;
 }

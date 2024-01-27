@@ -28,9 +28,11 @@ private:
 public:
     Model(const std::string &path, const bool skipTextures = false);
     Model(const Mesh &mesh);
+    Model(const Model &model);
     ~Model();
 
     void draw(Shader &shader, unsigned int mode = 0, unsigned int drawGui = 1) const;
+    const std::vector<Mesh*> getMeshes() const;
 };
 
 #endif

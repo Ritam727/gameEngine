@@ -21,6 +21,26 @@ Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> 
     m_PickerColor = glm::vec3(m_Count % 256, (m_Count / 256) % 256, ((m_Count / 256) / 256) % 256);
 }
 
+Mesh::Mesh(const Mesh &mesh)
+    : m_Buffer(0, sizeof(Vertex), NULL), m_Index(0, NULL), m_Trans(0.0f),
+    m_Scale(1.0f), m_Rot(0.0f), m_PrevRot(0.0f), m_GlobalRot(0.0f), m_PrevGlobalRot(0.0f),
+    m_RotMat(1.0f), m_X(1.0f, 0.0f, 0.0f), m_Y(0.0f, 1.0f, 0.0f), m_Z(0.0f, 0.0f, 1.0f)
+{
+    this->m_Array = mesh.getArray();
+    this->m_Buffer = mesh.getBuffer();
+    this->m_Layout = mesh.getLayout();
+    this->m_Index = mesh.getIndex();
+    this->m_Textures = mesh.getTextures();
+    if (mesh.getMaterial() == NULL)
+        this->m_Material = NULL;
+    else
+        this->m_Material = new Material(*mesh.getMaterial());
+    this->m_BasicMaterial = new BasicMaterial(*mesh.getBasicMaterial());
+    this->m_Vertices = mesh.getVertices();
+    this->m_ID = m_Count++;
+    this->m_PickerColor = glm::vec3(m_Count % 256, (m_Count / 256) % 256, ((m_Count / 256) / 256) % 256);
+}
+
 Mesh::~Mesh()
 {
     delete m_BasicMaterial;
@@ -56,7 +76,7 @@ const glm::vec3 Mesh::getScale()
     return m_Scale;
 }
 
-const std::vector<Vertex> &Mesh::getVertices()
+const std::vector<Vertex> &Mesh::getVertices() const
 {
     return m_Vertices;
 }
@@ -64,6 +84,41 @@ const std::vector<Vertex> &Mesh::getVertices()
 const unsigned int Mesh::getID() const
 {
     return m_ID;
+}
+
+const VertexArray &Mesh::getArray() const
+{
+    return m_Array;
+}
+
+const VertexBuffer &Mesh::getBuffer() const
+{
+    return m_Buffer;
+}
+
+const VertexLayout &Mesh::getLayout() const
+{
+    return m_Layout;
+}
+
+const IndexBuffer &Mesh::getIndex() const
+{
+    return m_Index;
+}
+
+const std::vector<std::string> Mesh::getTextures() const
+{
+    return m_Textures;
+}
+
+const Material *Mesh::getMaterial() const
+{
+    return m_Material;
+}
+
+const BasicMaterial *Mesh::getBasicMaterial() const
+{
+    return m_BasicMaterial;
 }
 
 Mesh *Mesh::getSelectedMesh()
