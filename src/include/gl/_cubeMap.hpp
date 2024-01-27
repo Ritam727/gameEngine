@@ -1,8 +1,7 @@
 #ifndef CUBE_MAP_HPP
 #define CUBE_MAP_HPP
 
-#include <common/_debug.hpp>
-#include <_texture.hpp>
+#include "_texture.hpp"
 
 #include <vector>
 #include <string>

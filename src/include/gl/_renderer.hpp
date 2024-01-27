@@ -1,15 +1,13 @@
 #ifndef RENDERER_HPP
 #define RENDERER_HPP
 
-#include <common/_debug.hpp>
-#include <_shader.hpp>
+#include "_shader.hpp"
+
 #include <gl/_vertexArray.hpp>
 #include <gl/_indexBuffer.hpp>
-#include <_dirLight.hpp>
-#include <_spotLight.hpp>
-#include <_pointLight.hpp>
 #include <common/_camera.hpp>
 #include <common/_screen.hpp>
+
 
 #include <glm/glm.hpp>
 

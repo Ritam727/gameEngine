@@ -2,9 +2,6 @@
 #define SHADER_HPP
 
 #include <common/_debug.hpp>
-#include <_spotLight.hpp>
-#include <_dirLight.hpp>
-#include <_pointLight.hpp>
 #include <props/_material.hpp>
 #include <props/_basicMaterial.hpp>
 
@@ -50,12 +47,6 @@ public:
     void setVec2i(const std::string &name, const int *value) const;
     void setVec3f(const std::string &name, const glm::vec3 &value) const;
     void setVec4f(const std::string &name, const glm::vec4 &value) const;
-    void setSpotLight(const std::string &name, const SpotLight &light) const;
-    void setDirLight(const std::string &name, const DirLight &light) const;
-    void setPointLight(const std::string &name, const PointLight &light) const;
-    void setPointLights(const std::string &name, std::vector<PointLight> &lights) const;
-    void setMaterial(const std::string &name, Material &material) const;
-    void setBasicMaterial(const std::string &name, BasicMaterial &material) const;
 };
 
 #endif

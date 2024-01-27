@@ -92,8 +92,8 @@ void Mesh::useShader(const Shader &shader)
     shader.use();
     this->activateTextures();
     if (m_Material)
-        shader.setMaterial("material", *m_Material);
-    shader.setBasicMaterial("basicMaterial", *m_BasicMaterial);
+        this->setMaterial(shader);
+    this->setBasicMaterial(shader);
 }
 
 void Mesh::drawSelectButton(unsigned int drawGui)
@@ -197,6 +197,37 @@ void Mesh::addTexture(const std::string &texture, const std::string &type)
 void Mesh::selectMesh()
 {
     m_CurMesh = this;
+}
+
+void Mesh::setMaterial(const Shader &shader)
+{
+    for (unsigned int i = 0; i < this->m_Material->diffuseCount; i++)
+    {
+        shader.setInt("material.diffuse[" + std::to_string(i) + "]", this->m_Material->diffuse[i]);
+    }
+    for (unsigned int i = 0; i < this->m_Material->specularCount; i++)
+    {
+        shader.setInt("material.specular[" + std::to_string(i) + "]", this->m_Material->specular[i]);
+    }
+    for (unsigned int i = 0; i < this->m_Material->emissionCount; i++)
+    {
+        shader.setInt("material.emission[" + std::to_string(i) + "]", this->m_Material->emission[i]);
+    }
+    for (unsigned int i = 0; i < this->m_Material->normalCount; i++)
+        shader.setInt("material.normal[" + std::to_string(i) + "]", this->m_Material->normal[i]);
+    shader.setInt("material.diffuseCount", this->m_Material->diffuseCount);
+    shader.setInt("material.specularCount", this->m_Material->specularCount);
+    shader.setInt("material.emissionCount", this->m_Material->emissionCount);
+    shader.setInt("material.normalCount", this->m_Material->normalCount);
+    shader.setFloat("material.shininess", this->m_Material->shininess);
+}
+
+void Mesh::setBasicMaterial(const Shader &shader)
+{
+    shader.setVec3f("basicMaterial.diffuse", this->m_BasicMaterial->diffuse);
+    shader.setVec3f("basicMaterial.specular", this->m_BasicMaterial->specular);
+    shader.setVec3f("basicMaterial.emission", this->m_BasicMaterial->emission);
+    shader.setFloat("basicMaterial.shininess", this->m_BasicMaterial->shininess);
 }
 
 void Mesh::deselectMesh()

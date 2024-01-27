@@ -1,12 +1,16 @@
 #ifndef DRAWER_HPP
 #define DRAWER_HPP
 
-#include <_model.hpp>
+#include "_model.hpp"
+#include "fx.inl"
+
 #include <common/_camera.hpp>
 #include <common/_screen.hpp>
+#include <engine/_dirLight.hpp>
+#include <engine/_spotLight.hpp>
+#include <engine/_pointLight.hpp>
 #include <utils/_helper.hpp>
 #include <gl/_uniformBuffer.hpp>
-#include <fx.inl>
 
 #include <queue>
 

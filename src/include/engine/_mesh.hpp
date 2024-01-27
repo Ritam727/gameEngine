@@ -1,13 +1,14 @@
 #ifndef MESH_HPP
 #define MESH_HPP
 
+#include "_vertex.hpp"
+
 #include <gl/_vertexArray.hpp>
 #include <gl/_vertexBuffer.hpp>
 #include <gl/_indexBuffer.hpp>
 #include <gl/_texture.hpp>
-#include <_vertex.hpp>
-#include <_shader.hpp>
-#include <_renderer.hpp>
+#include <gl/_shader.hpp>
+#include <gl/_renderer.hpp>
 #include <utils/_rotation.hpp>
 #include <common/_camera.hpp>
 #include <imgui/imgui.h>
@@ -74,6 +75,8 @@ public:
     void draw(const Shader &shader, unsigned int mode = 0);
     void addTexture(const std::string &texture, const std::string &type);
     void selectMesh();
+    void setMaterial(const Shader &shader);
+    void setBasicMaterial(const Shader &shader);
     static void deselectMesh();
     static void setCurMeshShader(Shader *shader);
     static void setCurMeshMode(unsigned int mode);

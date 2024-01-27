@@ -76,6 +76,7 @@ int main(void)
 
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, Renderer::viewportCallback);
+    glfwSwapInterval(0.0f);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -169,7 +170,7 @@ int main(void)
             bool onObjectWindow = ImGui::IsWindowHovered() | ImGui::IsAnyItemHovered() | ImGui::IsWindowFocused() | ImGui::IsAnyItemFocused() | ImGui::IsAnyItemActive();
             ImGui::End();
 
-            Drawer::setOnWindow(onCameraWindow | onObjectWindow);
+            Drawer::setOnWindow(false);
 
             ImGui::Render();
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

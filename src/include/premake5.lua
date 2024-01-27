@@ -6,7 +6,6 @@ project "obj"
     objdir "../../objects"
 
     includedirs {
-        "**",
         "../assimp",
         "../spdlog/include",
         "../"

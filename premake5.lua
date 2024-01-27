@@ -19,7 +19,6 @@ project "main"
 
     includedirs {
         "src/include",
-        "src/include/**",
         "src/",
         "src/assimp",
         "src/spdlog/include"

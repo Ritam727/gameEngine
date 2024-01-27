@@ -1,10 +1,12 @@
 #ifndef DEBUG_HPP
 #define DEBUG_HPP
 
+#include "_logger.hpp"
+
 #include <glad/glad.h>
 #include <iostream>
 #include <stb_image/stb_image.h>
-#include <common/_logger.hpp>
+
 
 #if defined ENVIRONMENT_DEBUG
 #if defined PLATFORM_LINUX
