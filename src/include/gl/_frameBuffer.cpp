@@ -12,13 +12,13 @@ FrameBuffer::~FrameBuffer()
 {
     GLCall(glDeleteFramebuffers(1, &m_ID));
     delete m_Texture;
-    delete m_DepthBuffer;
+    delete m_RenderBuffer;
 }
 
 void FrameBuffer::attachTexture(const unsigned int width, const unsigned int height, const unsigned int slot)
 {
     m_TextureSlot = slot;
-    m_Texture = new Texture(width, height);
+    m_Texture = new Texture(width, height, GL_RGB, GL_FLOAT, GL_RGB);
     m_Texture->bind(slot);
     GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_Texture->getID(), 0));
     GLCall(glDrawBuffer(GL_COLOR_ATTACHMENT0));
@@ -27,18 +27,9 @@ void FrameBuffer::attachTexture(const unsigned int width, const unsigned int hei
 void FrameBuffer::attachDepthBuffer(const unsigned int width, const unsigned int height, const unsigned int slot)
 {
     m_DepthSlot = slot;
-    m_DepthBuffer = new Texture(width, height, GL_DEPTH_COMPONENT, GL_FLOAT, GL_DEPTH_COMPONENT);
-    m_DepthBuffer->bind(slot);
-    GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_DepthBuffer->getID(), 0));
-}
-
-void FrameBuffer::adjustDimensions(const unsigned int width, const unsigned int height)
-{
-}
-
-void FrameBuffer::forwardBuffers(const unsigned int width, const unsigned int height)
-{
-    m_Texture->bind(m_TextureSlot);
+    m_RenderBuffer = new RenderBuffer();
+    m_RenderBuffer->createBufferStorage(GL_DEPTH24_STENCIL8, width, height);
+    GLCall(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_RenderBuffer->getID()));
 }
 
 void FrameBuffer::validate() const
@@ -68,7 +59,7 @@ Texture *FrameBuffer::getTexture()
     return m_Texture;
 }
 
-Texture *FrameBuffer::getDepthBuffer()
+RenderBuffer *FrameBuffer::getRenderBuffer()
 {
-    return m_DepthBuffer;
+    return m_RenderBuffer;
 }

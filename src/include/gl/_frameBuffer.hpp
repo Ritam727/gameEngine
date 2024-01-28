@@ -11,7 +11,7 @@ private:
     unsigned int m_TextureSlot;
     unsigned int m_DepthSlot;
     Texture *m_Texture;
-    Texture *m_DepthBuffer;
+    RenderBuffer *m_RenderBuffer;
 
 public:
     FrameBuffer();
@@ -19,14 +19,12 @@ public:
 
     void attachTexture(const unsigned int width, const unsigned int height, const unsigned int slot);
     void attachDepthBuffer(const unsigned int width, const unsigned int height, const unsigned int slot);
-    void adjustDimensions(const unsigned int width, const unsigned int height);
-    void forwardBuffers(const unsigned int width, const unsigned int height);
     void validate() const;
     void bind() const;
     void unbind() const;
 
     Texture *getTexture();
-    Texture *getDepthBuffer();
+    RenderBuffer *getRenderBuffer();
 };
 
 #endif

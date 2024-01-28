@@ -39,7 +39,6 @@ private:
     glm::vec3 m_PickerColor;
     
     std::vector<std::string> m_Textures;
-    std::vector<Vertex> m_Vertices;
 
     Material *m_Material;
     BasicMaterial *m_BasicMaterial;
@@ -62,7 +61,6 @@ public:
     const glm::vec3 getTrans();
     const glm::vec3 getRot();
     const glm::vec3 getScale();
-    const std::vector<Vertex> &getVertices() const;
     const unsigned int getID() const;
     const VertexArray &getArray() const;
     const VertexBuffer &getBuffer() const;

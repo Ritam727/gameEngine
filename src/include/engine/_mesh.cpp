@@ -5,7 +5,7 @@ Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> 
       m_Index(IndexBuffer(indices.size(), indices.data())), m_Layout(Vertex::getVertexLayout()), m_Trans({0.0f, 0.0f, 0.0f}),
       m_Rot({0.0f, 0.0f, 0.0f}), m_Scale({1.0f, 1.0f, 1.0f}), m_Material(NULL), m_BasicMaterial(NULL), m_ID(m_Count),
       m_PrevRot({0.0f, 0.0f, 0.0f}), m_RotMat(1.0f), m_X({1.0f, 0.0f, 0.0f}), m_Y({0.0f, 1.0f, 0.0f}), m_Z({0.0f, 0.0f, 1.0f}),
-      m_GlobalRot({0.0f, 0.0f, 0.0f}), m_PrevGlobalRot({0.0f, 0.0f, 0.0f}), m_Vertices(vertices)
+      m_GlobalRot({0.0f, 0.0f, 0.0f}), m_PrevGlobalRot({0.0f, 0.0f, 0.0f})
 {
     m_Array.addBuffer(m_Buffer, m_Layout);
     for (Texture *texture : textures)
@@ -36,7 +36,7 @@ Mesh::Mesh(const Mesh &mesh)
     else
         this->m_Material = new Material(*mesh.getMaterial());
     this->m_BasicMaterial = new BasicMaterial(*mesh.getBasicMaterial());
-    this->m_Vertices = mesh.getVertices();
+    // this->m_Vertices = mesh.getVertices();
     this->m_ID = m_Count++;
     this->m_PickerColor = glm::vec3(m_Count % 256, (m_Count / 256) % 256, ((m_Count / 256) / 256) % 256);
 }
@@ -74,11 +74,6 @@ const glm::vec3 Mesh::getRot()
 const glm::vec3 Mesh::getScale()
 {
     return m_Scale;
-}
-
-const std::vector<Vertex> &Mesh::getVertices() const
-{
-    return m_Vertices;
 }
 
 const unsigned int Mesh::getID() const
@@ -156,7 +151,10 @@ void Mesh::drawSelectButton(unsigned int drawGui)
     if (!drawGui)
         return;
     std::string o = "Object (" + std::to_string(m_ID) + ")##" + std::to_string(drawGui);
-    if (ImGui::TreeNodeEx(o.c_str(), (m_CurMesh == this) * ImGuiTreeNodeFlags_DefaultOpen))
+    unsigned int treeNodeFlag = 0;
+    if (m_CurMesh == this)
+        treeNodeFlag |= ImGuiTreeNodeFlags_DefaultOpen;
+    if (ImGui::TreeNodeEx(o.c_str(), treeNodeFlag))
     {
         this->drawTransformGui();
         ImGui::TreePop();
