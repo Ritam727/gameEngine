@@ -25,6 +25,55 @@ void Drawer::setOnWindow(bool value)
     m_IsOnWindow = value;
 }
 
+void Drawer::addDirLight(DirLight &dirLight)
+{
+    m_DirLights.push_back(dirLight);
+}
+
+void Drawer::lightControlsGui()
+{
+    for (unsigned int i = 0; i < m_DirLights.size(); i++)
+    {
+        std::string o = "Directional Light (" + std::to_string(i) + ")";
+        if (ImGui::TreeNode(o.c_str()))
+        {
+            std::string t = "Direction";
+            std::string a = "Ambient";
+            std::string d = "Diffuse";
+            std::string s = "Specular";
+            if (ImGui::TreeNode(t.c_str()))
+            {
+                ImGui::DragFloat("X", &m_DirLights[i].direction.x, 0.1);
+                ImGui::DragFloat("Y", &m_DirLights[i].direction.y, 0.1);
+                ImGui::DragFloat("Z", &m_DirLights[i].direction.z, 0.1);
+                ImGui::TreePop();
+            }
+            if (ImGui::TreeNode(a.c_str()))
+            {
+                ImGui::DragFloat("R", &m_DirLights[i].ambient.x, 0.1);
+                ImGui::DragFloat("G", &m_DirLights[i].ambient.y, 0.1);
+                ImGui::DragFloat("B", &m_DirLights[i].ambient.z, 0.1);
+                ImGui::TreePop();
+            }
+            if (ImGui::TreeNode(d.c_str()))
+            {
+                ImGui::DragFloat("R", &m_DirLights[i].diffuse.x, 0.1);
+                ImGui::DragFloat("G", &m_DirLights[i].diffuse.y, 0.1);
+                ImGui::DragFloat("B", &m_DirLights[i].diffuse.z, 0.1);
+                ImGui::TreePop();
+            }
+            if (ImGui::TreeNode(s.c_str()))
+            {
+                ImGui::DragFloat("R", &m_DirLights[i].specular.x, 0.1);
+                ImGui::DragFloat("G", &m_DirLights[i].specular.y, 0.1);
+                ImGui::DragFloat("B", &m_DirLights[i].specular.z, 0.1);
+                ImGui::TreePop();
+            }
+            ImGui::TreePop();
+        }
+    }
+}
+
 void Drawer::clearMeshes()
 {
     for (unsigned int i = 0; i < 3; i++)
@@ -102,7 +151,7 @@ void Drawer::render()
             ShaderElem("res/shaders/border/shader.frag", GL_FRAGMENT_SHADER),
         });
         Shader shader_(shaderElems);
-        
+
         Mesh::getSelectedMesh()->draw(shader_, Mesh::getSelectedMeshMode());
 
         Renderer::stencilMask(0xFF);
@@ -117,7 +166,7 @@ void Drawer::renderForMousePicking()
     Renderer::stencilMask(0x00);
     Renderer::clearColor({0.0f, 0.0f, 0.0f, 1.0f});
     Renderer::clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    
+
     std::vector<ShaderElem> shaderElems({ShaderElem("res/shaders/mousePicking/shader.vert", GL_VERTEX_SHADER),
                                          ShaderElem("res/shaders/mousePicking/shader.frag", GL_FRAGMENT_SHADER)});
     Shader mousePicking(shaderElems);
@@ -139,7 +188,7 @@ void Drawer::renderForMousePicking()
             m_Meshes[i][j].mesh->draw(mousePicking, m_Meshes[i][j].mode);
         }
     }
-    
+
     ImGuiIO &io = ImGui::GetIO();
     (void)io;
     glm::vec2 mousePos = {io.MousePos.x, io.MousePos.y};
@@ -175,11 +224,11 @@ void Drawer::update(const unsigned int width, const unsigned int height, const s
     m_Matrices->subData(0, sizeof(glm::mat4), glm::value_ptr(proj));
     m_Matrices->subData(sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(view));
 
-    unsigned int dirLightCount = dirLights.size();
+    unsigned int dirLightCount = m_DirLights.size();
     unsigned int pointLightCount = pointLights.size();
     unsigned int spotLightCount = spotLights.size();
     for (unsigned int i = 0; i < dirLightCount; i++)
-        m_Lights->subData(64 * i, sizeof(DirLight), &dirLights[i]);
+        m_Lights->subData(64 * i, sizeof(DirLight), &m_DirLights[i]);
     for (unsigned int i = 0; i < pointLightCount; i++)
         m_Lights->subData(64 * 1 + 80 * i, sizeof(PointLight), &pointLights[i]);
     for (unsigned int i = 0; i < spotLightCount; i++)

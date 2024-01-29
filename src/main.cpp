@@ -125,6 +125,7 @@ int main(void)
         float deltaTime = 0.0f;
 
         std::vector<DirLight> dirLights({DirLight().setDirection({-0.2f, -1.0f, -0.3f})});
+        Drawer::addDirLight(dirLights[0]);
         std::vector<PointLight> pointLights; // ({ PointLight().setPosition({ 1.5f, 1.2f, 2.0f }) });
 
         glfwGetWindowSize(window, &Screen::getScreenWidth(), &Screen::getScreenHeight());
@@ -169,6 +170,7 @@ int main(void)
             ImGui::End();
 
             ImGui::Begin("Lights");
+            Drawer::lightControlsGui();
             ImGui::End();
 
             fileDialog(onWindow);
