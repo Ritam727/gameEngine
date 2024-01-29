@@ -1,6 +1,7 @@
 #include <_internals.hpp>
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
+#include <IGFD/ImGuiFileDialog.h>
 
 static void processInput(GLFWwindow *window, float deltaTime)
 {
@@ -8,23 +9,26 @@ static void processInput(GLFWwindow *window, float deltaTime)
         glfwSetWindowShouldClose(window, true);
 }
 
-static void handleInput()
+void fileDialog()
 {
-    while (true)
+    IGFD::FileDialogConfig config;
+    config.path = ".";
+    config.flags = ImGuiFileDialogFlags_DisableQuickPathSelection;
+    ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".obj,.mtl,.fbx,.bin,.gltf", config);
+    ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByTypeDir | IGFD_FileStyleByTypeLink, nullptr, ImVec4(0.8f, 0.8f, 0.8f, 0.8f), ICON_IGFD_FOLDER);
+    ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByExtention, ".obj", ImVec4(0.8f, 0.8f, 0.8f, 0.8f), ICON_IGFD_FILE);
+
+    if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey"))
     {
-        std::string path;
-        unsigned int mode;
-        unsigned int priority;
+        if (ImGuiFileDialog::Instance()->IsOk())
+        {
+            std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+            std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
 
-        std::cout << "Enter path of model: ";
-        std::cin >> path;
-        std::cout << "Enter mode of rendering: ";
-        std::cin >> mode;
-        std::cout << "Enter priority of rendering: ";
-        std::cin >> priority;
-
-        ModelLoader loader = ModelLoader(path, mode, priority);
-        Drawer::enqueue(loader);
+            ModelLoader loader = ModelLoader(filePathName, 1, 1);
+            Drawer::enqueue(loader);
+        }
+        ImGuiFileDialog::Instance()->Close();
     }
 }
 
@@ -45,7 +49,6 @@ void dockSpace(bool *p_open)
     ImGui::Begin("DockSpace", p_open, window_flags);
     ImGui::PopStyleVar(3);
 
-    // Submit the DockSpace
     ImGuiIO &io = ImGui::GetIO();
     if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
     {
@@ -76,7 +79,6 @@ int main(void)
 
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, Renderer::viewportCallback);
-    glfwSwapInterval(0.0f);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -90,7 +92,12 @@ int main(void)
         (void)io;
         io.ConfigFlags != ImGuiConfigFlags_NavEnableKeyboard;
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-        io.Fonts->AddFontFromFileTTF("res/fonts/single_day.ttf", 18.0f);
+        io.Fonts->AddFontDefault();
+        static const ImWchar icons_ranges[] = {ICON_MIN_IGFD, ICON_MAX_IGFD, 0};
+        ImFontConfig icons_config;
+        icons_config.MergeMode = true;
+        icons_config.PixelSnapH = true;
+        io.Fonts->AddFontFromMemoryCompressedBase85TTF(FONT_ICON_BUFFER_NAME_IGFD, 15.0f, &icons_config, icons_ranges);
 
         ImGui::StyleColorsDark();
 
@@ -114,7 +121,6 @@ int main(void)
         std::vector<DirLight> dirLights({DirLight().setDirection({-0.2f, -1.0f, -0.3f})});
         std::vector<PointLight> pointLights; // ({ PointLight().setPosition({ 1.5f, 1.2f, 2.0f }) });
 
-        std::future<void> *inputThread = new std::future<void>(std::async(std::launch::async, handleInput));
         glfwGetWindowSize(window, &Screen::getScreenWidth(), &Screen::getScreenHeight());
 
         while (!glfwWindowShouldClose(window))
@@ -147,15 +153,17 @@ int main(void)
             ImGui::Begin("Camera");
             Camera::drawCameraControlsGui();
             ImGui::Text("FrameRate %.3f", io.Framerate);
-            bool onCameraWindow = ImGui::IsWindowHovered() | ImGui::IsAnyItemHovered() | ImGui::IsWindowFocused() | ImGui::IsAnyItemFocused() | ImGui::IsAnyItemActive();
             ImGui::End();
 
             ImGui::Begin("Objects");
             Drawer::render();
-            bool onObjectWindow = ImGui::IsWindowHovered() | ImGui::IsAnyItemHovered() | ImGui::IsWindowFocused() | ImGui::IsAnyItemFocused() | ImGui::IsAnyItemActive();
             ImGui::End();
 
-            Drawer::setOnWindow(onCameraWindow | onObjectWindow);
+            fileDialog();
+
+            bool onWindow = ImGui::IsAnyItemActive() | ImGui::IsAnyItemHovered() | ImGui::IsAnyItemFocused();
+
+            Drawer::setOnWindow(onWindow);
 
             ImGui::Render();
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -170,11 +178,6 @@ int main(void)
             processInput(window, deltaTime);
             glfwSwapBuffers(window);
         }
-
-        if (inputThread->wait_for(std::chrono::milliseconds(200)) == std::future_status::timeout)
-            Logger::logWarn("Closing input thread");
-        else
-            delete inputThread;
 
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();

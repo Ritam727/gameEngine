@@ -4,6 +4,7 @@ workspace "LearnOpenGL"
 group "dependencies"
     include "src/glad"
     include "src/include"
+    include "src/IGFD"
 group ""
 
 project "main"
@@ -34,7 +35,8 @@ project "main"
         "obj",
         "glad",
         "assimp",
-        "spdlog"
+        "spdlog",
+        "IGFD"
     }
 
     defines {
