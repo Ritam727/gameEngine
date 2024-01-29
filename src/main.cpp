@@ -9,7 +9,7 @@ static void processInput(GLFWwindow *window, float deltaTime)
         glfwSetWindowShouldClose(window, true);
 }
 
-void fileDialog()
+void fileDialog(bool &onWindow)
 {
     IGFD::FileDialogConfig config;
     config.path = ".";
@@ -17,6 +17,7 @@ void fileDialog()
     ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".obj,.mtl,.fbx,.bin,.gltf", config);
     ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByTypeDir | IGFD_FileStyleByTypeLink, nullptr, ImVec4(0.8f, 0.8f, 0.8f, 0.8f), ICON_IGFD_FOLDER);
     ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByExtention, ".obj", ImVec4(0.8f, 0.8f, 0.8f, 0.8f), ICON_IGFD_FILE);
+    onWindow |= ImGui::IsWindowFocused() | ImGui::IsWindowHovered();
 
     if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey"))
     {
@@ -57,6 +58,11 @@ void dockSpace(bool *p_open)
     }
 
     ImGui::End();
+}
+
+void lightControls(bool &onWindow)
+{
+    
 }
 
 int main(void)
@@ -149,19 +155,25 @@ int main(void)
             Renderer::clearColor({0.5f, 0.5f, 0.5f, 1.0f});
             Renderer::clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+            bool onWindow = false;
             dockSpace(NULL);
             ImGui::Begin("Camera");
             Camera::drawCameraControlsGui();
+            onWindow |= ImGui::IsWindowFocused() | ImGui::IsWindowHovered();
             ImGui::Text("FrameRate %.3f", io.Framerate);
             ImGui::End();
 
             ImGui::Begin("Objects");
             Drawer::render();
+            onWindow |= ImGui::IsWindowFocused() | ImGui::IsWindowHovered();
             ImGui::End();
 
-            fileDialog();
+            ImGui::Begin("Lights");
+            ImGui::End();
 
-            bool onWindow = ImGui::IsAnyItemActive() | ImGui::IsAnyItemHovered() | ImGui::IsAnyItemFocused();
+            fileDialog(onWindow);
+
+            onWindow |= ImGui::IsAnyItemActive() | ImGui::IsAnyItemHovered() | ImGui::IsAnyItemFocused();
 
             Drawer::setOnWindow(onWindow);
 

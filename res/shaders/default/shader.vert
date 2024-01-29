@@ -19,6 +19,7 @@ layout (std140, binding = 1) uniform matrices
     mat4 view;
 };
 uniform mat4 model;
+uniform vec3 centre;
 
 void main()
 {

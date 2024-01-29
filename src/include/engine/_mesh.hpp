@@ -37,6 +37,7 @@ private:
     glm::vec3 m_GlobalRot;
     glm::vec3 m_PrevGlobalRot;
     glm::vec3 m_PickerColor;
+    glm::vec3 m_Centre;
     
     std::vector<std::string> m_Textures;
 

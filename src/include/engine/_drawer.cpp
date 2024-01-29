@@ -102,11 +102,8 @@ void Drawer::render()
             ShaderElem("res/shaders/border/shader.frag", GL_FRAGMENT_SHADER),
         });
         Shader shader_(shaderElems);
-
-        glm::vec3 _scale = Mesh::getSelectedMesh()->getScale();
-        Mesh::getSelectedMesh()->setScale(_scale * 1.01f);
+        
         Mesh::getSelectedMesh()->draw(shader_, Mesh::getSelectedMeshMode());
-        Mesh::getSelectedMesh()->setScale(_scale);
 
         Renderer::stencilMask(0xFF);
         Renderer::stencilFunc(GL_ALWAYS, 1, 0xFF);

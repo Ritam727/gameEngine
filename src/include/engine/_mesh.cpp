@@ -5,7 +5,7 @@ Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> 
       m_Index(IndexBuffer(indices.size(), indices.data())), m_Layout(Vertex::getVertexLayout()), m_Trans({0.0f, 0.0f, 0.0f}),
       m_Rot({0.0f, 0.0f, 0.0f}), m_Scale({1.0f, 1.0f, 1.0f}), m_Material(NULL), m_BasicMaterial(NULL), m_ID(m_Count),
       m_PrevRot({0.0f, 0.0f, 0.0f}), m_RotMat(1.0f), m_X({1.0f, 0.0f, 0.0f}), m_Y({0.0f, 1.0f, 0.0f}), m_Z({0.0f, 0.0f, 1.0f}),
-      m_GlobalRot({0.0f, 0.0f, 0.0f}), m_PrevGlobalRot({0.0f, 0.0f, 0.0f})
+      m_GlobalRot({0.0f, 0.0f, 0.0f}), m_PrevGlobalRot({0.0f, 0.0f, 0.0f}), m_Centre(0.0f)
 {
     m_Array.addBuffer(m_Buffer, m_Layout);
     for (Texture *texture : textures)
@@ -19,6 +19,9 @@ Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> 
     m_BasicMaterial = new BasicMaterial();
     m_Count++;
     m_PickerColor = glm::vec3(m_Count % 256, (m_Count / 256) % 256, ((m_Count / 256) / 256) % 256);
+    for (const Vertex &vertex : vertices)
+        m_Centre += vertex.pos;
+    m_Centre = (1.0f / (float) vertices.size()) * m_Centre;
 }
 
 Mesh::Mesh(const Mesh &mesh)
@@ -144,6 +147,7 @@ void Mesh::useShader(const Shader &shader)
     if (m_Material)
         this->setMaterial(shader);
     this->setBasicMaterial(shader);
+    shader.setVec3f("centre", m_Centre);
 }
 
 void Mesh::drawSelectButton(unsigned int drawGui)
