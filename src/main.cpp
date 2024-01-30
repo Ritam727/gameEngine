@@ -60,11 +60,6 @@ void dockSpace(bool *p_open)
     ImGui::End();
 }
 
-void lightControls(bool &onWindow)
-{
-    
-}
-
 int main(void)
 {
     Logger::init();
@@ -140,7 +135,7 @@ int main(void)
             float currentTime = glfwGetTime();
             deltaTime = currentTime - lastFrame;
             lastFrame = currentTime;
-            
+
             int width_ = Screen::getScreenWidth();
             int height_ = Screen::getScreenHeight();
 
@@ -151,7 +146,9 @@ int main(void)
             Renderer::clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
             bool onWindow = false;
+            
             dockSpace(NULL);
+            
             ImGui::Begin("Camera");
             Camera::drawCameraControlsGui();
             onWindow |= ImGui::IsWindowFocused() | ImGui::IsWindowHovered();
@@ -165,6 +162,7 @@ int main(void)
 
             ImGui::Begin("Lights");
             Drawer::lightControlsGui();
+            onWindow |= ImGui::IsWindowFocused() | ImGui::IsWindowHovered();
             ImGui::End();
 
             fileDialog(onWindow);

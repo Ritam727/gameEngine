@@ -192,6 +192,7 @@ void Drawer::lightControlsGui()
                 m_SpotLights[i].outerCutOff = std::min(m_SpotLights[i].outerCutOff, m_SpotLights[i].innerCutOff - 0.01f);
                 ImGui::TreePop();
             }
+            ImGui::Checkbox("Follow Camera", &m_SpotLights[i].follow);
             ImGui::TreePop();
         }
     }
@@ -370,7 +371,14 @@ void Drawer::update(const unsigned int width, const unsigned int height)
     for (unsigned int i = 0; i < pointLightCount; i++)
         m_Lights->subData(64 * 1 + 80 * i, sizeof(PointLight), &m_PointLights[i]);
     for (unsigned int i = 0; i < spotLightCount; i++)
-        m_Lights->subData(64 * 1 + 80 * 20 + 112 * i, sizeof(SpotLight), &m_SpotLights[i]);
+    {
+        if (m_SpotLights[i].follow)
+        {
+            m_SpotLights[i] = m_SpotLights[i].setPosition(Camera::getCameraPos());
+            m_SpotLights[i] = m_SpotLights[i].setDirection(Camera::getCameraFront());
+        }
+        m_Lights->subData(64 * 1 + 80 * 20 + 112 * i, sizeof(SpotLight) - sizeof(bool), &m_SpotLights[i]);
+    }
     m_Lights->subData(64 * 1 + 112 * 5 + 80 * 20, 4, &dirLightCount);
     m_Lights->subData(64 * 1 + 112 * 5 + 80 * 20 + 4 * 1, 4, &pointLightCount);
     m_Lights->subData(64 * 1 + 112 * 5 + 80 * 20 + 4 * 2, 4, &spotLightCount);

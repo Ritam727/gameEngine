@@ -19,6 +19,8 @@ struct SpotLight
     float innerCutOff;
     float outerCutOff;
 
+    bool follow;
+
     SpotLight();
 
     SpotLight setPosition(const glm::vec3 &position);

@@ -4,7 +4,8 @@ SpotLight::SpotLight()
     : position(0.0f), direction(glm::vec4(0.0f, -1.0f, 0.0f, 0.0f)),
       ambient(0.2f), diffuse(0.5f), specular(1.0f),
       constant(1.0f), linear(0.0f), quadratic(0.0f),
-      innerCutOff(cos(glm::radians(12.5f))), outerCutOff(cos(glm::radians(17.5f)))
+      innerCutOff(cos(glm::radians(12.5f))), outerCutOff(cos(glm::radians(17.5f))),
+      follow(false)
 {
 }
 
