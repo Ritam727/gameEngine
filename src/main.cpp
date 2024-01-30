@@ -14,9 +14,13 @@ void fileDialog(bool &onWindow)
     IGFD::FileDialogConfig config;
     config.path = ".";
     config.flags = ImGuiFileDialogFlags_DisableQuickPathSelection;
-    ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".obj,.mtl,.fbx,.bin,.gltf", config);
+    ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".obj,.mtl,.dae,.bin,.gltf", config);
     ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByTypeDir | IGFD_FileStyleByTypeLink, nullptr, ImVec4(0.8f, 0.8f, 0.8f, 0.8f), ICON_IGFD_FOLDER);
     ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByExtention, ".obj", ImVec4(0.8f, 0.8f, 0.8f, 0.8f), ICON_IGFD_FILE);
+    ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByExtention, ".gltf", ImVec4(0.8f, 0.8f, 0.8f, 0.8f), ICON_IGFD_FILE);
+    ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByExtention, ".dae", ImVec4(0.8f, 0.8f, 0.8f, 0.8f), ICON_IGFD_FILE);
+    ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByExtention, ".fbx", ImVec4(0.8f, 0.8f, 0.8f, 0.8f), ICON_IGFD_FILE);
+    ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByExtention, ".mtl", ImVec4(0.8f, 0.8f, 0.8f, 0.8f), ICON_IGFD_FILE);
     onWindow |= ImGui::IsWindowFocused() | ImGui::IsWindowHovered();
 
     if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey"))
