@@ -124,10 +124,6 @@ int main(void)
         float lastFrame = 0.0f;
         float deltaTime = 0.0f;
 
-        std::vector<DirLight> dirLights({DirLight().setDirection({-0.2f, -1.0f, -0.3f})});
-        Drawer::addDirLight(dirLights[0]);
-        std::vector<PointLight> pointLights; // ({ PointLight().setPosition({ 1.5f, 1.2f, 2.0f }) });
-
         glfwGetWindowSize(window, &Screen::getScreenWidth(), &Screen::getScreenHeight());
 
         while (!glfwWindowShouldClose(window))
@@ -144,13 +140,11 @@ int main(void)
             float currentTime = glfwGetTime();
             deltaTime = currentTime - lastFrame;
             lastFrame = currentTime;
-            std::vector<SpotLight> spotLights; //({SpotLight()
-                                               //  .setPosition(Camera::getCameraPos())
-                                               //.setDirection(Camera::getCameraFront())});
+            
             int width_ = Screen::getScreenWidth();
             int height_ = Screen::getScreenHeight();
 
-            Drawer::update(width_, height_, dirLights, pointLights, spotLights);
+            Drawer::update(width_, height_);
             Drawer::renderForMousePicking();
 
             Renderer::clearColor({0.5f, 0.5f, 0.5f, 1.0f});

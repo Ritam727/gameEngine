@@ -30,8 +30,21 @@ void Drawer::addDirLight(DirLight &dirLight)
     m_DirLights.push_back(dirLight);
 }
 
+void Drawer::addPointLight(PointLight &pointLight)
+{
+    m_PointLights.push_back(pointLight);
+}
+
+void Drawer::addSpotLight(SpotLight &spotLight)
+{
+    m_SpotLights.push_back(spotLight);
+}
+
 void Drawer::lightControlsGui()
 {
+    std::string dir = "Add Directional Light";
+    std::string point = "Add Point Light";
+    std::string spot = "Add Spot Light";
     for (unsigned int i = 0; i < m_DirLights.size(); i++)
     {
         std::string o = "Directional Light (" + std::to_string(i) + ")";
@@ -50,27 +63,152 @@ void Drawer::lightControlsGui()
             }
             if (ImGui::TreeNode(a.c_str()))
             {
-                ImGui::DragFloat("R", &m_DirLights[i].ambient.x, 0.1);
-                ImGui::DragFloat("G", &m_DirLights[i].ambient.y, 0.1);
-                ImGui::DragFloat("B", &m_DirLights[i].ambient.z, 0.1);
+                ImGui::DragFloat("R", &m_DirLights[i].ambient.x, 0.01, 0.0f, 1.0f);
+                ImGui::DragFloat("G", &m_DirLights[i].ambient.y, 0.01, 0.0f, 1.0f);
+                ImGui::DragFloat("B", &m_DirLights[i].ambient.z, 0.01, 0.0f, 1.0f);
                 ImGui::TreePop();
             }
             if (ImGui::TreeNode(d.c_str()))
             {
-                ImGui::DragFloat("R", &m_DirLights[i].diffuse.x, 0.1);
-                ImGui::DragFloat("G", &m_DirLights[i].diffuse.y, 0.1);
-                ImGui::DragFloat("B", &m_DirLights[i].diffuse.z, 0.1);
+                ImGui::DragFloat("R", &m_DirLights[i].diffuse.x, 0.01, 0.0f, 1.0f);
+                ImGui::DragFloat("G", &m_DirLights[i].diffuse.y, 0.01, 0.0f, 1.0f);
+                ImGui::DragFloat("B", &m_DirLights[i].diffuse.z, 0.01, 0.0f, 1.0f);
                 ImGui::TreePop();
             }
             if (ImGui::TreeNode(s.c_str()))
             {
-                ImGui::DragFloat("R", &m_DirLights[i].specular.x, 0.1);
-                ImGui::DragFloat("G", &m_DirLights[i].specular.y, 0.1);
-                ImGui::DragFloat("B", &m_DirLights[i].specular.z, 0.1);
+                ImGui::DragFloat("R", &m_DirLights[i].specular.x, 0.01, 0.0f, 1.0f);
+                ImGui::DragFloat("G", &m_DirLights[i].specular.y, 0.01, 0.0f, 1.0f);
+                ImGui::DragFloat("B", &m_DirLights[i].specular.z, 0.01, 0.0f, 1.0f);
                 ImGui::TreePop();
             }
             ImGui::TreePop();
         }
+    }
+    for (unsigned int i = 0; i < m_PointLights.size(); i++)
+    {
+        std::string o = "Point Light (" + std::to_string(i) + ")";
+        if (ImGui::TreeNode(o.c_str()))
+        {
+            std::string p = "Position";
+            std::string a = "Ambient";
+            std::string d = "Diffuse";
+            std::string s = "Specular";
+            std::string c = "Intensity";
+            if (ImGui::TreeNode(p.c_str()))
+            {
+                ImGui::DragFloat("X", &m_PointLights[i].position.x, 0.1);
+                ImGui::DragFloat("Y", &m_PointLights[i].position.y, 0.1);
+                ImGui::DragFloat("Z", &m_PointLights[i].position.z, 0.1);
+                ImGui::TreePop();
+            }
+            if (ImGui::TreeNode(a.c_str()))
+            {
+                ImGui::DragFloat("R", &m_PointLights[i].ambient.x, 0.01, 0.0f, 1.0f);
+                ImGui::DragFloat("G", &m_PointLights[i].ambient.y, 0.01, 0.0f, 1.0f);
+                ImGui::DragFloat("B", &m_PointLights[i].ambient.z, 0.01, 0.0f, 1.0f);
+                ImGui::TreePop();
+            }
+            if (ImGui::TreeNode(d.c_str()))
+            {
+                ImGui::DragFloat("R", &m_PointLights[i].diffuse.x, 0.01, 0.0f, 1.0f);
+                ImGui::DragFloat("G", &m_PointLights[i].diffuse.y, 0.01, 0.0f, 1.0f);
+                ImGui::DragFloat("B", &m_PointLights[i].diffuse.z, 0.01, 0.0f, 1.0f);
+                ImGui::TreePop();
+            }
+            if (ImGui::TreeNode(s.c_str()))
+            {
+                ImGui::DragFloat("R", &m_PointLights[i].specular.x, 0.01, 0.0f, 1.0f);
+                ImGui::DragFloat("G", &m_PointLights[i].specular.y, 0.01, 0.0f, 1.0f);
+                ImGui::DragFloat("B", &m_PointLights[i].specular.z, 0.01, 0.0f, 1.0f);
+                ImGui::TreePop();
+            }
+            if (ImGui::TreeNode(c.c_str()))
+            {
+                ImGui::DragFloat("Linear", &m_PointLights[i].linear, 0.01, 0.0f, 1.0f);
+                ImGui::DragFloat("Quadratic", &m_PointLights[i].quadratic, 0.01, 0.0f, 1.0f);
+                ImGui::TreePop();
+            }
+            ImGui::TreePop();
+        }
+    }
+    for (unsigned int i = 0; i < m_SpotLights.size(); i++)
+    {
+        std::string o = "Spot Light (" + std::to_string(i) + ")";
+        if (ImGui::TreeNode(o.c_str()))
+        {
+            std::string p = "Position";
+            std::string t = "Direction";
+            std::string a = "Ambient";
+            std::string d = "Diffuse";
+            std::string s = "Specular";
+            std::string c = "Intensity";
+            std::string o = "Cutoff";
+            if (ImGui::TreeNode(p.c_str()))
+            {
+                ImGui::DragFloat("X", &m_SpotLights[i].position.x, 0.1);
+                ImGui::DragFloat("Y", &m_SpotLights[i].position.y, 0.1);
+                ImGui::DragFloat("Z", &m_SpotLights[i].position.z, 0.1);
+                ImGui::TreePop();
+            }
+            if (ImGui::TreeNode(t.c_str()))
+            {
+                ImGui::DragFloat("X", &m_SpotLights[i].direction.x, 0.1);
+                ImGui::DragFloat("Y", &m_SpotLights[i].direction.y, 0.1);
+                ImGui::DragFloat("Z", &m_SpotLights[i].direction.z, 0.1);
+                ImGui::TreePop();
+            }
+            if (ImGui::TreeNode(a.c_str()))
+            {
+                ImGui::DragFloat("R", &m_SpotLights[i].ambient.x, 0.01, 0.0f, 1.0f);
+                ImGui::DragFloat("G", &m_SpotLights[i].ambient.y, 0.01, 0.0f, 1.0f);
+                ImGui::DragFloat("B", &m_SpotLights[i].ambient.z, 0.01, 0.0f, 1.0f);
+                ImGui::TreePop();
+            }
+            if (ImGui::TreeNode(d.c_str()))
+            {
+                ImGui::DragFloat("R", &m_SpotLights[i].diffuse.x, 0.01, 0.0f, 1.0f);
+                ImGui::DragFloat("G", &m_SpotLights[i].diffuse.y, 0.01, 0.0f, 1.0f);
+                ImGui::DragFloat("B", &m_SpotLights[i].diffuse.z, 0.01, 0.0f, 1.0f);
+                ImGui::TreePop();
+            }
+            if (ImGui::TreeNode(s.c_str()))
+            {
+                ImGui::DragFloat("R", &m_SpotLights[i].specular.x, 0.01, 0.0f, 1.0f);
+                ImGui::DragFloat("G", &m_SpotLights[i].specular.y, 0.01, 0.0f, 1.0f);
+                ImGui::DragFloat("B", &m_SpotLights[i].specular.z, 0.01, 0.0f, 1.0f);
+                ImGui::TreePop();
+            }
+            if (ImGui::TreeNode(c.c_str()))
+            {
+                ImGui::DragFloat("Linear", &m_SpotLights[i].linear, 0.01, 0.0f, 1.0f);
+                ImGui::DragFloat("Quadratic", &m_SpotLights[i].quadratic, 0.01, 0.0f, 1.0f);
+                ImGui::TreePop();
+            }
+            if (ImGui::TreeNode(o.c_str()))
+            {
+                ImGui::DragFloat("Inner Cutoff", &m_SpotLights[i].innerCutOff, 0.01, 0.01f, 1.0f);
+                ImGui::DragFloat("Outer Cutoff", &m_SpotLights[i].outerCutOff, 0.01, 0.0f, 0.99f);
+                m_SpotLights[i].outerCutOff = std::min(m_SpotLights[i].outerCutOff, m_SpotLights[i].innerCutOff - 0.01f);
+                ImGui::TreePop();
+            }
+            ImGui::TreePop();
+        }
+    }
+    if (ImGui::Button(dir.c_str()))
+    {
+        DirLight _dirLight;
+        addDirLight(_dirLight);
+    }
+    if (ImGui::Button(point.c_str()))
+    {
+        PointLight _pointLight;
+        addPointLight(_pointLight);
+    }
+    if (ImGui::Button(spot.c_str()))
+    {
+        SpotLight _spotLight;
+        addSpotLight(_spotLight);
     }
 }
 
@@ -205,7 +343,7 @@ void Drawer::renderForMousePicking()
     m_MousePickingBuffer->unbind();
 }
 
-void Drawer::update(const unsigned int width, const unsigned int height, const std::vector<DirLight> &dirLights, const std::vector<PointLight> &pointLights, const std::vector<SpotLight> &spotLights)
+void Drawer::update(const unsigned int width, const unsigned int height)
 {
     while (!m_Queue.empty())
     {
@@ -225,14 +363,14 @@ void Drawer::update(const unsigned int width, const unsigned int height, const s
     m_Matrices->subData(sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(view));
 
     unsigned int dirLightCount = m_DirLights.size();
-    unsigned int pointLightCount = pointLights.size();
-    unsigned int spotLightCount = spotLights.size();
+    unsigned int pointLightCount = m_PointLights.size();
+    unsigned int spotLightCount = m_SpotLights.size();
     for (unsigned int i = 0; i < dirLightCount; i++)
         m_Lights->subData(64 * i, sizeof(DirLight), &m_DirLights[i]);
     for (unsigned int i = 0; i < pointLightCount; i++)
-        m_Lights->subData(64 * 1 + 80 * i, sizeof(PointLight), &pointLights[i]);
+        m_Lights->subData(64 * 1 + 80 * i, sizeof(PointLight), &m_PointLights[i]);
     for (unsigned int i = 0; i < spotLightCount; i++)
-        m_Lights->subData(64 * 1 + 80 * 20 + 112 * i, sizeof(SpotLight), &spotLights[i]);
+        m_Lights->subData(64 * 1 + 80 * 20 + 112 * i, sizeof(SpotLight), &m_SpotLights[i]);
     m_Lights->subData(64 * 1 + 112 * 5 + 80 * 20, 4, &dirLightCount);
     m_Lights->subData(64 * 1 + 112 * 5 + 80 * 20 + 4 * 1, 4, &pointLightCount);
     m_Lights->subData(64 * 1 + 112 * 5 + 80 * 20 + 4 * 2, 4, &spotLightCount);
