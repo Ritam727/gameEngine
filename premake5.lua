@@ -22,7 +22,8 @@ project "main"
         "src/include",
         "src/",
         "src/assimp",
-        "src/spdlog/include"
+        "src/spdlog/include",
+        "src/glad/include"
     }
 
     libdirs { 

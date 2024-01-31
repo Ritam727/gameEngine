@@ -8,7 +8,9 @@ project "obj"
     includedirs {
         "../assimp",
         "../spdlog/include",
-        "../"
+        "../",
+        "../include",
+        "../glad/include/"
     }
 
     libdirs {
