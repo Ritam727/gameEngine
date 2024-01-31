@@ -273,7 +273,7 @@ void Drawer::render()
             m_Meshes[i][j].mesh->draw(*m_Meshes[i][j].shader, m_Meshes[i][j].mode);
         }
     }
-    for (auto &p : Model::getSelectedMeshes())
+    for (auto &p : Mesh::getSelectedMeshes())
     {
         Renderer::stencilFunc(GL_ALWAYS, 1, 0xFF);
         Renderer::stencilMask(0xFF);
@@ -338,7 +338,7 @@ void Drawer::renderForMousePicking()
         unsigned char pixels[3];
         GLCall(glReadPixels((int)mousePos.x, Screen::getScreenHeight() - (int)mousePos.y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixels));
         int r = pixels[0], g = pixels[1], b = pixels[2];
-        Model::addPickedColor(glm::vec3(r, g, b), !m_ShiftHeldDown);
+        Mesh::addPickedColor(glm::vec3(r, g, b), !m_ShiftHeldDown);
     }
     else if (pressed == -1)
     {

@@ -17,6 +17,19 @@
 #include <string>
 #include <memory>
 #include <unordered_map>
+#include <unordered_set>
+
+struct Vec3Hash
+{
+    size_t operator() (const glm::vec3 &v) const
+    {
+        unsigned int r = v.r;
+        unsigned int g = v.g;
+        unsigned int b = v.b;
+        std::hash<unsigned int> h;
+        return h(r | (g >> 8) | (b >> 16));
+    }
+};
 
 class Mesh
 {
@@ -47,10 +60,8 @@ private:
     unsigned int m_ID;
 
     static unsigned int m_Count;
-    static Mesh *m_CurMesh;
-    static Shader *m_CurMeshShader;
-    static unsigned int m_CurMeshMode;
-    static glm::vec3 m_CurrentPickedColor;
+    static std::unordered_set<glm::vec3, Vec3Hash> m_PickedColors;
+    static std::unordered_map<Mesh*, std::pair<Shader*, unsigned int>> m_MeshShaderMode;
 
 public:
     Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices, const std::vector<Texture*> &textures);
@@ -71,24 +82,19 @@ public:
     const Material *getMaterial() const;
     const BasicMaterial *getBasicMaterial() const;
     
-    static Mesh *getSelectedMesh();
-    static Shader *getSelectedMeshShader();
-    static unsigned int getSelectedMeshMode();
+    static std::unordered_map<Mesh*, std::pair<Shader*, unsigned int>> &getSelectedMeshes();
+    static std::unordered_set<glm::vec3, Vec3Hash> &getPickedColors();
 
     void activateTextures();
     void useShader(const Shader &shader);
     void drawSelectButton(unsigned int drawGui = 1, bool expand = false);
     void drawTransformGui();
-    void update();
     void draw(const Shader &shader, unsigned int mode = 0);
     void addTexture(const std::string &texture, const std::string &type);
-    void selectMesh();
     void setMaterial(const Shader &shader);
     void setBasicMaterial(const Shader &shader);
-    static void deselectMesh();
-    static void setCurMeshShader(Shader *shader);
-    static void setCurMeshMode(unsigned int mode);
-    static void setCurPickedColor(glm::vec3 color);
+    
+    static void addPickedColor(const glm::vec3 color, const bool clear);
 
     void setTrans(const glm::vec3 trans);
     void setRot(const glm::vec3 rot);

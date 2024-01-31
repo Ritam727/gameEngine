@@ -148,19 +148,18 @@ void Model::draw(Shader &shader, unsigned int mode, unsigned int drawGui) const
 {
     for (Mesh *mesh : m_Meshes)
     {
-        mesh->update();
-        if (!drawGui || m_PickedColors.find(mesh->getPickerColor()) == m_PickedColors.end())
+        if (!drawGui || Mesh::getPickedColors().find(mesh->getPickerColor()) == Mesh::getPickedColors().end())
         {
             mesh->drawSelectButton(drawGui, false);
             Renderer::stencilMask(0x00);
             mesh->draw(shader, mode);
-            if (drawGui && m_MeshShaderMode.find(mesh) != m_MeshShaderMode.end())
-                m_MeshShaderMode.erase(mesh);
+            if (drawGui && Mesh::getSelectedMeshes().find(mesh) != Mesh::getSelectedMeshes().end())
+                Mesh::getSelectedMeshes().erase(mesh);
         }
         else
         {
             mesh->drawSelectButton(drawGui, true);
-            m_MeshShaderMode[mesh] = {&shader, mode};
+            Mesh::getSelectedMeshes()[mesh] = {&shader, mode};
         }
     }
 }
@@ -169,31 +168,3 @@ const std::unordered_set<Mesh *> Model::getMeshes() const
 {
     return m_Meshes;
 }
-
-void Model::addPickedColor(const glm::vec3 color, const bool clear)
-{
-    if (!clear)
-    {
-        if (color.r == 0 && color.g == 0 && color.b == 0)
-            return;
-        if (m_PickedColors.find(color) == m_PickedColors.end())
-            m_PickedColors.insert(color);
-        else
-            m_PickedColors.erase(color);
-    }
-    else
-    {
-        m_PickedColors.clear();
-        if (color.r == 0 && color.g == 0 && color.b == 0)
-            return;
-        m_PickedColors.insert(color);
-    }
-}
-
-std::unordered_map<Mesh *, std::pair<Shader *, unsigned int>> Model::getSelectedMeshes()
-{
-    return m_MeshShaderMode;
-}
-
-std::unordered_set<glm::vec3, Vec3Hash> Model::m_PickedColors;
-std::unordered_map<Mesh *, std::pair<Shader *, unsigned int>> Model::m_MeshShaderMode;

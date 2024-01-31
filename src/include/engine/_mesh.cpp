@@ -118,21 +118,6 @@ const BasicMaterial *Mesh::getBasicMaterial() const
     return m_BasicMaterial;
 }
 
-Mesh *Mesh::getSelectedMesh()
-{
-    return m_CurMesh;
-}
-
-Shader *Mesh::getSelectedMeshShader()
-{
-    return m_CurMeshShader;
-}
-
-unsigned int Mesh::getSelectedMeshMode()
-{
-    return m_CurMeshMode;
-}
-
 void Mesh::activateTextures()
 {
     for (unsigned int i = 0; i < m_Textures.size(); i++)
@@ -202,22 +187,6 @@ void Mesh::drawTransformGui()
         ImGui::DragFloat("Z", &m_Scale.z, 0.1);
         ImGui::TreePop();
     }
-    if (ImGui::Button(b.c_str()))
-        Mesh::setCurPickedColor(this->m_PickerColor);
-    if (ImGui::Button(u.c_str()))
-        deselectMesh();
-}
-
-void Mesh::update()
-{
-    if (m_PickerColor == m_CurrentPickedColor)
-    {
-        this->selectMesh();
-    }
-    else if (m_CurrentPickedColor == glm::vec3(0))
-    {
-        this->deselectMesh();
-    }
 }
 
 void Mesh::draw(const Shader &shader, unsigned int mode)
@@ -250,11 +219,6 @@ void Mesh::addTexture(const std::string &texture, const std::string &type)
     m_Material = new Material(m_Textures);
 }
 
-void Mesh::selectMesh()
-{
-    m_CurMesh = this;
-}
-
 void Mesh::setMaterial(const Shader &shader)
 {
     for (unsigned int i = 0; i < this->m_Material->diffuseCount; i++)
@@ -284,28 +248,6 @@ void Mesh::setBasicMaterial(const Shader &shader)
     shader.setVec3f("basicMaterial.specular", this->m_BasicMaterial->specular);
     shader.setVec3f("basicMaterial.emission", this->m_BasicMaterial->emission);
     shader.setFloat("basicMaterial.shininess", this->m_BasicMaterial->shininess);
-}
-
-void Mesh::deselectMesh()
-{
-    m_CurMesh = NULL;
-    m_CurMeshShader = NULL;
-    m_CurMeshMode = -1;
-}
-
-void Mesh::setCurMeshMode(unsigned int mode)
-{
-    m_CurMeshMode = mode;
-}
-
-void Mesh::setCurPickedColor(glm::vec3 color)
-{
-    m_CurrentPickedColor = color;
-}
-
-void Mesh::setCurMeshShader(Shader *shader)
-{
-    m_CurMeshShader = shader;
 }
 
 void Mesh::setTrans(const glm::vec3 trans)
@@ -369,8 +311,36 @@ void Mesh::updateGlobalRot()
     m_PrevGlobalRot += _delta;
 }
 
+void Mesh::addPickedColor(const glm::vec3 color, const bool clear)
+{
+    if (!clear)
+    {
+        if (color.r == 0 && color.g == 0 && color.b == 0)
+            return;
+        if (m_PickedColors.find(color) == m_PickedColors.end())
+            m_PickedColors.insert(color);
+        else
+            m_PickedColors.erase(color);
+    }
+    else
+    {
+        m_PickedColors.clear();
+        if (color.r == 0 && color.g == 0 && color.b == 0)
+            return;
+        m_PickedColors.insert(color);
+    }
+}
+
+std::unordered_map<Mesh *, std::pair<Shader *, unsigned int>> &Mesh::getSelectedMeshes()
+{
+    return m_MeshShaderMode;
+}
+
+std::unordered_set<glm::vec3, Vec3Hash> &Mesh::getPickedColors()
+{
+    return m_PickedColors;
+}
+
 unsigned int Mesh::m_Count = 0;
-Mesh *Mesh::m_CurMesh = NULL;
-Shader *Mesh::m_CurMeshShader = NULL;
-unsigned int Mesh::m_CurMeshMode = -1;
-glm::vec3 Mesh::m_CurrentPickedColor = glm::vec3(0);
+std::unordered_set<glm::vec3, Vec3Hash> Mesh::m_PickedColors;
+std::unordered_map<Mesh *, std::pair<Shader *, unsigned int>> Mesh::m_MeshShaderMode;

@@ -170,6 +170,9 @@ int main(void)
             onWindow |= ImGui::IsWindowFocused() | ImGui::IsWindowHovered();
             ImGui::End();
 
+            ImGui::Begin("Transform");
+            ImGui::End();
+
             fileDialog(onWindow);
 
             onWindow |= ImGui::IsAnyItemActive() | ImGui::IsAnyItemHovered() | ImGui::IsAnyItemFocused();
