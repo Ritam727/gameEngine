@@ -7,6 +7,7 @@ static void processInput(GLFWwindow *window, float deltaTime)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+    Drawer::keyboardCallback(window, deltaTime);
 }
 
 void fileDialog(bool &onWindow)

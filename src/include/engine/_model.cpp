@@ -170,11 +170,24 @@ const std::unordered_set<Mesh *> Model::getMeshes() const
     return m_Meshes;
 }
 
-void Model::addPickedColor(const glm::vec3 color)
+void Model::addPickedColor(const glm::vec3 color, const bool clear)
 {
-    if (color.r == 0 && color.g == 0 && color.b == 0)
-        return;
-    m_PickedColors.insert(color);
+    if (!clear)
+    {
+        if (color.r == 0 && color.g == 0 && color.b == 0)
+            return;
+        if (m_PickedColors.find(color) == m_PickedColors.end())
+            m_PickedColors.insert(color);
+        else
+            m_PickedColors.erase(color);
+    }
+    else
+    {
+        m_PickedColors.clear();
+        if (color.r == 0 && color.g == 0 && color.b == 0)
+            return;
+        m_PickedColors.insert(color);
+    }
 }
 
 std::unordered_map<Mesh *, std::pair<Shader *, unsigned int>> Model::getSelectedMeshes()

@@ -51,7 +51,7 @@ public:
 
     const std::unordered_set<Mesh*> getMeshes() const;
     
-    static void addPickedColor(const glm::vec3 color);
+    static void addPickedColor(const glm::vec3 color, const bool clear);
     static std::unordered_map<Mesh*, std::pair<Shader*, unsigned int>> getSelectedMeshes();
 };
 

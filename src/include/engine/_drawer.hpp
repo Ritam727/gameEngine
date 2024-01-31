@@ -117,6 +117,8 @@ private:
     static FrameBuffer *m_MousePickingBuffer;
     static std::unordered_map<std::string, Model*> m_LoadedModels;
     static bool m_IsOnWindow;
+    static bool m_MouseLeftHeldDown;
+    static bool m_ShiftHeldDown;
 
 public:
     static void init();
@@ -124,6 +126,7 @@ public:
     static void renderForMousePicking();
     static void update(const unsigned int width, const unsigned int height);
     static void enqueue(const ModelLoader &loader);
+    static void keyboardCallback(GLFWwindow *window, float deltaTime);
 
     static void addModel(ModelElem &modelElem, unsigned int priority, bool skipTextures = false);
     static void addMesh(Mesh *mesh, Shader *shader, unsigned int mode, unsigned int priority, const glm::vec3 &trans, const glm::vec3 &rot, const glm::vec3 &scale);

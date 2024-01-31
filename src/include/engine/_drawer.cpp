@@ -332,12 +332,17 @@ void Drawer::renderForMousePicking()
     (void)io;
     glm::vec2 mousePos = {io.MousePos.x, io.MousePos.y};
     float pressed = io.MouseDownDuration[0];
-    if (pressed > -1 && !m_IsOnWindow)
+    if (pressed > -1 && !m_IsOnWindow && !m_MouseLeftHeldDown)
     {
+        m_MouseLeftHeldDown = true;
         unsigned char pixels[3];
         GLCall(glReadPixels((int)mousePos.x, Screen::getScreenHeight() - (int)mousePos.y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixels));
         int r = pixels[0], g = pixels[1], b = pixels[2];
-        Model::addPickedColor(glm::vec3(r, g, b));
+        Model::addPickedColor(glm::vec3(r, g, b), !m_ShiftHeldDown);
+    }
+    else if (pressed == -1)
+    {
+        m_MouseLeftHeldDown = false;
     }
     Renderer::stencilMask(0xFF);
 
@@ -389,6 +394,14 @@ void Drawer::enqueue(const ModelLoader &loader)
     m_Queue.push(loader);
 }
 
+void Drawer::keyboardCallback(GLFWwindow *window, float deltaTime)
+{
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS)
+        m_ShiftHeldDown = true;
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE || glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS)
+        m_ShiftHeldDown = false;
+}
+
 std::unordered_map<std::string, Model *> &Drawer::getLoadedModels()
 {
     return m_LoadedModels;
@@ -410,3 +423,5 @@ UniformBuffer *Drawer::m_Matrices;
 UniformBuffer *Drawer::m_Lights;
 FrameBuffer *Drawer::m_MousePickingBuffer;
 bool Drawer::m_IsOnWindow = false;
+bool Drawer::m_MouseLeftHeldDown = false;
+bool Drawer::m_ShiftHeldDown = false;
