@@ -39,7 +39,6 @@ Mesh::Mesh(const Mesh &mesh)
     else
         this->m_Material = new Material(*mesh.getMaterial());
     this->m_BasicMaterial = new BasicMaterial(*mesh.getBasicMaterial());
-    // this->m_Vertices = mesh.getVertices();
     this->m_ID = m_Count++;
     this->m_PickerColor = glm::vec3(m_Count % 256, (m_Count / 256) % 256, ((m_Count / 256) / 256) % 256);
 }
@@ -150,13 +149,13 @@ void Mesh::useShader(const Shader &shader)
     shader.setVec3f("centre", m_Centre);
 }
 
-void Mesh::drawSelectButton(unsigned int drawGui)
+void Mesh::drawSelectButton(unsigned int drawGui, bool expand)
 {
     if (!drawGui)
         return;
     std::string o = "Object (" + std::to_string(m_ID) + ")##" + std::to_string(drawGui);
     unsigned int treeNodeFlag = 0;
-    if (m_CurMesh == this)
+    if (expand)
         treeNodeFlag |= ImGuiTreeNodeFlags_DefaultOpen;
     if (ImGui::TreeNodeEx(o.c_str(), treeNodeFlag))
     {

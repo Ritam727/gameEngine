@@ -77,7 +77,7 @@ public:
 
     void activateTextures();
     void useShader(const Shader &shader);
-    void drawSelectButton(unsigned int drawGui = 1);
+    void drawSelectButton(unsigned int drawGui = 1, bool expand = false);
     void drawTransformGui();
     void update();
     void draw(const Shader &shader, unsigned int mode = 0);

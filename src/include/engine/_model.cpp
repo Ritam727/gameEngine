@@ -20,7 +20,7 @@ void Model::processNode(aiNode *node, const aiScene *scene, const bool skipTextu
     for (unsigned int i = 0; i < node->mNumMeshes; i++)
     {
         aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-        m_Meshes.emplace_back(processMesh(mesh, scene, skipTextures));
+        m_Meshes.insert(processMesh(mesh, scene, skipTextures));
     }
 
     for (unsigned int i = 0; i < node->mNumChildren; i++)
@@ -135,35 +135,52 @@ Model::Model(const Mesh &mesh)
 Model::Model(const Model &model)
 {
     for (const Mesh *mesh : model.getMeshes())
-        this->m_Meshes.push_back(new Mesh(*mesh));
+        this->m_Meshes.insert(new Mesh(*mesh));
 }
 
 Model::~Model()
 {
-    for (unsigned int i = 0; i < m_Meshes.size(); i++)
-        delete m_Meshes[i];
+    for (Mesh *mesh : m_Meshes)
+        delete mesh;
 }
 
 void Model::draw(Shader &shader, unsigned int mode, unsigned int drawGui) const
 {
-    for (unsigned int i = 0; i < m_Meshes.size(); i++)
+    for (Mesh *mesh : m_Meshes)
     {
-        m_Meshes[i]->drawSelectButton(drawGui);
-        m_Meshes[i]->update();
-        if (!drawGui || Mesh::getSelectedMesh() != m_Meshes[i])
+        mesh->update();
+        if (!drawGui || m_PickedColors.find(mesh->getPickerColor()) == m_PickedColors.end())
         {
+            mesh->drawSelectButton(drawGui, false);
             Renderer::stencilMask(0x00);
-            m_Meshes[i]->draw(shader, mode);
+            mesh->draw(shader, mode);
+            if (drawGui && m_MeshShaderMode.find(mesh) != m_MeshShaderMode.end())
+                m_MeshShaderMode.erase(mesh);
         }
         else
         {
-            Mesh::setCurMeshShader(&shader);
-            Mesh::setCurMeshMode(mode);
+            mesh->drawSelectButton(drawGui, true);
+            m_MeshShaderMode[mesh] = {&shader, mode};
         }
     }
 }
 
-const std::vector<Mesh *> Model::getMeshes() const
+const std::unordered_set<Mesh *> Model::getMeshes() const
 {
     return m_Meshes;
 }
+
+void Model::addPickedColor(const glm::vec3 color)
+{
+    if (color.r == 0 && color.g == 0 && color.b == 0)
+        return;
+    m_PickedColors.insert(color);
+}
+
+std::unordered_map<Mesh *, std::pair<Shader *, unsigned int>> Model::getSelectedMeshes()
+{
+    return m_MeshShaderMode;
+}
+
+std::unordered_set<glm::vec3, Vec3Hash> Model::m_PickedColors;
+std::unordered_map<Mesh *, std::pair<Shader *, unsigned int>> Model::m_MeshShaderMode;

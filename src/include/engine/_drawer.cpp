@@ -273,12 +273,12 @@ void Drawer::render()
             m_Meshes[i][j].mesh->draw(*m_Meshes[i][j].shader, m_Meshes[i][j].mode);
         }
     }
-    if (Mesh::getSelectedMesh() != NULL)
+    for (auto &p : Model::getSelectedMeshes())
     {
         Renderer::stencilFunc(GL_ALWAYS, 1, 0xFF);
         Renderer::stencilMask(0xFF);
 
-        Mesh::getSelectedMesh()->draw(*Mesh::getSelectedMeshShader(), Mesh::getSelectedMeshMode());
+        p.first->draw(*p.second.first, p.second.second);
 
         Renderer::stencilFunc(GL_NOTEQUAL, 1, 0xFF);
         Renderer::stencilMask(0x00);
@@ -291,7 +291,7 @@ void Drawer::render()
         });
         Shader shader_(shaderElems);
 
-        Mesh::getSelectedMesh()->draw(shader_, Mesh::getSelectedMeshMode());
+        p.first->draw(shader_, p.second.second);
 
         Renderer::stencilMask(0xFF);
         Renderer::stencilFunc(GL_ALWAYS, 1, 0xFF);
@@ -337,7 +337,7 @@ void Drawer::renderForMousePicking()
         unsigned char pixels[3];
         GLCall(glReadPixels((int)mousePos.x, Screen::getScreenHeight() - (int)mousePos.y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixels));
         int r = pixels[0], g = pixels[1], b = pixels[2];
-        Mesh::setCurPickedColor(glm::vec3(r, g, b));
+        Model::addPickedColor(glm::vec3(r, g, b));
     }
     Renderer::stencilMask(0xFF);
 
