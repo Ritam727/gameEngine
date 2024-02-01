@@ -35,30 +35,17 @@ private:
 public:
     static void init();
     
-    static glm::vec3 &getCameraPos();
+    static glm::vec3 getCameraPos();
     static glm::vec3 getCameraFront();
     static glm::vec3 getCameraUp();
-    static glm::vec3 getCameraForward();
-    static glm::vec3 getCameraRight();
 
-    static float &getZoom();
-    static float &getPitch();
-    static float &getYaw();
+    static float getZoom();
 
     static void setCameraPos(const glm::vec3 pos);
     static void setCameraFront(const glm::vec3 front);
     static void setCameraUp(const glm::vec3 up);
-    static void setCameraFoward(const glm::vec3 forward);
-    static void setCameraRight(const glm::vec3 right);
-
-    static void updateCameraPos(const glm::vec3 diff);
-    static void updateCameraFront(const glm::vec3 diff);
-    static void updateCameraUp(const glm::vec3 diff);
 
     static void drawCameraControlsGui();
-
-    static void invertCameraY();
-    static void revertCameraY();
     static void updateDirection();
 
     static glm::mat4 getViewMatrix();

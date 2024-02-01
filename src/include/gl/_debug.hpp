@@ -1,7 +1,7 @@
 #ifndef DEBUG_HPP
 #define DEBUG_HPP
 
-#include "_logger.hpp"
+#include <common/_logger.hpp>
 
 #include <glad/glad.h>
 #include <iostream>

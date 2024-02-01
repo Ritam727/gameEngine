@@ -1,7 +1,7 @@
 #ifndef SHADER_HPP
 #define SHADER_HPP
 
-#include <common/_debug.hpp>
+#include "_debug.hpp"
 #include <props/_material.hpp>
 #include <props/_basicMaterial.hpp>
 

@@ -66,8 +66,6 @@ public:
 
     const glm::mat4 getModelMatrix();
     const glm::vec3 getPickerColor();
-    const glm::vec3 getTrans();
-    const glm::vec3 getScale();
     const unsigned int getID() const;
     const VertexArray &getArray() const;
     const VertexBuffer &getBuffer() const;

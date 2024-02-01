@@ -1,7 +1,7 @@
 #ifndef VERTEX_LAYOUT_HPP
 #define VERTEX_LAYOUT_HPP
 
-#include <common/_debug.hpp>
+#include "_debug.hpp"
 
 #include <glm/glm.hpp>
 

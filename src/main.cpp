@@ -31,7 +31,7 @@ void fileDialog(bool &onWindow)
             std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
             std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
 
-            ModelLoader loader = ModelLoader(filePathName, 1, 1);
+            ModelLoader loader = ModelLoader(filePathName, 1);
             Drawer::enqueue(loader);
         }
         ImGuiFileDialog::Instance()->Close();
@@ -199,7 +199,6 @@ int main(void)
         ImGui::DestroyContext();
 
         Drawer::clearModels();
-        Drawer::clearMeshes();
         Drawer::clearUniformBuffers();
         Texture::clearTextures();
     }

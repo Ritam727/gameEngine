@@ -2,7 +2,6 @@
 #define DRAWER_HPP
 
 #include "_model.hpp"
-#include "fx.inl"
 
 #include <common/_camera.hpp>
 #include <common/_screen.hpp>
@@ -93,21 +92,18 @@ struct ModelLoader
 {
     std::string modelPath;
     unsigned int mode;
-    unsigned int priority;
 
-    ModelLoader(const std::string &path, const unsigned int mode, const unsigned int priority)
+    ModelLoader(const std::string &path, const unsigned int mode)
     {
         this->modelPath = path;
         this->mode = mode;
-        this->priority = priority;
     }
 };
 
 class Drawer
 {
 private:
-    static std::vector<std::vector<ModelElem>> m_Models;
-    static std::vector<std::vector<MeshElem>> m_Meshes;
+    static std::vector<ModelElem> m_Models;
     static std::vector<DirLight> m_DirLights;
     static std::vector<SpotLight> m_SpotLights;
     static std::vector<PointLight> m_PointLights;
@@ -136,8 +132,7 @@ public:
     static void enqueue(const ModelLoader &loader);
     static void keyboardCallback(GLFWwindow *window, float deltaTime);
 
-    static void addModel(ModelElem &modelElem, unsigned int priority, bool skipTextures = false);
-    static void addMesh(Mesh *mesh, Shader *shader, unsigned int mode, unsigned int priority, const glm::vec3 &trans, const glm::vec3 &rot, const glm::vec3 &scale);
+    static void addModel(ModelElem &modelElem, bool skipTextures = false);
     static void setOnWindow(bool value);
     static void addDirLight(DirLight &dirLight);
     static void addPointLight(PointLight &pointLight);
@@ -146,11 +141,9 @@ public:
     static void selectedTransformGui();
     static void resetSelectedTransform();
 
-    static void clearMeshes();
     static void clearModels();
     static void clearUniformBuffers();
-
-    static std::unordered_map<std::string, Model*> &getLoadedModels();
+    
     static bool getOnWindow();
 };
 

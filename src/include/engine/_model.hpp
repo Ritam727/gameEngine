@@ -28,7 +28,6 @@ private:
 
 public:
     Model(const std::string &path, const bool skipTextures = false);
-    Model(const Mesh &mesh);
     Model(const Model &model);
     ~Model();
 

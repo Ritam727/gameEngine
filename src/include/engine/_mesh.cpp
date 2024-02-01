@@ -52,23 +52,13 @@ const glm::mat4 Mesh::getModelMatrix()
 {
     glm::mat4 _trans = glm::translate(glm::mat4(1.0f), this->m_Trans + this->m_Centre);
     glm::mat4 _scale = glm::scale(glm::mat4(1.0f), this->m_Scale);
-    glm::mat4 _moveToCentre = glm::translate(glm::mat4(1.0f), -1.0f * this->m_Centre);
-    return _trans * m_RotMat * _scale * _moveToCentre;
+    glm::mat4 _backToCentre = glm::translate(glm::mat4(1.0f), -1.0f * this->m_Centre);
+    return _trans * m_RotMat * _scale * _backToCentre;
 }
 
 const glm::vec3 Mesh::getPickerColor()
 {
     return m_PickerColor;
-}
-
-const glm::vec3 Mesh::getTrans()
-{
-    return m_Trans;
-}
-
-const glm::vec3 Mesh::getScale()
-{
-    return m_Scale;
 }
 
 const unsigned int Mesh::getID() const

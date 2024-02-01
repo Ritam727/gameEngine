@@ -1,7 +1,7 @@
 #ifndef INDEX_BUFFER_HPP
 #define INDEX_BUFFER_HPP
 
-#include <common/_debug.hpp>
+#include "_debug.hpp"
 
 class IndexBuffer
 {

@@ -1,7 +1,7 @@
 #ifndef TEXTURE_HPP
 #define TEXTURE_HPP
 
-#include <common/_debug.hpp>
+#include "_debug.hpp"
 
 #include <string>
 #include <iostream>

@@ -1,23 +1,18 @@
 #include "_drawer.hpp"
 
-void Drawer::addModel(ModelElem &modelElem, unsigned int priority, bool skipTextures)
+void Drawer::addModel(ModelElem &modelElem, bool skipTextures)
 {
-    if (Drawer::getLoadedModels().find(modelElem.path) != Drawer::getLoadedModels().end())
+    if (Drawer::m_LoadedModels.find(modelElem.path) != Drawer::m_LoadedModels.end())
     {
         Logger::logInfo("Model already exists in system, not reloading");
-        modelElem.model = new Model(*Drawer::getLoadedModels()[modelElem.path]);
+        modelElem.model = new Model(*Drawer::m_LoadedModels[modelElem.path]);
     }
     else
     {
         modelElem.model = new Model(modelElem.path, skipTextures);
-        Drawer::getLoadedModels()[modelElem.path] = modelElem.model;
+        Drawer::m_LoadedModels[modelElem.path] = modelElem.model;
     }
-    m_Models[priority].push_back(modelElem);
-}
-
-void Drawer::addMesh(Mesh *mesh, Shader *shader, unsigned int mode, unsigned int priority, const glm::vec3 &trans, const glm::vec3 &rot, const glm::vec3 &scale)
-{
-    m_Meshes[priority].push_back(MeshElem(mesh, shader, mode).setTranslation(trans).setRotation(rot).setScale(scale));
+    m_Models.push_back(modelElem);
 }
 
 void Drawer::setOnWindow(bool value)
@@ -261,19 +256,6 @@ void Drawer::resetSelectedTransform()
     m_PrevSelectedScale = glm::vec3(1.0f);
 }
 
-void Drawer::clearMeshes()
-{
-    for (unsigned int i = 0; i < 3; i++)
-    {
-        for (unsigned int j = 0; j < m_Meshes[i].size(); j++)
-        {
-            delete m_Meshes[i][j].mesh;
-            if (m_Meshes[i][j].shader)
-                delete m_Meshes[i][j].shader;
-        }
-    }
-}
-
 void Drawer::clearModels()
 {
     for (auto &model : m_LoadedModels)
@@ -303,23 +285,12 @@ void Drawer::init()
 
 void Drawer::render()
 {
-    for (int i = 2; i >= 0; i--)
+    for (unsigned int i = 0; i < m_Models.size(); i++)
     {
-        for (unsigned int j = 0; j < m_Models[i].size(); j++)
-        {
-            m_Models[i][j].shader->use();
-            m_Models[i][j].shader->setVec3f("cameraPos", Camera::getCameraPos());
-            m_Models[i][j].shader->setFloat("time", glfwGetTime());
-            m_Models[i][j].model->draw(*m_Models[i][j].shader, m_Models[i][j].mode);
-        }
-        for (unsigned int j = 0; j < m_Meshes[i].size(); j++)
-        {
-            m_Meshes[i][j].shader->use();
-            m_Meshes[i][j].shader->setVec3f("cameraPos", Camera::getCameraPos());
-            m_Meshes[i][j].shader->setFloat("time", glfwGetTime());
-            m_Meshes[i][j].mesh->drawSelectButton();
-            m_Meshes[i][j].mesh->draw(*m_Meshes[i][j].shader, m_Meshes[i][j].mode);
-        }
+        m_Models[i].shader->use();
+        m_Models[i].shader->setVec3f("cameraPos", Camera::getCameraPos());
+        m_Models[i].shader->setFloat("time", glfwGetTime());
+        m_Models[i].model->draw(*m_Models[i].shader, m_Models[i].mode);
     }
     for (auto &p : Mesh::getSelectedMeshes())
     {
@@ -365,23 +336,12 @@ void Drawer::renderForMousePicking()
     std::vector<ShaderElem> shaderElems({ShaderElem("res/shaders/mousePicking/shader.vert", GL_VERTEX_SHADER),
                                          ShaderElem("res/shaders/mousePicking/shader.frag", GL_FRAGMENT_SHADER)});
     Shader mousePicking(shaderElems);
-    for (int i = 2; i >= 0; i--)
+    for (unsigned int i = 0; i < m_Models.size(); i++)
     {
-        for (unsigned int j = 0; j < m_Models[i].size(); j++)
-        {
-            m_Models[i][j].shader->use();
-            m_Models[i][j].shader->setVec3f("cameraPos", Camera::getCameraPos());
-            m_Models[i][j].shader->setFloat("time", glfwGetTime());
-            m_Models[i][j].model->draw(mousePicking, m_Models[i][j].mode, 0);
-        }
-        for (unsigned int j = 0; j < m_Meshes[i].size(); j++)
-        {
-            m_Meshes[i][j].shader->use();
-            m_Meshes[i][j].shader->setVec3f("cameraPos", Camera::getCameraPos());
-            m_Meshes[i][j].shader->setFloat("time", glfwGetTime());
-            m_Meshes[i][j].mesh->drawSelectButton(0);
-            m_Meshes[i][j].mesh->draw(mousePicking, m_Meshes[i][j].mode);
-        }
+        m_Models[i].shader->use();
+        m_Models[i].shader->setVec3f("cameraPos", Camera::getCameraPos());
+        m_Models[i].shader->setFloat("time", glfwGetTime());
+        m_Models[i].model->draw(mousePicking, m_Models[i].mode, 0);
     }
 
     ImGuiIO &io = ImGui::GetIO();
@@ -402,7 +362,6 @@ void Drawer::renderForMousePicking()
         m_MouseLeftHeldDown = false;
     }
     Renderer::stencilMask(0xFF);
-
     m_MousePickingBuffer->unbind();
 }
 
@@ -416,7 +375,7 @@ void Drawer::update(const unsigned int width, const unsigned int height)
                                              ShaderElem("res/shaders/default/shader.frag", GL_FRAGMENT_SHADER)});
         Shader *shader = new Shader(shaderElems);
         ModelElem modelElem = ModelElem(loader.modelPath, shader, loader.mode);
-        Drawer::addModel(modelElem, loader.priority);
+        Drawer::addModel(modelElem);
         m_Queue.pop();
     }
 
@@ -459,19 +418,13 @@ void Drawer::keyboardCallback(GLFWwindow *window, float deltaTime)
         m_ShiftHeldDown = false;
 }
 
-std::unordered_map<std::string, Model *> &Drawer::getLoadedModels()
-{
-    return m_LoadedModels;
-}
-
 bool Drawer::getOnWindow()
 {
     return m_IsOnWindow;
 }
 
 std::unordered_map<std::string, Model *> Drawer::m_LoadedModels;
-std::vector<std::vector<ModelElem>> Drawer::m_Models(3, std::vector<ModelElem>());
-std::vector<std::vector<MeshElem>> Drawer::m_Meshes(3, std::vector<MeshElem>());
+std::vector<ModelElem> Drawer::m_Models;
 std::vector<DirLight> Drawer::m_DirLights;
 std::vector<SpotLight> Drawer::m_SpotLights;
 std::vector<PointLight> Drawer::m_PointLights;

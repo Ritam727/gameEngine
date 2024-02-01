@@ -128,10 +128,6 @@ Model::Model(const std::string &path, const bool skipTextures)
     loadModel(path, skipTextures);
 }
 
-Model::Model(const Mesh &mesh)
-{
-}
-
 Model::Model(const Model &model)
 {
     for (const Mesh *mesh : model.getMeshes())
