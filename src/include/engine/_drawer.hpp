@@ -121,7 +121,10 @@ private:
     static bool m_ShiftHeldDown;
     static glm::vec3 m_SelectedTrans;
     static glm::vec3 m_SelectedRot;
+    static glm::vec3 m_SelectedGlobalRot;
     static glm::vec3 m_SelectedScale;
+    static glm::vec3 m_PrevSelectedRot;
+    static glm::vec3 m_PrevSelectedGlobalRot;
 
 public:
     static void init();

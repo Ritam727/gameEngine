@@ -160,6 +160,10 @@ int main(void)
             ImGui::Text("FrameRate %.3f", io.Framerate);
             ImGui::End();
 
+            ImGui::Begin("Transform");
+            Drawer::selectedTransformGui();
+            ImGui::End();
+
             ImGui::Begin("Objects");
             Drawer::render();
             onWindow |= ImGui::IsWindowFocused() | ImGui::IsWindowHovered();
@@ -168,10 +172,6 @@ int main(void)
             ImGui::Begin("Lights");
             Drawer::lightControlsGui();
             onWindow |= ImGui::IsWindowFocused() | ImGui::IsWindowHovered();
-            ImGui::End();
-
-            ImGui::Begin("Transform");
-            Drawer::selectedTransformGui();
             ImGui::End();
 
             fileDialog(onWindow);

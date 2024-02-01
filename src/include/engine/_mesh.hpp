@@ -41,7 +41,6 @@ private:
     
     glm::vec3 m_Trans;
     glm::vec3 m_Rot;
-    glm::vec3 m_PrevRot;
     glm::vec3 m_Scale;
     glm::mat4 m_RotMat;
     glm::vec3 m_X;
@@ -99,8 +98,8 @@ public:
     void setTrans(const glm::vec3 trans);
     void setRot(const glm::vec3 rot);
     void setScale(const glm::vec3 scale);
-    void updateRot();
-    void updateGlobalRot();
+    void updateRot(const glm::vec3 rot);
+    void updateGlobalRot(const glm::vec3 rot);
 };
 
 #endif

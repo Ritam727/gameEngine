@@ -217,6 +217,7 @@ void Drawer::selectedTransformGui()
 {
     std::string t = "Translation";
     std::string r = "Rotation";
+    std::string g = "Rotation in Global Coordinates";
     std::string s = "Scale";
     if (ImGui::TreeNode(t.c_str()))
     {
@@ -230,6 +231,13 @@ void Drawer::selectedTransformGui()
         ImGui::DragFloat("X", &m_SelectedRot.x, 0.1);
         ImGui::DragFloat("Y", &m_SelectedRot.y, 0.1);
         ImGui::DragFloat("Z", &m_SelectedRot.z, 0.1);
+        ImGui::TreePop();
+    }
+    if (ImGui::TreeNode(g.c_str()))
+    {
+        ImGui::DragFloat("X", &m_SelectedGlobalRot.x, 0.1);
+        ImGui::DragFloat("Y", &m_SelectedGlobalRot.y, 0.1);
+        ImGui::DragFloat("Z", &m_SelectedGlobalRot.z, 0.1);
         ImGui::TreePop();
     }
     if (ImGui::TreeNode(s.c_str()))
@@ -313,6 +321,8 @@ void Drawer::render()
         Renderer::stencilFunc(GL_ALWAYS, 1, 0xFF);
         Renderer::stencilMask(0xFF);
 
+        p.first->updateRot(m_SelectedRot - m_PrevSelectedRot);
+        p.first->updateGlobalRot(m_SelectedGlobalRot - m_PrevSelectedGlobalRot);
         p.first->draw(*p.second.first, p.second.second);
 
         Renderer::stencilFunc(GL_NOTEQUAL, 1, 0xFF);
@@ -332,6 +342,8 @@ void Drawer::render()
         Renderer::stencilFunc(GL_ALWAYS, 1, 0xFF);
         Renderer::enable(GL_DEPTH_TEST);
     }
+    m_PrevSelectedRot = m_SelectedRot;
+    m_PrevSelectedGlobalRot = m_SelectedGlobalRot;
 }
 
 void Drawer::renderForMousePicking()
@@ -463,4 +475,7 @@ bool Drawer::m_MouseLeftHeldDown = false;
 bool Drawer::m_ShiftHeldDown = false;
 glm::vec3 Drawer::m_SelectedTrans(0.0f);
 glm::vec3 Drawer::m_SelectedRot(0.0f);
+glm::vec3 Drawer::m_SelectedGlobalRot(0.0f);
 glm::vec3 Drawer::m_SelectedScale(1.0f);
+glm::vec3 Drawer::m_PrevSelectedRot(0.0f);
+glm::vec3 Drawer::m_PrevSelectedGlobalRot(0.0f);
