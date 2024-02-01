@@ -13,3 +13,4 @@ objects/
 .vscode/
 CMakeFiles/
 .VSCodeCounter/
+logs/

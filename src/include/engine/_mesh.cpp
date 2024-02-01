@@ -3,9 +3,8 @@
 Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices, const std::vector<Texture *> &textures)
     : m_Buffer(VertexBuffer(vertices.size(), sizeof(Vertex), vertices.data())), m_Array(VertexArray()),
       m_Index(IndexBuffer(indices.size(), indices.data())), m_Layout(Vertex::getVertexLayout()), m_Trans({0.0f, 0.0f, 0.0f}),
-      m_Rot({0.0f, 0.0f, 0.0f}), m_Scale({1.0f, 1.0f, 1.0f}), m_Material(NULL), m_BasicMaterial(NULL), m_ID(m_Count), 
-      m_RotMat(1.0f), m_X({1.0f, 0.0f, 0.0f}), m_Y({0.0f, 1.0f, 0.0f}), m_Z({0.0f, 0.0f, 1.0f}),
-      m_GlobalRot({0.0f, 0.0f, 0.0f}), m_PrevGlobalRot({0.0f, 0.0f, 0.0f}), m_Centre(0.0f)
+      m_Scale({1.0f, 1.0f, 1.0f}), m_Material(NULL), m_BasicMaterial(NULL), m_ID(m_Count), 
+      m_RotMat(1.0f), m_X({1.0f, 0.0f, 0.0f}), m_Y({0.0f, 1.0f, 0.0f}), m_Z({0.0f, 0.0f, 1.0f})
 {
     m_Array.addBuffer(m_Buffer, m_Layout);
     for (Texture *texture : textures)
@@ -26,8 +25,8 @@ Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> 
 
 Mesh::Mesh(const Mesh &mesh)
     : m_Buffer(0, sizeof(Vertex), NULL), m_Index(0, NULL), m_Trans(0.0f),
-      m_Scale(1.0f), m_Rot(0.0f), m_GlobalRot(0.0f), m_PrevGlobalRot(0.0f),
-      m_RotMat(1.0f), m_X(1.0f, 0.0f, 0.0f), m_Y(0.0f, 1.0f, 0.0f), m_Z(0.0f, 0.0f, 1.0f)
+      m_Scale(1.0f), m_RotMat(1.0f), m_X(1.0f, 0.0f, 0.0f), m_Y(0.0f, 1.0f, 0.0f),
+      m_Z(0.0f, 0.0f, 1.0f)
 {
     this->m_Array = mesh.getArray();
     this->m_Buffer = mesh.getBuffer();
@@ -65,11 +64,6 @@ const glm::vec3 Mesh::getPickerColor()
 const glm::vec3 Mesh::getTrans()
 {
     return m_Trans;
-}
-
-const glm::vec3 Mesh::getRot()
-{
-    return m_Rot;
 }
 
 const glm::vec3 Mesh::getScale()
@@ -163,20 +157,6 @@ void Mesh::drawTransformGui()
         ImGui::DragFloat("Z", &m_Trans.z, 0.1);
         ImGui::TreePop();
     }
-    if (ImGui::TreeNode(g.c_str()))
-    {
-        ImGui::DragFloat("X", &m_GlobalRot.x, 0.1);
-        ImGui::DragFloat("Y", &m_GlobalRot.y, 0.1);
-        ImGui::DragFloat("Z", &m_GlobalRot.z, 0.1);
-        ImGui::TreePop();
-    }
-    if (ImGui::TreeNode(r.c_str()))
-    {
-        ImGui::DragFloat("X", &m_Rot.x, 0.1);
-        ImGui::DragFloat("Y", &m_Rot.y, 0.1);
-        ImGui::DragFloat("Z", &m_Rot.z, 0.1);
-        ImGui::TreePop();
-    }
     if (ImGui::TreeNode(s.c_str()))
     {
         ImGui::DragFloat("X", &m_Scale.x, 0.1);
@@ -247,62 +227,54 @@ void Mesh::setBasicMaterial(const Shader &shader)
     shader.setFloat("basicMaterial.shininess", this->m_BasicMaterial->shininess);
 }
 
-void Mesh::setTrans(const glm::vec3 trans)
+void Mesh::updateTrans(const glm::vec3 delta)
 {
-    m_Trans = trans;
+    this->m_Trans += delta;
 }
 
-void Mesh::setRot(const glm::vec3 rot)
+void Mesh::updateRot(const glm::vec3 delta)
 {
-    m_Rot = rot;
-}
-
-void Mesh::setScale(const glm::vec3 scale)
-{
-    m_Scale = scale;
-}
-
-void Mesh::updateRot(const glm::vec3 rot)
-{
-    glm::quat _q = glm::quat(glm::radians(rot));
+    glm::quat _q = glm::quat(glm::radians(delta));
     m_X = glm::rotate(glm::inverse(_q), m_X);
     m_Y = glm::rotate(glm::inverse(_q), m_Y);
     m_Z = glm::rotate(glm::inverse(_q), m_Z);
-    m_RotMat = glm::rotation(m_RotMat, glm::radians(rot));
-    m_Rot += rot;
+    m_RotMat = glm::rotation(m_RotMat, glm::radians(delta));
 }
 
-void Mesh::updateGlobalRot(const glm::vec3 rot)
+void Mesh::updateGlobalRot(const glm::vec3 delta)
 {
     glm::quat _q;
-    if (rot.x != 0)
+    if (delta.x != 0)
     {
-        _q = glm::angleAxis(glm::radians(rot.x), m_X);
+        _q = glm::angleAxis(glm::radians(delta.x), m_X);
         m_Y = glm::rotate(glm::inverse(_q), m_Y);
         m_Z = glm::rotate(glm::inverse(_q), m_Z);
-        m_RotMat = glm::rotation(m_RotMat, glm::radians(rot.x), m_X);
+        m_RotMat = glm::rotation(m_RotMat, glm::radians(delta.x), m_X);
     }
-    if (rot.y != 0)
+    if (delta.y != 0)
     {
-        _q = glm::angleAxis(glm::radians(rot.y), m_Y);
+        _q = glm::angleAxis(glm::radians(delta.y), m_Y);
         m_X = glm::rotate(glm::inverse(_q), m_X);
         m_Z = glm::rotate(glm::inverse(_q), m_Z);
-        m_RotMat = glm::rotation(m_RotMat, glm::radians(rot.y), m_Y);
+        m_RotMat = glm::rotation(m_RotMat, glm::radians(delta.y), m_Y);
     }
-    if (rot.z != 0)
+    if (delta.z != 0)
     {
-        _q = glm::angleAxis(glm::radians(rot.z), m_Z);
+        _q = glm::angleAxis(glm::radians(delta.z), m_Z);
         m_Y = glm::rotate(glm::inverse(_q), m_Y);
         m_X = glm::rotate(glm::inverse(_q), m_X);
-        m_RotMat = glm::rotation(m_RotMat, glm::radians(rot.z), m_Z);
+        m_RotMat = glm::rotation(m_RotMat, glm::radians(delta.z), m_Z);
     }
-    if (glm::length(rot) > 0)
+    if (glm::length(delta) > 0)
     {
         float X, Y, Z;
         glm::extractEulerAngleXYZ(m_RotMat, X, Y, Z);
-        m_Rot = glm::degrees(glm::vec3(X, Y, Z));
     }
-    m_PrevGlobalRot += rot;
+}
+
+void Mesh::updateScale(const glm::vec3 delta)
+{
+    this->m_Scale *= delta;
 }
 
 void Mesh::addPickedColor(const glm::vec3 color, const bool clear)

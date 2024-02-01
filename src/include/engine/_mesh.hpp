@@ -40,14 +40,11 @@ private:
     IndexBuffer m_Index;
     
     glm::vec3 m_Trans;
-    glm::vec3 m_Rot;
     glm::vec3 m_Scale;
     glm::mat4 m_RotMat;
     glm::vec3 m_X;
     glm::vec3 m_Y;
     glm::vec3 m_Z;
-    glm::vec3 m_GlobalRot;
-    glm::vec3 m_PrevGlobalRot;
     glm::vec3 m_PickerColor;
     glm::vec3 m_Centre;
     
@@ -70,7 +67,6 @@ public:
     const glm::mat4 getModelMatrix();
     const glm::vec3 getPickerColor();
     const glm::vec3 getTrans();
-    const glm::vec3 getRot();
     const glm::vec3 getScale();
     const unsigned int getID() const;
     const VertexArray &getArray() const;
@@ -95,11 +91,10 @@ public:
     
     static void addPickedColor(const glm::vec3 color, const bool clear);
 
-    void setTrans(const glm::vec3 trans);
-    void setRot(const glm::vec3 rot);
-    void setScale(const glm::vec3 scale);
-    void updateRot(const glm::vec3 rot);
-    void updateGlobalRot(const glm::vec3 rot);
+    void updateTrans(const glm::vec3 delta);
+    void updateRot(const glm::vec3 delta);
+    void updateGlobalRot(const glm::vec3 delta);
+    void updateScale(const glm::vec3 delta);
 };
 
 #endif

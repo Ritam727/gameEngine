@@ -6,7 +6,7 @@ void Logger::init()
 {
     spdlog::set_pattern("%^[%T] %n: %v%$");
 
-    m_Log = spdlog::stdout_color_mt("Engine");
+    m_Log = spdlog::daily_logger_mt("Engine", "logs/engine.log", 0, 0);
 #if defined LOGGER_TRACE
     m_Log->set_level(spdlog::level::trace);
 #elif defined LOGGER_DEBUG

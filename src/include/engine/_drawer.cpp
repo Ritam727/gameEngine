@@ -253,7 +253,12 @@ void Drawer::resetSelectedTransform()
 {
     m_SelectedTrans = glm::vec3(0.0f);
     m_SelectedRot = glm::vec3(0.0f);
+    m_SelectedGlobalRot = glm::vec3(0.0f);
     m_SelectedScale = glm::vec3(1.0f);
+    m_PrevSelectedTrans = glm::vec3(0.0f);
+    m_PrevSelectedRot = glm::vec3(0.0f);
+    m_PrevSelectedGlobalRot = glm::vec3(0.0f);
+    m_PrevSelectedScale = glm::vec3(1.0f);
 }
 
 void Drawer::clearMeshes()
@@ -321,8 +326,10 @@ void Drawer::render()
         Renderer::stencilFunc(GL_ALWAYS, 1, 0xFF);
         Renderer::stencilMask(0xFF);
 
+        p.first->updateTrans(m_SelectedTrans - m_PrevSelectedTrans);
         p.first->updateRot(m_SelectedRot - m_PrevSelectedRot);
         p.first->updateGlobalRot(m_SelectedGlobalRot - m_PrevSelectedGlobalRot);
+        p.first->updateScale(m_SelectedScale / m_PrevSelectedScale);
         p.first->draw(*p.second.first, p.second.second);
 
         Renderer::stencilFunc(GL_NOTEQUAL, 1, 0xFF);
@@ -342,8 +349,10 @@ void Drawer::render()
         Renderer::stencilFunc(GL_ALWAYS, 1, 0xFF);
         Renderer::enable(GL_DEPTH_TEST);
     }
+    m_PrevSelectedTrans = m_SelectedTrans;
     m_PrevSelectedRot = m_SelectedRot;
     m_PrevSelectedGlobalRot = m_SelectedGlobalRot;
+    m_PrevSelectedScale = m_SelectedScale;
 }
 
 void Drawer::renderForMousePicking()
@@ -477,5 +486,7 @@ glm::vec3 Drawer::m_SelectedTrans(0.0f);
 glm::vec3 Drawer::m_SelectedRot(0.0f);
 glm::vec3 Drawer::m_SelectedGlobalRot(0.0f);
 glm::vec3 Drawer::m_SelectedScale(1.0f);
+glm::vec3 Drawer::m_PrevSelectedTrans(0.0f);
 glm::vec3 Drawer::m_PrevSelectedRot(0.0f);
 glm::vec3 Drawer::m_PrevSelectedGlobalRot(0.0f);
+glm::vec3 Drawer::m_PrevSelectedScale(1.0f);
