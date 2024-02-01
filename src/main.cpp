@@ -171,6 +171,7 @@ int main(void)
             ImGui::End();
 
             ImGui::Begin("Transform");
+            Drawer::selectedTransformGui();
             ImGui::End();
 
             fileDialog(onWindow);

@@ -21,13 +21,13 @@ Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> 
     m_PickerColor = glm::vec3(m_Count % 256, (m_Count / 256) % 256, ((m_Count / 256) / 256) % 256);
     for (const Vertex &vertex : vertices)
         m_Centre += vertex.pos;
-    m_Centre = (1.0f / (float) vertices.size()) * m_Centre;
+    m_Centre = (1.0f / (float)vertices.size()) * m_Centre;
 }
 
 Mesh::Mesh(const Mesh &mesh)
     : m_Buffer(0, sizeof(Vertex), NULL), m_Index(0, NULL), m_Trans(0.0f),
-    m_Scale(1.0f), m_Rot(0.0f), m_PrevRot(0.0f), m_GlobalRot(0.0f), m_PrevGlobalRot(0.0f),
-    m_RotMat(1.0f), m_X(1.0f, 0.0f, 0.0f), m_Y(0.0f, 1.0f, 0.0f), m_Z(0.0f, 0.0f, 1.0f)
+      m_Scale(1.0f), m_Rot(0.0f), m_PrevRot(0.0f), m_GlobalRot(0.0f), m_PrevGlobalRot(0.0f),
+      m_RotMat(1.0f), m_X(1.0f, 0.0f, 0.0f), m_Y(0.0f, 1.0f, 0.0f), m_Z(0.0f, 0.0f, 1.0f)
 {
     this->m_Array = mesh.getArray();
     this->m_Buffer = mesh.getBuffer();
@@ -155,8 +155,6 @@ void Mesh::drawTransformGui()
     std::string r = "Rotation##" + std::to_string(m_ID);
     std::string g = "Global Rotation##" + std::to_string(m_ID);
     std::string s = "Scale##" + std::to_string(m_ID);
-    std::string b = "Select Mesh##" + std::to_string(m_ID);
-    std::string u = "Unselect Mesh##" + std::to_string(m_ID);
 
     ImGui::Text("Object (%d)", m_ID);
     if (ImGui::TreeNode(t.c_str()))

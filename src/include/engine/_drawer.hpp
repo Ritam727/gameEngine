@@ -119,6 +119,9 @@ private:
     static bool m_IsOnWindow;
     static bool m_MouseLeftHeldDown;
     static bool m_ShiftHeldDown;
+    static glm::vec3 m_SelectedTrans;
+    static glm::vec3 m_SelectedRot;
+    static glm::vec3 m_SelectedScale;
 
 public:
     static void init();
@@ -135,6 +138,8 @@ public:
     static void addPointLight(PointLight &pointLight);
     static void addSpotLight(SpotLight &spotLight);
     static void lightControlsGui();
+    static void selectedTransformGui();
+    static void resetSelectedTransform();
 
     static void clearMeshes();
     static void clearModels();

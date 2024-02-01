@@ -213,6 +213,41 @@ void Drawer::lightControlsGui()
     }
 }
 
+void Drawer::selectedTransformGui()
+{
+    std::string t = "Translation";
+    std::string r = "Rotation";
+    std::string s = "Scale";
+    if (ImGui::TreeNode(t.c_str()))
+    {
+        ImGui::DragFloat("X", &m_SelectedTrans.x, 0.1);
+        ImGui::DragFloat("Y", &m_SelectedTrans.y, 0.1);
+        ImGui::DragFloat("Z", &m_SelectedTrans.z, 0.1);
+        ImGui::TreePop();
+    }
+    if (ImGui::TreeNode(r.c_str()))
+    {
+        ImGui::DragFloat("X", &m_SelectedRot.x, 0.1);
+        ImGui::DragFloat("Y", &m_SelectedRot.y, 0.1);
+        ImGui::DragFloat("Z", &m_SelectedRot.z, 0.1);
+        ImGui::TreePop();
+    }
+    if (ImGui::TreeNode(s.c_str()))
+    {
+        ImGui::DragFloat("X", &m_SelectedScale.x, 0.1);
+        ImGui::DragFloat("Y", &m_SelectedScale.y, 0.1);
+        ImGui::DragFloat("Z", &m_SelectedScale.z, 0.1);
+        ImGui::TreePop();
+    }
+}
+
+void Drawer::resetSelectedTransform()
+{
+    m_SelectedTrans = glm::vec3(0.0f);
+    m_SelectedRot = glm::vec3(0.0f);
+    m_SelectedScale = glm::vec3(1.0f);
+}
+
 void Drawer::clearMeshes()
 {
     for (unsigned int i = 0; i < 3; i++)
@@ -334,6 +369,7 @@ void Drawer::renderForMousePicking()
     float pressed = io.MouseDownDuration[0];
     if (pressed > -1 && !m_IsOnWindow && !m_MouseLeftHeldDown)
     {
+        Drawer::resetSelectedTransform();
         m_MouseLeftHeldDown = true;
         unsigned char pixels[3];
         GLCall(glReadPixels((int)mousePos.x, Screen::getScreenHeight() - (int)mousePos.y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixels));
@@ -425,3 +461,6 @@ FrameBuffer *Drawer::m_MousePickingBuffer;
 bool Drawer::m_IsOnWindow = false;
 bool Drawer::m_MouseLeftHeldDown = false;
 bool Drawer::m_ShiftHeldDown = false;
+glm::vec3 Drawer::m_SelectedTrans(0.0f);
+glm::vec3 Drawer::m_SelectedRot(0.0f);
+glm::vec3 Drawer::m_SelectedScale(1.0f);
