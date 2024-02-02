@@ -256,6 +256,14 @@ void Drawer::resetSelectedTransform()
     m_PrevSelectedScale = glm::vec3(1.0f);
 }
 
+void Drawer::setSelectedTransform(glm::vec3 trans, glm::vec3 rot, glm::vec3 globalRot, glm::vec3 scale)
+{
+    m_SelectedTrans = m_PrevSelectedTrans = trans;
+    m_SelectedRot = m_PrevSelectedRot = rot;
+    m_SelectedGlobalRot = m_PrevSelectedGlobalRot = globalRot;
+    m_SelectedScale = m_PrevSelectedScale = scale;
+}
+
 void Drawer::clearModels()
 {
     for (auto &model : m_LoadedModels)
@@ -348,6 +356,7 @@ void Drawer::renderForMousePicking()
     (void)io;
     glm::vec2 mousePos = {io.MousePos.x, io.MousePos.y};
     float pressed = io.MouseDownDuration[0];
+    
     if (pressed > -1 && !m_IsOnWindow && !m_MouseLeftHeldDown)
     {
         Drawer::resetSelectedTransform();
@@ -355,11 +364,24 @@ void Drawer::renderForMousePicking()
         unsigned char pixels[3];
         GLCall(glReadPixels((int)mousePos.x, Screen::getScreenHeight() - (int)mousePos.y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixels));
         int r = pixels[0], g = pixels[1], b = pixels[2];
-        Mesh::addPickedColor(glm::vec3(r, g, b), !m_ShiftHeldDown);
+        if (Mesh::getColorMap().find(glm::vec3(r, g, b)) == Mesh::getColorMap().end() || !Mesh::getColorMap()[glm::vec3(r, g, b)]->selected())
+            Mesh::addPickedColor(glm::vec3(r, g, b), !m_ShiftHeldDown);
+        else
+            Mesh::removePickedColor(glm::vec3(r, g, b));
     }
     else if (pressed == -1)
     {
         m_MouseLeftHeldDown = false;
+    }
+
+    if (Mesh::getPickedColors().size() == 1)
+    {
+        Mesh *curMesh = Mesh::getColorMap()[*Mesh::getPickedColors().begin()];
+        setSelectedTransform(curMesh->getTrans(), curMesh->getRot(), curMesh->getGlobalRot(), curMesh->getScale());
+    }
+    else
+    {
+        resetSelectedTransform();
     }
     Renderer::stencilMask(0xFF);
     m_MousePickingBuffer->unbind();

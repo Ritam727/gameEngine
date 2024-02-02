@@ -31,6 +31,8 @@ struct Vec3Hash
     }
 };
 
+class Drawer;
+
 class Mesh
 {
 private:
@@ -41,6 +43,8 @@ private:
     
     glm::vec3 m_Trans;
     glm::vec3 m_Scale;
+    glm::vec3 m_Rot;
+    glm::vec3 m_GlobalRot;
     glm::mat4 m_RotMat;
     glm::vec3 m_X;
     glm::vec3 m_Y;
@@ -54,16 +58,22 @@ private:
     BasicMaterial *m_BasicMaterial;
 
     unsigned int m_ID;
+    bool m_Selected;
 
     static unsigned int m_Count;
     static std::unordered_set<glm::vec3, Vec3Hash> m_PickedColors;
     static std::unordered_map<Mesh*, std::pair<Shader*, unsigned int>> m_MeshShaderMode;
+    static std::unordered_map<glm::vec3, Mesh*, Vec3Hash> m_ColorMap;
 
 public:
     Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices, const std::vector<Texture*> &textures);
     Mesh(const Mesh &mesh);
     ~Mesh();
 
+    const glm::vec3 getTrans();
+    const glm::vec3 getRot();
+    const glm::vec3 getGlobalRot();
+    const glm::vec3 getScale();
     const glm::mat4 getModelMatrix();
     const glm::vec3 getPickerColor();
     const unsigned int getID() const;
@@ -74,9 +84,11 @@ public:
     const std::vector<std::string> getTextures() const;
     const Material *getMaterial() const;
     const BasicMaterial *getBasicMaterial() const;
+    const bool selected() const;
     
     static std::unordered_map<Mesh*, std::pair<Shader*, unsigned int>> &getSelectedMeshes();
     static std::unordered_set<glm::vec3, Vec3Hash> &getPickedColors();
+    static std::unordered_map<glm::vec3, Mesh*, Vec3Hash> &getColorMap();
 
     void activateTextures();
     void useShader(const Shader &shader);
@@ -86,8 +98,10 @@ public:
     void addTexture(const std::string &texture, const std::string &type);
     void setMaterial(const Shader &shader);
     void setBasicMaterial(const Shader &shader);
+    void select(const bool &select);
     
     static void addPickedColor(const glm::vec3 color, const bool clear);
+    static void removePickedColor(const glm::vec3 color);
 
     void updateTrans(const glm::vec3 delta);
     void updateRot(const glm::vec3 delta);

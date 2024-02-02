@@ -3,8 +3,8 @@
 Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices, const std::vector<Texture *> &textures)
     : m_Buffer(VertexBuffer(vertices.size(), sizeof(Vertex), vertices.data())), m_Array(VertexArray()),
       m_Index(IndexBuffer(indices.size(), indices.data())), m_Layout(Vertex::getVertexLayout()), m_Trans({0.0f, 0.0f, 0.0f}),
-      m_Scale({1.0f, 1.0f, 1.0f}), m_Material(NULL), m_BasicMaterial(NULL), m_ID(m_Count), 
-      m_RotMat(1.0f), m_X({1.0f, 0.0f, 0.0f}), m_Y({0.0f, 1.0f, 0.0f}), m_Z({0.0f, 0.0f, 1.0f})
+      m_Scale({1.0f, 1.0f, 1.0f}), m_Material(NULL), m_BasicMaterial(NULL), m_ID(m_Count), m_Selected(false),
+      m_RotMat(1.0f), m_X({1.0f, 0.0f, 0.0f}), m_Y({0.0f, 1.0f, 0.0f}), m_Z({0.0f, 0.0f, 1.0f}), m_Rot(0.0f), m_GlobalRot(0.0f)
 {
     m_Array.addBuffer(m_Buffer, m_Layout);
     for (Texture *texture : textures)
@@ -21,12 +21,13 @@ Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> 
     for (const Vertex &vertex : vertices)
         m_Centre += vertex.pos;
     m_Centre = (1.0f / (float)vertices.size()) * m_Centre;
+    m_ColorMap[m_PickerColor] = this;
 }
 
 Mesh::Mesh(const Mesh &mesh)
     : m_Buffer(0, sizeof(Vertex), NULL), m_Index(0, NULL), m_Trans(0.0f),
       m_Scale(1.0f), m_RotMat(1.0f), m_X(1.0f, 0.0f, 0.0f), m_Y(0.0f, 1.0f, 0.0f),
-      m_Z(0.0f, 0.0f, 1.0f)
+      m_Z(0.0f, 0.0f, 1.0f), m_Selected(false)
 {
     this->m_Array = mesh.getArray();
     this->m_Buffer = mesh.getBuffer();
@@ -40,12 +41,33 @@ Mesh::Mesh(const Mesh &mesh)
     this->m_BasicMaterial = new BasicMaterial(*mesh.getBasicMaterial());
     this->m_ID = m_Count++;
     this->m_PickerColor = glm::vec3(m_Count % 256, (m_Count / 256) % 256, ((m_Count / 256) / 256) % 256);
+    m_ColorMap[this->m_PickerColor] = this;
 }
 
 Mesh::~Mesh()
 {
     delete m_BasicMaterial;
     delete m_Material;
+}
+
+const glm::vec3 Mesh::getTrans()
+{
+    return m_Trans;
+}
+
+const glm::vec3 Mesh::getRot()
+{
+    return m_Rot;
+}
+
+const glm::vec3 Mesh::getGlobalRot()
+{
+    return m_GlobalRot;
+}
+
+const glm::vec3 Mesh::getScale()
+{
+    return m_Scale;
 }
 
 const glm::mat4 Mesh::getModelMatrix()
@@ -101,6 +123,11 @@ const BasicMaterial *Mesh::getBasicMaterial() const
     return m_BasicMaterial;
 }
 
+const bool Mesh::selected() const
+{
+    return m_Selected;
+}
+
 void Mesh::activateTextures()
 {
     for (unsigned int i = 0; i < m_Textures.size(); i++)
@@ -122,14 +149,11 @@ void Mesh::drawSelectButton(unsigned int drawGui, bool expand)
     if (!drawGui)
         return;
     std::string o = "Object (" + std::to_string(m_ID) + ")##" + std::to_string(drawGui);
-    unsigned int treeNodeFlag = 0;
-    if (expand)
-        treeNodeFlag |= ImGuiTreeNodeFlags_DefaultOpen;
-    if (ImGui::TreeNodeEx(o.c_str(), treeNodeFlag))
-    {
-        this->drawTransformGui();
-        ImGui::TreePop();
-    }
+    ImGui::Checkbox(o.c_str(), &this->m_Selected);
+    if (this->m_Selected)
+        addPickedColor(this->m_PickerColor, false);
+    else
+        removePickedColor(this->m_PickerColor);
 }
 
 void Mesh::drawTransformGui()
@@ -217,6 +241,11 @@ void Mesh::setBasicMaterial(const Shader &shader)
     shader.setFloat("basicMaterial.shininess", this->m_BasicMaterial->shininess);
 }
 
+void Mesh::select(const bool &select)
+{
+    this->m_Selected = select;
+}
+
 void Mesh::updateTrans(const glm::vec3 delta)
 {
     this->m_Trans += delta;
@@ -229,6 +258,7 @@ void Mesh::updateRot(const glm::vec3 delta)
     m_Y = glm::rotate(glm::inverse(_q), m_Y);
     m_Z = glm::rotate(glm::inverse(_q), m_Z);
     m_RotMat = glm::rotation(m_RotMat, glm::radians(delta));
+    m_Rot += delta;
 }
 
 void Mesh::updateGlobalRot(const glm::vec3 delta)
@@ -259,7 +289,9 @@ void Mesh::updateGlobalRot(const glm::vec3 delta)
     {
         float X, Y, Z;
         glm::extractEulerAngleXYZ(m_RotMat, X, Y, Z);
+        m_Rot = glm::degrees(glm::vec3(X, Y, Z));
     }
+    m_GlobalRot += delta;
 }
 
 void Mesh::updateScale(const glm::vec3 delta)
@@ -273,18 +305,26 @@ void Mesh::addPickedColor(const glm::vec3 color, const bool clear)
     {
         if (color.r == 0 && color.g == 0 && color.b == 0)
             return;
-        if (m_PickedColors.find(color) == m_PickedColors.end())
-            m_PickedColors.insert(color);
-        else
-            m_PickedColors.erase(color);
+        m_PickedColors.insert(color);
+        m_ColorMap[color]->select(true);
     }
     else
     {
+        for (const glm::vec3 color_ : m_PickedColors)
+            m_ColorMap[color_]->select(false);
         m_PickedColors.clear();
         if (color.r == 0 && color.g == 0 && color.b == 0)
             return;
         m_PickedColors.insert(color);
+        m_ColorMap[color]->select(true);
     }
+}
+
+void Mesh::removePickedColor(const glm::vec3 color)
+{
+    if (m_PickedColors.find(color) != m_PickedColors.end())
+        m_PickedColors.erase(color);
+    m_ColorMap[color]->select(false);
 }
 
 std::unordered_map<Mesh *, std::pair<Shader *, unsigned int>> &Mesh::getSelectedMeshes()
@@ -297,6 +337,12 @@ std::unordered_set<glm::vec3, Vec3Hash> &Mesh::getPickedColors()
     return m_PickedColors;
 }
 
+std::unordered_map<glm::vec3, Mesh *, Vec3Hash> &Mesh::getColorMap()
+{
+    return m_ColorMap;
+}
+
 unsigned int Mesh::m_Count = 0;
 std::unordered_set<glm::vec3, Vec3Hash> Mesh::m_PickedColors;
 std::unordered_map<Mesh *, std::pair<Shader *, unsigned int>> Mesh::m_MeshShaderMode;
+std::unordered_map<glm::vec3, Mesh *, Vec3Hash> Mesh::m_ColorMap;

@@ -57,7 +57,8 @@ project "main"
     
     filter "configurations:Release"
         defines {
-            "LOGGER_WARN"
+            "LOGGER_WARN",
+            "ENVIRONMENT_DEBUG"
         }
 
     filter "configurations:Debug"

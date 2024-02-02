@@ -144,18 +144,22 @@ void Model::draw(Shader &shader, unsigned int mode, unsigned int drawGui) const
 {
     for (Mesh *mesh : m_Meshes)
     {
-        if (!drawGui || Mesh::getPickedColors().find(mesh->getPickerColor()) == Mesh::getPickedColors().end())
+        if (!drawGui || !mesh->selected())
         {
             mesh->drawSelectButton(drawGui, false);
             Renderer::stencilMask(0x00);
             mesh->draw(shader, mode);
             if (drawGui && Mesh::getSelectedMeshes().find(mesh) != Mesh::getSelectedMeshes().end())
+            {
+                mesh->select(false);
                 Mesh::getSelectedMeshes().erase(mesh);
+            }
         }
         else
         {
             mesh->drawSelectButton(drawGui, true);
             Mesh::getSelectedMeshes()[mesh] = {&shader, mode};
+            Mesh::getPickedColors().insert(mesh->getPickerColor());
         }
     }
 }
