@@ -93,7 +93,6 @@ public:
     void activateTextures();
     void useShader(const Shader &shader);
     void drawSelectButton(unsigned int drawGui = 1, bool expand = false);
-    void drawTransformGui();
     void draw(const Shader &shader, unsigned int mode = 0);
     void addTexture(const std::string &texture, const std::string &type);
     void setMaterial(const Shader &shader);

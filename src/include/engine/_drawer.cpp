@@ -289,6 +289,23 @@ void Drawer::init()
     m_MousePickingBuffer->attachDepthBuffer(Screen::getScreenWidth(), Screen::getScreenHeight(), 30);
     m_MousePickingBuffer->validate();
     m_MousePickingBuffer->unbind();
+
+    m_BorderShader = new Shader(
+        std::vector<ShaderElem>(
+            {ShaderElem("res/shaders/border/shader.vert", GL_VERTEX_SHADER),
+             ShaderElem("res/shaders/border/shader.geom", GL_GEOMETRY_SHADER),
+             ShaderElem("res/shaders/border/shader.frag", GL_FRAGMENT_SHADER)}));
+
+    m_DefaultShader = new Shader(
+        std::vector<ShaderElem>(
+            {ShaderElem("res/shaders/default/shader.vert", GL_VERTEX_SHADER),
+             ShaderElem("res/shaders/default/shader.geom", GL_GEOMETRY_SHADER),
+             ShaderElem("res/shaders/default/shader.frag", GL_FRAGMENT_SHADER)}));
+    
+    m_MousePickingShader = new Shader(
+        std::vector<ShaderElem>(
+            {ShaderElem("res/shaders/mousePicking/shader.vert", GL_VERTEX_SHADER),
+             ShaderElem("res/shaders/mousePicking/shader.frag", GL_FRAGMENT_SHADER)}));
 }
 
 void Drawer::render()
@@ -315,14 +332,7 @@ void Drawer::render()
         Renderer::stencilMask(0x00);
         Renderer::disable(GL_DEPTH_TEST);
 
-        std::vector<ShaderElem> shaderElems({
-            ShaderElem("res/shaders/border/shader.vert", GL_VERTEX_SHADER),
-            ShaderElem("res/shaders/border/shader.geom", GL_GEOMETRY_SHADER),
-            ShaderElem("res/shaders/border/shader.frag", GL_FRAGMENT_SHADER),
-        });
-        Shader shader_(shaderElems);
-
-        p.first->draw(shader_, p.second.second);
+        p.first->draw(*m_BorderShader, p.second.second);
 
         Renderer::stencilMask(0xFF);
         Renderer::stencilFunc(GL_ALWAYS, 1, 0xFF);
@@ -341,22 +351,19 @@ void Drawer::renderForMousePicking()
     Renderer::clearColor({0.0f, 0.0f, 0.0f, 1.0f});
     Renderer::clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    std::vector<ShaderElem> shaderElems({ShaderElem("res/shaders/mousePicking/shader.vert", GL_VERTEX_SHADER),
-                                         ShaderElem("res/shaders/mousePicking/shader.frag", GL_FRAGMENT_SHADER)});
-    Shader mousePicking(shaderElems);
     for (unsigned int i = 0; i < m_Models.size(); i++)
     {
         m_Models[i].shader->use();
         m_Models[i].shader->setVec3f("cameraPos", Camera::getCameraPos());
         m_Models[i].shader->setFloat("time", glfwGetTime());
-        m_Models[i].model->draw(mousePicking, m_Models[i].mode, 0);
+        m_Models[i].model->draw(*m_MousePickingShader, m_Models[i].mode, 0);
     }
 
     ImGuiIO &io = ImGui::GetIO();
     (void)io;
     glm::vec2 mousePos = {io.MousePos.x, io.MousePos.y};
     float pressed = io.MouseDownDuration[0];
-    
+
     if (pressed > -1 && !m_IsOnWindow && !m_MouseLeftHeldDown)
     {
         Drawer::resetSelectedTransform();
@@ -379,10 +386,6 @@ void Drawer::renderForMousePicking()
         Mesh *curMesh = Mesh::getColorMap()[*Mesh::getPickedColors().begin()];
         setSelectedTransform(curMesh->getTrans(), curMesh->getRot(), curMesh->getGlobalRot(), curMesh->getScale());
     }
-    else
-    {
-        resetSelectedTransform();
-    }
     Renderer::stencilMask(0xFF);
     m_MousePickingBuffer->unbind();
 }
@@ -392,11 +395,7 @@ void Drawer::update(const unsigned int width, const unsigned int height)
     while (!m_Queue.empty())
     {
         ModelLoader loader = m_Queue.front();
-        std::vector<ShaderElem> shaderElems({ShaderElem("res/shaders/default/shader.vert", GL_VERTEX_SHADER),
-                                             ShaderElem("res/shaders/default/shader.geom", GL_GEOMETRY_SHADER),
-                                             ShaderElem("res/shaders/default/shader.frag", GL_FRAGMENT_SHADER)});
-        Shader *shader = new Shader(shaderElems);
-        ModelElem modelElem = ModelElem(loader.modelPath, shader, loader.mode);
+        ModelElem modelElem = ModelElem(loader.modelPath, m_DefaultShader, loader.mode);
         Drawer::addModel(modelElem);
         m_Queue.pop();
     }
@@ -465,3 +464,6 @@ glm::vec3 Drawer::m_PrevSelectedTrans(0.0f);
 glm::vec3 Drawer::m_PrevSelectedRot(0.0f);
 glm::vec3 Drawer::m_PrevSelectedGlobalRot(0.0f);
 glm::vec3 Drawer::m_PrevSelectedScale(1.0f);
+Shader *Drawer::m_BorderShader;
+Shader *Drawer::m_DefaultShader;
+Shader *Drawer::m_MousePickingShader;

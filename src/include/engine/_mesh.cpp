@@ -3,7 +3,7 @@
 Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices, const std::vector<Texture *> &textures)
     : m_Buffer(VertexBuffer(vertices.size(), sizeof(Vertex), vertices.data())), m_Array(VertexArray()),
       m_Index(IndexBuffer(indices.size(), indices.data())), m_Layout(Vertex::getVertexLayout()), m_Trans({0.0f, 0.0f, 0.0f}),
-      m_Scale({1.0f, 1.0f, 1.0f}), m_Material(NULL), m_BasicMaterial(NULL), m_ID(m_Count), m_Selected(false),
+      m_Scale({1.0f, 1.0f, 1.0f}), m_Material(NULL), m_BasicMaterial(NULL), m_ID(m_Count), m_Selected(false), m_Centre(0.0f),
       m_RotMat(1.0f), m_X({1.0f, 0.0f, 0.0f}), m_Y({0.0f, 1.0f, 0.0f}), m_Z({0.0f, 0.0f, 1.0f}), m_Rot(0.0f), m_GlobalRot(0.0f)
 {
     m_Array.addBuffer(m_Buffer, m_Layout);
@@ -15,6 +15,8 @@ Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> 
     this->activateTextures();
     if (m_Textures.size() > 0)
         m_Material = new Material(m_Textures);
+    else
+        m_Material = new Material(std::vector<std::string>());
     m_BasicMaterial = new BasicMaterial();
     m_Count++;
     m_PickerColor = glm::vec3(m_Count % 256, (m_Count / 256) % 256, ((m_Count / 256) / 256) % 256);
@@ -138,8 +140,7 @@ void Mesh::useShader(const Shader &shader)
 {
     shader.use();
     this->activateTextures();
-    if (m_Material)
-        this->setMaterial(shader);
+    this->setMaterial(shader);
     this->setBasicMaterial(shader);
     shader.setVec3f("centre", m_Centre);
 }
@@ -154,30 +155,6 @@ void Mesh::drawSelectButton(unsigned int drawGui, bool expand)
         addPickedColor(this->m_PickerColor, false);
     else
         removePickedColor(this->m_PickerColor);
-}
-
-void Mesh::drawTransformGui()
-{
-    std::string t = "Translation##" + std::to_string(m_ID);
-    std::string r = "Rotation##" + std::to_string(m_ID);
-    std::string g = "Global Rotation##" + std::to_string(m_ID);
-    std::string s = "Scale##" + std::to_string(m_ID);
-
-    ImGui::Text("Object (%d)", m_ID);
-    if (ImGui::TreeNode(t.c_str()))
-    {
-        ImGui::DragFloat("X", &m_Trans.x, 0.1);
-        ImGui::DragFloat("Y", &m_Trans.y, 0.1);
-        ImGui::DragFloat("Z", &m_Trans.z, 0.1);
-        ImGui::TreePop();
-    }
-    if (ImGui::TreeNode(s.c_str()))
-    {
-        ImGui::DragFloat("X", &m_Scale.x, 0.1);
-        ImGui::DragFloat("Y", &m_Scale.y, 0.1);
-        ImGui::DragFloat("Z", &m_Scale.z, 0.1);
-        ImGui::TreePop();
-    }
 }
 
 void Mesh::draw(const Shader &shader, unsigned int mode)

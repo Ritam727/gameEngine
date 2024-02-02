@@ -46,7 +46,6 @@ project "main"
     }
 
     buildoptions {
-        "-O2",
         "-funroll-loops"
     }
 
@@ -64,7 +63,8 @@ project "main"
     filter "configurations:Debug"
         buildoptions {
             "-g",
-            "-fdiagnostics-color=always"
+            "-fdiagnostics-color=always",
+            "-O2"
         }
 
         defines {

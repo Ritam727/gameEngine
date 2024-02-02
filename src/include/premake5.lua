@@ -35,7 +35,6 @@ project "obj"
     }
     
     buildoptions {
-        "-O2",
         "-funroll-loops"
     }
 
@@ -48,7 +47,8 @@ project "obj"
     filter "configurations:Debug"
         buildoptions {
             "-g",
-            "-fdiagnostics-color=always"
+            "-fdiagnostics-color=always",
+            "-O2"
         }
 
         defines {
