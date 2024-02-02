@@ -13,10 +13,7 @@ Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> 
         Texture::getLoadedTextures()[texture->getFile()] = texture;
     }
     this->activateTextures();
-    if (m_Textures.size() > 0)
-        m_Material = new Material(m_Textures);
-    else
-        m_Material = new Material(std::vector<std::string>());
+    m_Material = new Material(m_Textures);
     m_BasicMaterial = new BasicMaterial();
     m_Count++;
     m_PickerColor = glm::vec3(m_Count % 256, (m_Count / 256) % 256, ((m_Count / 256) / 256) % 256);
