@@ -237,9 +237,15 @@ void Drawer::selectedTransformGui()
     }
     if (ImGui::TreeNode(s.c_str()))
     {
-        ImGui::DragFloat("X", &m_SelectedScale.x, 0.1);
-        ImGui::DragFloat("Y", &m_SelectedScale.y, 0.1);
-        ImGui::DragFloat("Z", &m_SelectedScale.z, 0.1);
+        ImGui::DragFloat("X", &m_SelectedScale.x, 0.1, -std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity());
+        ImGui::DragFloat("Y", &m_SelectedScale.y, 0.1, -std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity());
+        ImGui::DragFloat("Z", &m_SelectedScale.z, 0.1, -std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity());
+        if (m_SelectedScale.x == 0.0f)
+            m_SelectedScale.x = 0.00001f;
+        if (m_SelectedScale.y == 0.0f)
+            m_SelectedScale.y = 0.00001f;
+        if (m_SelectedScale.z == 0.0f)
+            m_SelectedScale.z = 0.00001f;
         ImGui::TreePop();
     }
 }

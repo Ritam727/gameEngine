@@ -45,7 +45,9 @@ private:
     glm::vec3 m_Scale;
     glm::vec3 m_Rot;
     glm::vec3 m_GlobalRot;
+    glm::mat4 m_TransMat;
     glm::mat4 m_RotMat;
+    glm::mat4 m_ScaleMat;
     glm::vec3 m_X;
     glm::vec3 m_Y;
     glm::vec3 m_Z;
