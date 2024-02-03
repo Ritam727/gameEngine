@@ -301,7 +301,7 @@ void Drawer::init()
             {ShaderElem("res/shaders/default/shader.vert", GL_VERTEX_SHADER),
              ShaderElem("res/shaders/default/shader.geom", GL_GEOMETRY_SHADER),
              ShaderElem("res/shaders/default/shader.frag", GL_FRAGMENT_SHADER)}));
-    
+
     m_MousePickingShader = new Shader(
         std::vector<ShaderElem>(
             {ShaderElem("res/shaders/mousePicking/shader.vert", GL_VERTEX_SHADER),
@@ -371,10 +371,17 @@ void Drawer::renderForMousePicking()
         unsigned char pixels[3];
         GLCall(glReadPixels((int)mousePos.x, Screen::getScreenHeight() - (int)mousePos.y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixels));
         int r = pixels[0], g = pixels[1], b = pixels[2];
-        if (Mesh::getColorMap().find(glm::vec3(r, g, b)) == Mesh::getColorMap().end() || !Mesh::getColorMap()[glm::vec3(r, g, b)]->selected())
-            Mesh::addPickedColor(glm::vec3(r, g, b), !m_ShiftHeldDown);
+        if (m_ShiftHeldDown)
+        {
+            if (Mesh::getColorMap().find(glm::vec3(r, g, b)) == Mesh::getColorMap().end() || !Mesh::getColorMap()[glm::vec3(r, g, b)]->selected())
+                Mesh::addPickedColor(glm::vec3(r, g, b), false);
+            else
+                Mesh::removePickedColor(glm::vec3(r, g, b));
+        }
         else
-            Mesh::removePickedColor(glm::vec3(r, g, b));
+        {
+            Mesh::addPickedColor(glm::vec3(r, g, b), true);
+        }
     }
     else if (pressed == -1)
     {
