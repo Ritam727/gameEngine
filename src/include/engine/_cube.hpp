@@ -6,7 +6,6 @@
 class Cube : public Mesh
 {
 private:
-
 public:
     Cube();
     ~Cube();

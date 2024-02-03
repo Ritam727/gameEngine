@@ -17,7 +17,7 @@ Material::Material(const std::vector<std::string> &textures)
         {
             this->emission[this->emissionCount++] = Texture::getLoadedTextures()[textures[i]]->getSlot();
         }
-        else if(Texture::getLoadedTextures()[textures[i]]->getType() == "normal")
+        else if (Texture::getLoadedTextures()[textures[i]]->getType() == "normal")
         {
             this->normal[this->normalCount++] = Texture::getLoadedTextures()[textures[i]]->getSlot();
         }

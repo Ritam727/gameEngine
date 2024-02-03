@@ -16,10 +16,12 @@ struct VertexLayoutElement
 
     static unsigned int getSizeOfElement(unsigned int type)
     {
-        switch(type)
+        switch (type)
         {
-            case GL_FLOAT : return sizeof(GLfloat);
-            case GL_INT : return sizeof(GLint);
+        case GL_FLOAT:
+            return sizeof(GLfloat);
+        case GL_INT:
+            return sizeof(GLint);
         }
         return 0;
     }
@@ -46,35 +48,35 @@ public:
         return m_Elements;
     }
 
-    template<typename T>
+    template <typename T>
     void push(unsigned int count, unsigned int interval = 0)
     {
         static_assert(true);
     }
 };
 
-template<>
+template <>
 inline void VertexLayout::push<float>(unsigned int count, unsigned int interval)
 {
-    m_Elements.push_back({ GL_FLOAT, count, GL_FALSE, interval });
+    m_Elements.push_back({GL_FLOAT, count, GL_FALSE, interval});
     m_Stride += count * VertexLayoutElement::getSizeOfElement(GL_FLOAT);
 }
 
-template<>
+template <>
 inline void VertexLayout::push<int>(unsigned int count, unsigned int interval)
 {
-    m_Elements.push_back({ GL_INT, count, GL_FALSE, interval });
+    m_Elements.push_back({GL_INT, count, GL_FALSE, interval});
     m_Stride += count * VertexLayoutElement::getSizeOfElement(GL_INT);
 }
 
-template<>
+template <>
 inline void VertexLayout::push<glm::vec4>(unsigned int count, unsigned int interval)
 {
     for (unsigned int i = 0; i < count; i++)
         this->push<float>(4, interval);
 }
 
-template<>
+template <>
 inline void VertexLayout::push<glm::mat4>(unsigned int count, unsigned int interval)
 {
     for (unsigned int i = 0; i < count; i++)

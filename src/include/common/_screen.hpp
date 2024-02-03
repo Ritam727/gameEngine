@@ -11,8 +11,8 @@ private:
     Screen(Screen &screen) = delete;
 
 public:
-    static int& getScreenWidth();
-    static int& getScreenHeight();
+    static int &getScreenWidth();
+    static int &getScreenHeight();
 };
 
 #endif

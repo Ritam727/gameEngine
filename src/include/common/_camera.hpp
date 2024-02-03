@@ -34,7 +34,7 @@ private:
 
 public:
     static void init();
-    
+
     static glm::vec3 getCameraPos();
     static glm::vec3 getCameraFront();
     static glm::vec3 getCameraUp();

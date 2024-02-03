@@ -151,9 +151,9 @@ int main(void)
             Renderer::clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
             bool onWindow = false;
-            
+
             dockSpace(NULL);
-            
+
             ImGui::Begin("Camera");
             Camera::drawCameraControlsGui();
             onWindow |= ImGui::IsWindowFocused() | ImGui::IsWindowHovered();

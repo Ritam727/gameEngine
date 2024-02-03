@@ -14,7 +14,7 @@ struct DirLight
     DirLight();
 
     DirLight setDirection(const glm::vec3 &direction);
-    
+
     DirLight setAmbient(const glm::vec3 &ambient);
     DirLight setDiffuse(const glm::vec3 &diffuse);
     DirLight setSpecular(const glm::vec3 &specular);

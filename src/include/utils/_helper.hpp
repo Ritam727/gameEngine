@@ -9,8 +9,10 @@ struct Vec2Sort
 {
     inline bool operator()(const glm::vec2 &v1, const glm::vec2 &v2) const
     {
-        if (v1.x < v2.x) return true;
-        if (v1.x == v2.x) return (v1.y < v2.y);
+        if (v1.x < v2.x)
+            return true;
+        if (v1.x == v2.x)
+            return (v1.y < v2.y);
         return false;
     }
 };

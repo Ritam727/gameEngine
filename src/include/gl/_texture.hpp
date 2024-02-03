@@ -41,7 +41,8 @@ struct Image
 
     ~Image()
     {
-        if (this->data) this->free();
+        if (this->data)
+            this->free();
     }
 };
 
@@ -52,8 +53,8 @@ private:
     unsigned int m_Slot;
     std::string m_Type;
     std::string m_File;
-    static std::unordered_map<std::string, Image*> m_LoadedImages;
-    static std::unordered_map<std::string, Texture*> m_LoadedTextures;
+    static std::unordered_map<std::string, Image *> m_LoadedImages;
+    static std::unordered_map<std::string, Texture *> m_LoadedTextures;
 
 public:
     Texture(const unsigned int width, const unsigned int height, unsigned int format = GL_RGB32F, unsigned int internalFormat = GL_FLOAT, unsigned int storeFormat = GL_RGB);
@@ -66,13 +67,13 @@ public:
     void attachData(Image *image);
     void adjustDimensions(const unsigned int width, const unsigned int height, unsigned int format = GL_RGB32F, unsigned int internalFormat = GL_FLOAT, unsigned int storeFormat = GL_RGB);
 
-    const unsigned int& getSlot() const;
+    const unsigned int &getSlot() const;
     const std::string &getFile() const;
-    const std::string& getType() const;
-    const unsigned int& getID() const;
+    const std::string &getType() const;
+    const unsigned int &getID() const;
 
-    static std::unordered_map<std::string, Image*> &getLoadedImages();
-    static std::unordered_map<std::string, Texture*> &getLoadedTextures();
+    static std::unordered_map<std::string, Image *> &getLoadedImages();
+    static std::unordered_map<std::string, Texture *> &getLoadedTextures();
 
     static void clearTextures();
 };

@@ -16,7 +16,7 @@ public:
     void createBufferStorage(const unsigned int type, const unsigned int width, const unsigned int height);
     void adjustDimensions(const unsigned int width, const unsigned int height);
 
-    const unsigned int& getID() const;
+    const unsigned int &getID() const;
 };
 
 #endif

@@ -16,7 +16,7 @@
 class Model
 {
 private:
-    std::unordered_set<Mesh*> m_Meshes;
+    std::unordered_set<Mesh *> m_Meshes;
     std::string m_Directory;
 
     void loadModel(const std::string &path, const bool skipTextures);
@@ -24,7 +24,7 @@ private:
     Mesh *processMesh(aiMesh *mesh, const aiScene *scene, const bool skipTextures);
     static void loadVertices(aiMesh *mesh, std::vector<Vertex> &vertices);
     static void loadIndices(aiMesh *mesh, std::vector<unsigned int> &indices);
-    void loadTextureImages(aiMaterial *mat, aiTextureType type, const std::string &typeName, std::vector<Image*> &images, std::vector<std::string> &paths, std::vector<std::string> &types);
+    void loadTextureImages(aiMaterial *mat, aiTextureType type, const std::string &typeName, std::vector<Image *> &images, std::vector<std::string> &paths, std::vector<std::string> &types);
 
 public:
     Model(const std::string &path, const bool skipTextures = false);
@@ -33,7 +33,7 @@ public:
 
     void draw(Shader &shader, unsigned int mode = 0, unsigned int drawGui = 1) const;
 
-    const std::unordered_set<Mesh*> getMeshes() const;
+    const std::unordered_set<Mesh *> getMeshes() const;
 };
 
 #endif

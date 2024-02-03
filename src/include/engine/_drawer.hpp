@@ -111,7 +111,7 @@ private:
     static UniformBuffer *m_Matrices;
     static UniformBuffer *m_Lights;
     static FrameBuffer *m_MousePickingBuffer;
-    static std::unordered_map<std::string, Model*> m_LoadedModels;
+    static std::unordered_map<std::string, Model *> m_LoadedModels;
     static bool m_IsOnWindow;
     static bool m_MouseLeftHeldDown;
     static bool m_ShiftHeldDown;
@@ -147,7 +147,7 @@ public:
 
     static void clearModels();
     static void clearUniformBuffers();
-    
+
     static bool getOnWindow();
 };
 

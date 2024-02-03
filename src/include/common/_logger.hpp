@@ -19,22 +19,22 @@ public:
         return m_Log;
     }
 
-    template<typename... Args>
+    template <typename... Args>
     static void logCritical(std::string fmt, Args &&...args);
 
-    template<typename... Args>
+    template <typename... Args>
     static void logError(std::string fmt, Args &&...args);
 
-    template<typename... Args>
+    template <typename... Args>
     static void logWarn(std::string fmt, Args &&...args);
 
-    template<typename... Args>
+    template <typename... Args>
     static void logInfo(std::string fmt, Args &&...args);
 
-    template<typename... Args>
+    template <typename... Args>
     static void logDebug(std::string fmt, Args &&...args);
 
-    template<typename... Args>
+    template <typename... Args>
     static void logTrace(std::string fmt, Args &&...args);
 };
 

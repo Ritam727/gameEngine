@@ -12,7 +12,7 @@ class CubeMap
 private:
     unsigned int m_ID;
 
-    static std::unordered_map<std::string, CubeMap*> m_CubeMaps;
+    static std::unordered_map<std::string, CubeMap *> m_CubeMaps;
 
 public:
     CubeMap(std::string &name, std::vector<std::string> &faces);

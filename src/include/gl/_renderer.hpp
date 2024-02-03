@@ -8,7 +8,6 @@
 #include <common/_camera.hpp>
 #include <common/_screen.hpp>
 
-
 #include <glm/glm.hpp>
 
 #include <GLFW/glfw3.h>
@@ -26,7 +25,7 @@ public:
     static void drawArr(const VertexArray &array, const Shader &shader, glm::mat4 &model);
 
     static void clearDepth();
-    
+
     static void enable(unsigned int feature);
     static void disable(unsigned int feature);
     static void blendFunc(unsigned int source, unsigned int target);
