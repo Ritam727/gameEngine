@@ -4,8 +4,8 @@ Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> 
     : m_Buffer(VertexBuffer(vertices.size(), sizeof(Vertex), vertices.data())), m_Array(VertexArray()),
       m_Index(IndexBuffer(indices.size(), indices.data())), m_Layout(Vertex::getVertexLayout()), m_Trans({0.0f, 0.0f, 0.0f}),
       m_Scale({1.0f, 1.0f, 1.0f}), m_Material(NULL), m_BasicMaterial(NULL), m_ID(m_Count), m_Selected(false), m_Centre(0.0f),
-      m_RotMat(1.0f), m_X({1.0f, 0.0f, 0.0f}), m_Y({0.0f, 1.0f, 0.0f}), m_Z({0.0f, 0.0f, 1.0f}), m_Rot(0.0f), m_GlobalRot(0.0f),
-      m_TransMat(1.0f), m_ScaleMat(1.0f)
+      m_RotMat(1.0f), m_X({1.0f, 0.0f, 0.0f}), m_Y({0.0f, 1.0f, 0.0f}), m_Z({0.0f, 0.0f, 1.0f}), m_Rot(0.0f), m_TransMat(1.0f),
+      m_ScaleMat(1.0f)
 {
     m_Array.addBuffer(m_Buffer, m_Layout);
     for (Texture *texture : textures)
@@ -41,6 +41,7 @@ Mesh::Mesh(const Mesh &mesh)
     this->m_BasicMaterial = new BasicMaterial(*mesh.getBasicMaterial());
     this->m_ID = m_Count++;
     this->m_PickerColor = glm::vec3(m_Count % 256, (m_Count / 256) % 256, ((m_Count / 256) / 256) % 256);
+    this->m_Centre = mesh.getCentre();
     m_ColorMap[this->m_PickerColor] = this;
 }
 
@@ -60,11 +61,6 @@ const glm::vec3 Mesh::getRot()
     return m_Rot;
 }
 
-const glm::vec3 Mesh::getGlobalRot()
-{
-    return m_GlobalRot;
-}
-
 const glm::vec3 Mesh::getScale()
 {
     return m_Scale;
@@ -73,6 +69,11 @@ const glm::vec3 Mesh::getScale()
 const glm::mat4 Mesh::getModelMatrix()
 {
     return m_TransMat * m_RotMat * m_ScaleMat;
+}
+
+const glm::vec3 Mesh::getCentre() const
+{
+    return m_Centre;
 }
 
 const glm::vec3 Mesh::getPickerColor()
@@ -224,9 +225,11 @@ void Mesh::adjustAngles()
     glm::extractEulerAngleXYZ(this->m_RotMat, X, Y, Z);
     this->m_Rot = glm::degrees(glm::vec3(X, Y, Z));
     this->m_RotMat = glm::mat4(1.0f);
+    this->m_RotMat = glm::translate(this->m_RotMat, this->m_Centre);
     this->m_RotMat = glm::rotation(this->m_RotMat, glm::vec3(X, 0.0f, 0.0f));
     this->m_RotMat = glm::rotation(this->m_RotMat, glm::vec3(0.0f, Y, 0.0f));
     this->m_RotMat = glm::rotation(this->m_RotMat, glm::vec3(0.0f, 0.0f, Z));
+    this->m_RotMat = glm::translate(this->m_RotMat, -1.0f * this->m_Centre);
     this->m_X = glm::rotation(glm::vec3(1.0f, 0.0f, 0.0f), -1.0f * glm::vec3(X, Y, Z));
     this->m_Y = glm::rotation(glm::vec3(0.0f, 1.0f, 0.0f), -1.0f * glm::vec3(X, Y, Z));
     this->m_Z = glm::rotation(glm::vec3(0.0f, 0.0f, 1.0f), -1.0f * glm::vec3(X, Y, Z));
@@ -241,48 +244,29 @@ void Mesh::updateTrans(const glm::vec3 delta)
 void Mesh::rotateAroundAxis(const float angle, const glm::vec3 axis)
 {
     glm::vec3 _axis = glm::rotation(axis, -1.0f * glm::radians(this->m_Rot));
-    glm::quat _q = glm::angleAxis(glm::radians(angle), _axis);
     this->m_RotMat = glm::translate(this->m_RotMat, this->m_Centre);
     this->m_RotMat = glm::rotation(this->m_RotMat, glm::radians(angle), _axis);
     this->m_RotMat = glm::translate(this->m_RotMat, -1.0f * this->m_Centre);
-    if (angle > 0.0f)
-        adjustAngles();
-
 }
 
 void Mesh::updateRot(const glm::vec3 delta)
 {
-    glm::quat _q = glm::quat(glm::radians(delta));
     this->m_RotMat = glm::translate(this->m_RotMat, this->m_Centre);
     this->m_RotMat = glm::rotation(this->m_RotMat, glm::radians(delta));
     this->m_RotMat = glm::translate(this->m_RotMat, -1.0f * this->m_Centre);
-    if (glm::length(delta) > 0)
-        adjustAngles();
+    this->m_Rot += delta;
 }
 
 void Mesh::updateGlobalRot(const glm::vec3 delta)
 {
-    glm::quat _q;
     this->m_RotMat = glm::translate(this->m_RotMat, this->m_Centre);
     if (delta.x != 0)
-    {
-        _q = glm::angleAxis(glm::radians(delta.x), m_X);
         this->m_RotMat = glm::rotation(this->m_RotMat, glm::radians(delta.x), m_X);
-    }
     if (delta.y != 0)
-    {
-        _q = glm::angleAxis(glm::radians(delta.y), m_Y);
         this->m_RotMat = glm::rotation(this->m_RotMat, glm::radians(delta.y), m_Y);
-    }
     if (delta.z != 0)
-    {
-        _q = glm::angleAxis(glm::radians(delta.z), m_Z);
         this->m_RotMat = glm::rotation(this->m_RotMat, glm::radians(delta.z), m_Z);
-    }
     this->m_RotMat = glm::translate(this->m_RotMat, -1.0f * this->m_Centre);
-    if (glm::length(delta) > 0)
-        adjustAngles();
-    this->m_GlobalRot += delta;
 }
 
 void Mesh::updateScale(const glm::vec3 delta)

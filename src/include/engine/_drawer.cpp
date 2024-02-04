@@ -265,11 +265,10 @@ void Drawer::resetSelectedTransform()
     m_PrevViewAngle = 0.0f;
 }
 
-void Drawer::setSelectedTransform(glm::vec3 trans, glm::vec3 rot, glm::vec3 globalRot, glm::vec3 scale)
+void Drawer::setSelectedTransform(glm::vec3 trans, glm::vec3 rot, glm::vec3 scale)
 {
     m_SelectedTrans = m_PrevSelectedTrans = trans;
     m_SelectedRot = m_PrevSelectedRot = rot;
-    m_SelectedGlobalRot = m_PrevSelectedGlobalRot = globalRot;
     m_SelectedScale = m_PrevSelectedScale = scale;
 }
 
@@ -336,6 +335,8 @@ void Drawer::render()
         p.first->updateGlobalRot(m_SelectedGlobalRot - m_PrevSelectedGlobalRot);
         p.first->rotateAroundAxis(m_ViewAngle - m_PrevViewAngle, -1.0f * Camera::getCameraFront());
         p.first->updateScale(m_SelectedScale / m_PrevSelectedScale);
+        if (!(ImGui::IsAnyItemActive() || ImGui::IsAnyItemFocused()))
+            p.first->adjustAngles();
         p.first->draw(*p.second.first, p.second.second);
 
         Renderer::stencilFunc(GL_NOTEQUAL, 1, 0xFF);
@@ -375,10 +376,13 @@ void Drawer::renderForMousePicking()
     glm::vec2 mousePos = {io.MousePos.x, io.MousePos.y};
     float pressed = io.MouseDownDuration[0];
 
-    if (pressed > -1 && !m_IsOnWindow && !m_MouseLeftHeldDown)
-    {
-        Drawer::resetSelectedTransform();
+    if (pressed > -1 && !m_MouseLeftHeldDown)
         m_MouseLeftHeldDown = true;
+    else if (pressed == -1)
+        m_MouseLeftHeldDown = false;
+
+    if (!m_IsOnWindow && m_MouseLeftHeldDown)
+    {
         unsigned char pixels[3];
         GLCall(glReadPixels((int)mousePos.x, Screen::getScreenHeight() - (int)mousePos.y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixels));
         int r = pixels[0], g = pixels[1], b = pixels[2];
@@ -394,15 +398,13 @@ void Drawer::renderForMousePicking()
             Mesh::addPickedColor(glm::vec3(r, g, b), true);
         }
     }
-    else if (pressed == -1)
-    {
-        m_MouseLeftHeldDown = false;
-    }
+    if (!(ImGui::IsAnyItemActive() || ImGui::IsAnyItemFocused()))
+        Drawer::resetSelectedTransform();
 
     if (Mesh::getPickedColors().size() == 1)
     {
         Mesh *curMesh = Mesh::getColorMap()[*Mesh::getPickedColors().begin()];
-        setSelectedTransform(curMesh->getTrans(), curMesh->getRot(), curMesh->getGlobalRot(), curMesh->getScale());
+        setSelectedTransform(curMesh->getTrans(), curMesh->getRot(), curMesh->getScale());
     }
     Renderer::stencilMask(0xFF);
     m_MousePickingBuffer->unbind();

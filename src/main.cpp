@@ -162,6 +162,7 @@ int main(void)
 
             ImGui::Begin("Transform");
             Drawer::selectedTransformGui();
+            onWindow |= ImGui::IsWindowFocused() | ImGui::IsWindowHovered();
             ImGui::End();
 
             ImGui::Begin("Objects");

@@ -145,7 +145,7 @@ public:
     static void lightControlsGui();
     static void selectedTransformGui();
     static void resetSelectedTransform();
-    static void setSelectedTransform(glm::vec3 trans, glm::vec3 rot, glm::vec3 globalRot, glm::vec3 scale);
+    static void setSelectedTransform(glm::vec3 trans, glm::vec3 rot, glm::vec3 scale);
 
     static void clearModels();
     static void clearUniformBuffers();

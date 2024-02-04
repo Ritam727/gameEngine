@@ -44,7 +44,6 @@ private:
     glm::vec3 m_Trans;
     glm::vec3 m_Scale;
     glm::vec3 m_Rot;
-    glm::vec3 m_GlobalRot;
     glm::mat4 m_TransMat;
     glm::mat4 m_RotMat;
     glm::mat4 m_ScaleMat;
@@ -74,10 +73,10 @@ public:
 
     const glm::vec3 getTrans();
     const glm::vec3 getRot();
-    const glm::vec3 getGlobalRot();
     const glm::vec3 getScale();
     const glm::mat4 getModelMatrix();
     const glm::vec3 getPickerColor();
+    const glm::vec3 getCentre() const;
     const unsigned int getID() const;
     const VertexArray &getArray() const;
     const VertexBuffer &getBuffer() const;
