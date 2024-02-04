@@ -376,14 +376,10 @@ void Drawer::renderForMousePicking()
     glm::vec2 mousePos = {io.MousePos.x, io.MousePos.y};
     float pressed = io.MouseDownDuration[0];
 
-    if (pressed > -1 && !m_MouseLeftHeldDown)
-        m_MouseLeftHeldDown = true;
-    else if (pressed == -1)
-        m_MouseLeftHeldDown = false;
-
-    if (!m_IsOnWindow && m_MouseLeftHeldDown)
+    if (pressed > -1 && !m_IsOnWindow && !m_MouseLeftHeldDown)
     {
         unsigned char pixels[3];
+        m_MouseLeftHeldDown = true;
         GLCall(glReadPixels((int)mousePos.x, Screen::getScreenHeight() - (int)mousePos.y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixels));
         int r = pixels[0], g = pixels[1], b = pixels[2];
         if (m_ShiftHeldDown)
@@ -398,6 +394,11 @@ void Drawer::renderForMousePicking()
             Mesh::addPickedColor(glm::vec3(r, g, b), true);
         }
     }
+    else if (pressed == -1)
+    {
+        m_MouseLeftHeldDown = false;
+    }
+
     if (!(ImGui::IsAnyItemActive() || ImGui::IsAnyItemFocused()))
         Drawer::resetSelectedTransform();
 
