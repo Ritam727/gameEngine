@@ -106,6 +106,7 @@ public:
     static void removePickedColor(const glm::vec3 color);
 
     void updateTrans(const glm::vec3 delta);
+    void rotateAroundAxis(const float angle, const glm::vec3 axis);
     void updateRot(const glm::vec3 delta);
     void updateGlobalRot(const glm::vec3 delta);
     void updateScale(const glm::vec3 delta);

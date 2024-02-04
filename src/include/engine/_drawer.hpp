@@ -119,10 +119,12 @@ private:
     static glm::vec3 m_SelectedRot;
     static glm::vec3 m_SelectedGlobalRot;
     static glm::vec3 m_SelectedScale;
+    static float m_ViewAngle;
     static glm::vec3 m_PrevSelectedTrans;
     static glm::vec3 m_PrevSelectedRot;
     static glm::vec3 m_PrevSelectedGlobalRot;
     static glm::vec3 m_PrevSelectedScale;
+    static float m_PrevViewAngle;
     static Shader *m_BorderShader;
     static Shader *m_DefaultShader;
     static Shader *m_MousePickingShader;

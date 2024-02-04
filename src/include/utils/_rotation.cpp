@@ -20,3 +20,9 @@ glm::mat4 glm::rotation(const glm::mat4 &mat, glm::vec3 angles)
     glm::mat4 _mat = glm::mat4_cast(_rot);
     return mat * _mat;
 }
+
+glm::vec3 glm::rotation(const glm::vec3 &vec, glm::vec3 angles)
+{
+    glm::quat _rot = glm::normalize(glm::quat(angles));
+    return _rot * vec;
+}
