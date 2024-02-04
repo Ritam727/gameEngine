@@ -100,6 +100,7 @@ public:
     void setMaterial(const Shader &shader);
     void setBasicMaterial(const Shader &shader);
     void select(const bool &select);
+    void adjustAngles();
 
     static void addPickedColor(const glm::vec3 color, const bool clear);
     static void removePickedColor(const glm::vec3 color);

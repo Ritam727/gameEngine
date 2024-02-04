@@ -218,6 +218,17 @@ void Mesh::select(const bool &select)
     this->m_Selected = select;
 }
 
+void Mesh::adjustAngles()
+{
+    float X, Y, Z;
+    glm::extractEulerAngleXYZ(this->m_RotMat, X, Y, Z);
+    this->m_Rot = glm::degrees(glm::vec3(X, Y, Z));
+    this->m_RotMat = glm::mat4(1.0f);
+    this->m_RotMat = glm::rotation(this->m_RotMat, glm::vec3(X, 0.0f, 0.0f));
+    this->m_RotMat = glm::rotation(this->m_RotMat, glm::vec3(0.0f, Y, 0.0f));
+    this->m_RotMat = glm::rotation(this->m_RotMat, glm::vec3(0.0f, 0.0f, Z));
+}
+
 void Mesh::updateTrans(const glm::vec3 delta)
 {
     this->m_TransMat = glm::translate(this->m_TransMat, delta);
@@ -234,6 +245,8 @@ void Mesh::updateRot(const glm::vec3 delta)
     this->m_RotMat = glm::rotation(this->m_RotMat, glm::radians(delta));
     this->m_RotMat = glm::translate(this->m_RotMat, -1.0f * this->m_Centre);
     this->m_Rot += delta;
+    if (glm::length(delta) > 0)
+        adjustAngles();
 }
 
 void Mesh::updateGlobalRot(const glm::vec3 delta)
@@ -263,19 +276,15 @@ void Mesh::updateGlobalRot(const glm::vec3 delta)
     }
     this->m_RotMat = glm::translate(this->m_RotMat, -1.0f * this->m_Centre);
     if (glm::length(delta) > 0)
-    {
-        float X, Y, Z;
-        glm::extractEulerAngleXYZ(m_RotMat, X, Y, Z);
-        m_Rot = glm::degrees(glm::vec3(X, Y, Z));
-    }
+        adjustAngles();
     m_GlobalRot += delta;
 }
 
 void Mesh::updateScale(const glm::vec3 delta)
 {
-    this->m_RotMat = glm::translate(this->m_RotMat, this->m_Centre);
+    this->m_ScaleMat = glm::translate(this->m_ScaleMat, this->m_Centre);
     this->m_ScaleMat = glm::scale(this->m_ScaleMat, delta);
-    this->m_RotMat = glm::translate(this->m_RotMat, -1.0f * this->m_Centre);
+    this->m_ScaleMat = glm::translate(this->m_ScaleMat, -1.0f * this->m_Centre);
     this->m_Scale *= delta;
 }
 
