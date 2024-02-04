@@ -233,7 +233,7 @@ void Drawer::selectedTransformGui()
         ImGui::DragFloat("X", &m_SelectedGlobalRot.x, 0.1);
         ImGui::DragFloat("Y", &m_SelectedGlobalRot.y, 0.1);
         ImGui::DragFloat("Z", &m_SelectedGlobalRot.z, 0.1);
-        ImGui::DragFloat("Around View Axis", &m_ViewAngle, 0.1);
+        ImGui::DragFloat("N", &m_ViewAngle, 0.1);
         ImGui::TreePop();
     }
     if (ImGui::TreeNode(s.c_str()))
