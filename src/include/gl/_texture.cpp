@@ -35,10 +35,10 @@ void Texture::unbind()
     GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
-Image *Texture::loadImage(const std::string &path, const bool flip)
+Image *Texture::loadImage(const std::string &path, const bool flip, const bool srgb)
 {
     stbi_set_flip_vertically_on_load(flip);
-    return new Image(path);
+    return new Image(path, srgb);
 }
 
 void Texture::attachData(Image *image)

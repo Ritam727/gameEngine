@@ -17,11 +17,14 @@ struct Image
 
     unsigned char *data;
 
-    Image(const std::string &path)
+    Image(const std::string &path, bool srgb = false)
     {
         this->data = NULL;
         this->path = path;
-        this->format = GL_RGB;
+        if (!srgb)
+            this->format = GL_RGB;
+        else
+            this->format = GL_SRGB;
     }
 
     void get()
@@ -57,15 +60,15 @@ private:
     static std::unordered_map<std::string, Texture *> m_LoadedTextures;
 
 public:
-    Texture(const unsigned int width, const unsigned int height, unsigned int format = GL_RGB32F, unsigned int internalFormat = GL_FLOAT, unsigned int storeFormat = GL_RGB);
+    Texture(const unsigned int width, const unsigned int height, unsigned int format = GL_RGB, unsigned int internalFormat = GL_FLOAT, unsigned int storeFormat = GL_RGB);
     Texture(Image *image, const std::string &type);
     ~Texture();
 
     void bind(unsigned int slot);
     void unbind();
-    static Image *loadImage(const std::string &path, const bool flip = true);
+    static Image *loadImage(const std::string &path, const bool flip = true, const bool srgb = false);
     void attachData(Image *image);
-    void adjustDimensions(const unsigned int width, const unsigned int height, unsigned int format = GL_RGB32F, unsigned int internalFormat = GL_FLOAT, unsigned int storeFormat = GL_RGB);
+    void adjustDimensions(const unsigned int width, const unsigned int height, unsigned int format = GL_RGB, unsigned int internalFormat = GL_FLOAT, unsigned int storeFormat = GL_RGB);
 
     const unsigned int &getSlot() const;
     const std::string &getFile() const;
