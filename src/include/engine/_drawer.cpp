@@ -294,7 +294,7 @@ void Drawer::init()
 
     m_MousePickingBuffer = new FrameBuffer();
     m_MousePickingBuffer->attachTexture(Screen::getScreenWidth(), Screen::getScreenHeight(), 31, 0);
-    m_MousePickingBuffer->attachDepthBuffer(Screen::getScreenWidth(), Screen::getScreenHeight(), 30);
+    m_MousePickingBuffer->attachDepthBuffer(Screen::getScreenWidth(), Screen::getScreenHeight());
     m_MousePickingBuffer->validate();
     m_MousePickingBuffer->unbind();
 

@@ -1,7 +1,7 @@
 #include "_frameBuffer.hpp"
 
 FrameBuffer::FrameBuffer()
-    : m_TextureSlot(0), m_DepthSlot(0)
+    : m_TextureSlot(0)
 {
     GLCall(glGenFramebuffers(1, &m_ID));
     GLCall(glBindFramebuffer(GL_FRAMEBUFFER, m_ID));
@@ -24,9 +24,8 @@ void FrameBuffer::attachTexture(const unsigned int width, const unsigned int hei
     GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + m_Attachment, GL_TEXTURE_2D, m_Texture->getID(), 0));
 }
 
-void FrameBuffer::attachDepthBuffer(const unsigned int width, const unsigned int height, const unsigned int slot)
+void FrameBuffer::attachDepthBuffer(const unsigned int width, const unsigned int height)
 {
-    m_DepthSlot = slot;
     m_RenderBuffer = new RenderBuffer();
     m_RenderBuffer->createBufferStorage(GL_DEPTH24_STENCIL8, width, height);
     GLCall(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_RenderBuffer->getID()));
