@@ -21,21 +21,20 @@ project "IGFD"
         "imgui"
     }
 
-    buildoptions {
-        "-funroll-loops"
-    }
-
     filter "configurations:Release"
         defines {
             "LOGGER_WARN",
             "ENVIRONMENT_DEBUG"
         }
 
+        buildoptions {
+            "-O2"
+        }
+
     filter "configurations:Debug"
         buildoptions {
             "-g",
-            "-fdiagnostics-color=always",
-            "-O2"
+            "-fdiagnostics-color=always"
         }
 
         defines {

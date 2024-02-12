@@ -12,3 +12,7 @@ project "glad"
     files {
         "src/glad.c"
     }
+
+    buildoptions {
+        "-O2"
+    }
