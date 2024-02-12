@@ -22,7 +22,6 @@ void fileDialog(bool &onWindow)
     ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByExtention, ".dae", ImVec4(0.8f, 0.8f, 0.8f, 0.8f), ICON_IGFD_FILE);
     ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByExtention, ".fbx", ImVec4(0.8f, 0.8f, 0.8f, 0.8f), ICON_IGFD_FILE);
     ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByExtention, ".mtl", ImVec4(0.8f, 0.8f, 0.8f, 0.8f), ICON_IGFD_FILE);
-    onWindow |= ImGui::IsWindowFocused() | ImGui::IsWindowHovered();
 
     if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey"))
     {
@@ -36,6 +35,7 @@ void fileDialog(bool &onWindow)
         }
         ImGuiFileDialog::Instance()->Close();
     }
+    onWindow |= ImGui::IsWindowFocused() | ImGui::IsWindowHovered();
 }
 
 void dockSpace(bool *p_open)

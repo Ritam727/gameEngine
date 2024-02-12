@@ -25,7 +25,7 @@ Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> 
 }
 
 Mesh::Mesh(const Mesh &mesh)
-    : m_Buffer(0, sizeof(Vertex), NULL), m_Index(0, NULL), m_Trans(0.0f),
+    : m_Buffer(0, sizeof(Vertex), NULL), m_Index(0, NULL), m_Trans(0.0f), m_TransMat(1.0f), m_ScaleMat(1.0f),
       m_Scale(1.0f), m_RotMat(1.0f), m_X(1.0f, 0.0f, 0.0f), m_Y(0.0f, 1.0f, 0.0f),
       m_Z(0.0f, 0.0f, 1.0f), m_Selected(false)
 {
@@ -69,6 +69,11 @@ const glm::vec3 Mesh::getScale()
 const glm::mat4 Mesh::getModelMatrix()
 {
     return m_TransMat * m_RotMat * m_ScaleMat;
+}
+
+const glm::mat4 Mesh::getTranslationMatrix()
+{
+    return m_TransMat;
 }
 
 const glm::vec3 Mesh::getCentre() const
@@ -243,6 +248,11 @@ void Mesh::updateTrans(const glm::vec3 delta)
 
 void Mesh::rotateAroundAxis(const float angle, const glm::vec3 axis)
 {
+    glm::quat _q = glm::angleAxis(glm::radians(angle), axis);
+    glm::vec3 _disp = glm::vec3(this->getModelMatrix() * glm::vec4(this->m_Centre, 1.0f)) - m_SelectionCentre;
+    glm::vec3 _change = glm::rotate(_q, _disp);
+    this->updateTrans(_change - _disp);
+
     glm::vec3 _axis = glm::rotation(axis, -1.0f * glm::radians(this->m_Rot));
     this->m_RotMat = glm::translate(this->m_RotMat, this->m_Centre);
     this->m_RotMat = glm::rotation(this->m_RotMat, glm::radians(angle), _axis);
@@ -259,6 +269,10 @@ void Mesh::updateRot(const glm::vec3 delta)
 
 void Mesh::updateGlobalRot(const glm::vec3 delta)
 {
+    glm::quat _q = glm::quat(glm::radians(delta));
+    glm::vec3 _disp = glm::vec3(this->getModelMatrix() * glm::vec4(this->m_Centre, 1.0f)) - m_SelectionCentre;
+    glm::vec3 _change = glm::rotate(_q, _disp);
+    this->updateTrans(_change - _disp);
     this->m_RotMat = glm::translate(this->m_RotMat, this->m_Centre);
     if (delta.x != 0)
         this->m_RotMat = glm::rotation(this->m_RotMat, glm::radians(delta.x), m_X);
@@ -279,29 +293,46 @@ void Mesh::updateScale(const glm::vec3 delta)
 
 void Mesh::addPickedColor(const glm::vec3 color, const bool clear)
 {
+    glm::vec3 _cur = glm::vec3(0.0f);
+    if (color.r > 0 || color.g > 0 || color.b > 0)
+        _cur = glm::vec3(m_ColorMap[color]->getModelMatrix() * glm::vec4(m_ColorMap[color]->getCentre(), 1.0f));
     if (!clear)
     {
         if (color.r == 0 && color.g == 0 && color.b == 0)
             return;
         m_PickedColors.insert(color);
         m_ColorMap[color]->select(true);
+        m_SelectionCentre = (_cur + m_SelectionCentre * (float) m_PickedColors.size()) / (float) (m_PickedColors.size() + 1);
     }
     else
     {
         for (const glm::vec3 color_ : m_PickedColors)
             m_ColorMap[color_]->select(false);
         m_PickedColors.clear();
+        m_SelectionCentre = glm::vec3(0.0f);
         if (color.r == 0 && color.g == 0 && color.b == 0)
             return;
         m_PickedColors.insert(color);
         m_ColorMap[color]->select(true);
+        m_SelectionCentre = _cur;
     }
 }
 
 void Mesh::removePickedColor(const glm::vec3 color)
 {
     if (m_PickedColors.find(color) != m_PickedColors.end())
+    {
+        if (m_PickedColors.size() == 1)
+        {
+            m_SelectionCentre = glm::vec3(0.0f);
+        }
+        else
+        {
+            glm::vec3 _cur = glm::vec3(m_ColorMap[color]->getModelMatrix() * glm::vec4(m_ColorMap[color]->getCentre(), 1.0f));
+            m_SelectionCentre = (m_SelectionCentre * (float) m_PickedColors.size() - _cur) / (float) (m_PickedColors.size() - 1);
+        }
         m_PickedColors.erase(color);
+    }
     m_ColorMap[color]->select(false);
 }
 
@@ -324,3 +355,4 @@ unsigned int Mesh::m_Count = 0;
 std::unordered_set<glm::vec3, Vec3Hash> Mesh::m_PickedColors;
 std::unordered_map<Mesh *, std::pair<Shader *, unsigned int>> Mesh::m_MeshShaderMode;
 std::unordered_map<glm::vec3, Mesh *, Vec3Hash> Mesh::m_ColorMap;
+glm::vec3 Mesh::m_SelectionCentre;

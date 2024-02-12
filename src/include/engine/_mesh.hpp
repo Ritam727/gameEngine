@@ -65,6 +65,7 @@ private:
     static std::unordered_set<glm::vec3, Vec3Hash> m_PickedColors;
     static std::unordered_map<Mesh *, std::pair<Shader *, unsigned int>> m_MeshShaderMode;
     static std::unordered_map<glm::vec3, Mesh *, Vec3Hash> m_ColorMap;
+    static glm::vec3 m_SelectionCentre;
 
 public:
     Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices, const std::vector<Texture *> &textures);
@@ -75,6 +76,7 @@ public:
     const glm::vec3 getRot();
     const glm::vec3 getScale();
     const glm::mat4 getModelMatrix();
+    const glm::mat4 getTranslationMatrix();
     const glm::vec3 getPickerColor();
     const glm::vec3 getCentre() const;
     const unsigned int getID() const;

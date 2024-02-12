@@ -223,9 +223,13 @@ void Drawer::selectedTransformGui()
     }
     if (ImGui::TreeNode(r.c_str()))
     {
+        if (Mesh::getPickedColors().size() > 1)
+            ImGui::BeginDisabled(true);
         ImGui::DragFloat("X", &m_SelectedRot.x, 0.1);
         ImGui::DragFloat("Y", &m_SelectedRot.y, 0.1);
         ImGui::DragFloat("Z", &m_SelectedRot.z, 0.1);
+        if (Mesh::getPickedColors().size() > 1)
+            ImGui::EndDisabled();
         ImGui::TreePop();
     }
     if (ImGui::TreeNode(g.c_str()))
