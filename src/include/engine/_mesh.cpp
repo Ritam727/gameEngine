@@ -302,7 +302,7 @@ void Mesh::addPickedColor(const glm::vec3 color, const bool clear)
             return;
         m_PickedColors.insert(color);
         m_ColorMap[color]->select(true);
-        m_SelectionCentre = (_cur + m_SelectionCentre * (float) m_PickedColors.size()) / (float) (m_PickedColors.size() + 1);
+        m_SelectionCentre = (_cur + m_SelectionCentre * (float)m_PickedColors.size()) / (float)(m_PickedColors.size() + 1);
     }
     else
     {
@@ -329,7 +329,7 @@ void Mesh::removePickedColor(const glm::vec3 color)
         else
         {
             glm::vec3 _cur = glm::vec3(m_ColorMap[color]->getModelMatrix() * glm::vec4(m_ColorMap[color]->getCentre(), 1.0f));
-            m_SelectionCentre = (m_SelectionCentre * (float) m_PickedColors.size() - _cur) / (float) (m_PickedColors.size() - 1);
+            m_SelectionCentre = (m_SelectionCentre * (float)m_PickedColors.size() - _cur) / (float)(m_PickedColors.size() - 1);
         }
         m_PickedColors.erase(color);
     }

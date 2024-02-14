@@ -322,6 +322,9 @@ void Drawer::init()
 
 void Drawer::render()
 {
+    Renderer::clearColor({0.2f, 0.2f, 0.2f, 1.0f});
+    Renderer::clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
     for (unsigned int i = 0; i < m_Models.size(); i++)
     {
         m_Models[i].shader->use();

@@ -147,9 +147,6 @@ int main(void)
             Drawer::update(width_, height_);
             Drawer::renderForMousePicking();
 
-            Renderer::clearColor({0.5f, 0.5f, 0.5f, 1.0f});
-            Renderer::clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
             bool onWindow = false;
 
             dockSpace(NULL);
