@@ -21,7 +21,7 @@ project "editor"
 
     links {
         "glfw",
-        "core"
+        "engine"
     }
 
     defines {

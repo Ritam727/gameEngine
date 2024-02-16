@@ -1,4 +1,4 @@
-project "core"
+project "engine"
     kind "SharedLib"
     language "C++"
 

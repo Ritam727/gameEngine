@@ -34,7 +34,7 @@ project "main"
     links {
         "imgui",
         "glfw",
-        "core",
+        "engine",
         "glad",
         "assimp",
         "spdlog",

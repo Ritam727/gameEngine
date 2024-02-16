@@ -1,4 +1,4 @@
-#include <core/_internals.hpp>
+#define STB_IMAGE_IMPLEMENTATION
 #include <editor/_drawer.hpp>
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
