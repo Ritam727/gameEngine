@@ -10,7 +10,6 @@
 #include <gl/_shader.hpp>
 #include <gl/_renderer.hpp>
 #include <utils/_rotation.hpp>
-#include <common/_camera.hpp>
 #include <imgui/imgui.h>
 
 #include <vector>

@@ -1,10 +1,10 @@
 #ifndef DRAWER_HPP
 #define DRAWER_HPP
 
-#include "_model.hpp"
+#include "_camera.hpp"
+#include "_screen.hpp"
 
-#include <common/_camera.hpp>
-#include <common/_screen.hpp>
+#include <engine/_model.hpp>
 #include <engine/_dirLight.hpp>
 #include <engine/_spotLight.hpp>
 #include <engine/_pointLight.hpp>

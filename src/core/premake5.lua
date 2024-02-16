@@ -1,24 +1,41 @@
-project "IGFD"
+project "core"
     kind "SharedLib"
     language "C++"
 
     targetdir "../../lib"
     objdir "../../objects"
 
+    includedirs {
+        "../vendor/assimp",
+        "../vendor/spdlog/include",
+        "../vendor",
+        "../core",
+        "../vendor/glad/include"
+    }
+
     libdirs {
         "../../lib"
     }
 
-    includedirs {
-        "../"
+    links {
+        "glad",
+        "glfw",
+        "assimp",
+        "spdlog"
+    }
+
+    defines {
+        "PLATFORM_LINUX",
+        "SPDLOG_COMPILED_LIB"
     }
 
     files {
-        "*.cpp"
+        "**.cpp",
+        "**.hpp"
     }
-
-    links {
-        "imgui"
+    
+    buildoptions {
+        "-funroll-loops"
     }
 
     filter "configurations:Release"
@@ -30,7 +47,7 @@ project "IGFD"
         buildoptions {
             "-O2"
         }
-
+    
     filter "configurations:Debug"
         buildoptions {
             "-g",

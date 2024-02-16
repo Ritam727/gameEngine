@@ -1,4 +1,5 @@
-#include <_internals.hpp>
+#include <core/_internals.hpp>
+#include <editor/_drawer.hpp>
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
 #include <IGFD/ImGuiFileDialog.h>

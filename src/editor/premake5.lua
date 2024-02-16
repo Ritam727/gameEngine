@@ -1,4 +1,6 @@
-project "obj"
+include "../core"
+
+project "editor"
     kind "SharedLib"
     language "C++"
 
@@ -6,11 +8,11 @@ project "obj"
     objdir "../../objects"
 
     includedirs {
-        "../assimp",
-        "../spdlog/include",
-        "../",
-        "../include",
-        "../glad/include/"
+        "../editor",
+        "../vendor",
+        "../core",
+        "../vendor/spdlog/include",
+        "../vendor/glad/include"
     }
 
     libdirs {
@@ -18,10 +20,8 @@ project "obj"
     }
 
     links {
-        "glad",
         "glfw",
-        "assimp",
-        "spdlog"
+        "core"
     }
 
     defines {

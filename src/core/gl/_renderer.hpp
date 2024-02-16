@@ -5,8 +5,6 @@
 
 #include <gl/_vertexArray.hpp>
 #include <gl/_indexBuffer.hpp>
-#include <common/_camera.hpp>
-#include <common/_screen.hpp>
 
 #include <glm/glm.hpp>
 

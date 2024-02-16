@@ -2,9 +2,9 @@ workspace "LearnOpenGL"
     configurations { "Debug", "Release" }
 
 group "dependencies"
-    include "src/glad"
-    include "src/include"
-    include "src/IGFD"
+    include "src/vendor/glad"
+    include "src/vendor/IGFD"
+    include "src/editor"
 group ""
 
 project "main"
@@ -19,11 +19,12 @@ project "main"
     }
 
     includedirs {
-        "src/include",
         "src/",
-        "src/assimp",
-        "src/spdlog/include",
-        "src/glad/include"
+        "src/core",
+        "src/vendor",
+        "src/vendor/assimp",
+        "src/vendor/spdlog/include",
+        "src/vendor/glad/include"
     }
 
     libdirs { 
@@ -33,11 +34,12 @@ project "main"
     links {
         "imgui",
         "glfw",
-        "obj",
+        "core",
         "glad",
         "assimp",
         "spdlog",
-        "IGFD"
+        "IGFD",
+        "editor"
     }
 
     defines {

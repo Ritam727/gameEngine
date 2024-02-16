@@ -2,8 +2,8 @@ project "glad"
     kind "SharedLib"
     language "C++"
 
-    targetdir "../../lib"
-    objdir "../../objects"
+    targetdir "../../../lib"
+    objdir "../../../objects"
 
     includedirs {
         "include"
