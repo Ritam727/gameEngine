@@ -43,11 +43,9 @@ struct PointLight
     vec4 diffuse;       // 4 * 4 = 16
     vec4 specular;      // 4 * 4 = 16
 
-    float constant;     // 4
-    float linear;       // 4
-    float quadratic;    // 4
-                        // 16 * 4 + 4 * 3 = 76
-    // padded size = (76 / 16 + 1) * 16 = 80
+    float strength;     // 4
+                        // 16 * 4 + 4 = 68
+    // padded size = (68 / 16 + 1) * 16 = 80
 };
 
 struct SpotLight
@@ -58,14 +56,12 @@ struct SpotLight
     vec4 diffuse;       // 4 * 4 = 16
     vec4 specular;      // 4 * 4 = 16
 
-    float constant;     // 4
-    float linear;       // 4
-    float quadratic;    // 4
+    float strength;     // 4
 
     float innerCutOff;  // 4
     float outerCutOff;  // 4
-                        // 16 * 5 + 4 * 5 = 100
-    // padded size = (100 / 16 + 1) * 16 = 112
+                        // 16 * 5 + 4 * 3 = 92
+    // padded size = (92 / 16 + 1) * 16 = 96
 };
 
 vec3 dirLightIllumination(DirLight dirLight, vec3 normal, vec3 viewDir);
@@ -94,11 +90,11 @@ layout (std140, binding = 0) uniform Lights
 {
     DirLight dirLight[N_DIRECTIONAL_LIGHTS];                        // 64 * 6
     PointLight pointLights[N_POINT_LIGHTS];                         // 80 * 20
-    SpotLight spotLight[N_SPOT_LIGHTS];                             // 112 * 5
+    SpotLight spotLight[N_SPOT_LIGHTS];                             // 96 * 5
     int directionalLightCount;                                      // 4
     int pointLightCount;                                            // 4
     int spotLightCount;                                             // 4
-    // total size = 64 * 1 + 112 * 5 + 80 * 20 + 4 * 3 = 2506
+    // total size = 64 * 1 + 96 * 5 + 80 * 20 + 4 * 3 = 2156
 };
 
 void main()
@@ -173,7 +169,7 @@ vec3 pointLightIllumination(PointLight light, vec3 normal, vec3 viewDir, vec3 fr
     vec3 halfway = normalize(lightDir + viewDir);
     float spec = pow(max(dot(normal, halfway), 0.0f), material.shininess);
     float distance = length(light.position.xyz - fragPos);
-    float attenuation = 1.0f / (distance * distance);
+    float attenuation = light.strength / (distance * distance);
 
     vec3 ambient = vec3(0.0f);
     vec3 diffuse = vec3(0.0f);
@@ -210,14 +206,14 @@ vec3 spotLightIllumination(SpotLight light, vec3 normal, vec3 viewDir, vec3 frag
 {
     vec3 lightDir = normalize(light.position.xyz - fragPos);
     float theta = dot(lightDir, normalize(-light.direction.xyz));
-    float epsilon = (light.innerCutOff - light.outerCutOff);
-    float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0f ,1.0f);
+    float epsilon = (cos(radians(light.innerCutOff)) - cos(radians(light.outerCutOff)));
+    float intensity = clamp((theta - cos(radians(light.outerCutOff))) / epsilon, 0.0f ,1.0f);
     
     float diff = intensity * max(dot(lightDir, normal), 0.0f);
     vec3 reflectDir = reflect(-lightDir, normal);
     float spec = intensity * pow(max(dot(reflectDir, viewDir), 0.0f), material.shininess);
     float distance = length(light.position.xyz - fragPos);
-    float attenuation = 1.0f / (distance * distance);
+    float attenuation = light.strength / (distance * distance);
 
     vec3 ambient = vec3(0.0f);
     vec3 diffuse = vec3(0.0f);

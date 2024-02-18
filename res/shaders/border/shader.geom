@@ -12,11 +12,11 @@ in VS_OUT
 
 void main()
 {
-	for (float x = -1.0f; x < 2.0f; x += 2.0f)
+	for (float z = -1.0f; z < 2.0f; z += 2.0f)
 	{
 		for (float y = -1.0f; y < 2.0f ; y += 2.0f)
 		{
-			for (float z = -1.0f; z < 2.0f; z += 2.0f)
+			for (float x = -1.0f; x < 2.0f; x += 2.0f)
 			{
 				for (int i = 0; i < 3; i++)
 				{

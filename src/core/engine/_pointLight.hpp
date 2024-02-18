@@ -11,9 +11,7 @@ struct PointLight
     glm::vec4 diffuse;
     glm::vec4 specular;
 
-    float constant;
-    float linear;
-    float quadratic;
+    float strength;
 
     PointLight();
 
@@ -23,9 +21,7 @@ struct PointLight
     PointLight setDiffuse(const glm::vec3 &diffuse);
     PointLight setSpecular(const glm::vec3 &specular);
 
-    PointLight setConstant(const float &constant);
-    PointLight setLinear(const float &linear);
-    PointLight setQuadratic(const float &quadratic);
+    PointLight setStrength(const float &strength);
 };
 
 #endif

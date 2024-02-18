@@ -12,9 +12,7 @@ struct SpotLight
     glm::vec4 diffuse;
     glm::vec4 specular;
 
-    float constant;
-    float linear;
-    float quadratic;
+    float strength;
 
     float innerCutOff;
     float outerCutOff;
@@ -30,9 +28,7 @@ struct SpotLight
     SpotLight setDiffuse(const glm::vec3 &diffuse);
     SpotLight setSpecular(const glm::vec3 &specular);
 
-    SpotLight setConstant(const float &constant);
-    SpotLight setLinear(const float &linear);
-    SpotLight setQuadratic(const float &quadratic);
+    SpotLight setStrength(const float &strength);
 
     SpotLight setInnerCutOff(const float &innerCutOff);
     SpotLight setOuterCutOff(const float &outerCutOff);

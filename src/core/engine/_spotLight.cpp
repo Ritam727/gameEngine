@@ -3,9 +3,8 @@
 SpotLight::SpotLight()
     : position(0.0f), direction(glm::vec4(0.0f, -1.0f, 0.0f, 0.0f)),
       ambient(0.2f), diffuse(0.5f), specular(1.0f),
-      constant(1.0f), linear(0.0f), quadratic(0.0f),
-      innerCutOff(cos(glm::radians(12.5f))), outerCutOff(cos(glm::radians(17.5f))),
-      follow(false)
+      innerCutOff(12.5), outerCutOff(17.5),
+      follow(false), strength(1.0f)
 {
 }
 
@@ -39,21 +38,9 @@ SpotLight SpotLight::setSpecular(const glm::vec3 &specular)
     return *this;
 }
 
-SpotLight SpotLight::setConstant(const float &constant)
+SpotLight SpotLight::setStrength(const float &strength)
 {
-    this->constant = constant;
-    return *this;
-}
-
-SpotLight SpotLight::setLinear(const float &linear)
-{
-    this->linear = linear;
-    return *this;
-}
-
-SpotLight SpotLight::setQuadratic(const float &quadratic)
-{
-    this->quadratic = quadratic;
+    this->strength = strength;
     return *this;
 }
 

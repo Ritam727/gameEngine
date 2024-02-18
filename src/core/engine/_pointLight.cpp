@@ -1,8 +1,7 @@
 #include "_pointLight.hpp"
 
 PointLight::PointLight()
-    : position(0.0f), ambient(0.2f), diffuse(0.5f), specular(1.0f),
-      constant(1.0f), linear(0.0f), quadratic(0.0f)
+    : position(0.0f), ambient(0.2f), diffuse(0.5f), specular(1.0f), strength(1.0f)
 {
 }
 
@@ -30,20 +29,8 @@ PointLight PointLight::setSpecular(const glm::vec3 &specular)
     return *this;
 }
 
-PointLight PointLight::setConstant(const float &constant)
+PointLight PointLight::setStrength(const float &strength)
 {
-    this->constant = constant;
-    return *this;
-}
-
-PointLight PointLight::setLinear(const float &linear)
-{
-    this->linear = linear;
-    return *this;
-}
-
-PointLight PointLight::setQuadratic(const float &quadratic)
-{
-    this->quadratic = quadratic;
+    this->strength = strength;
     return *this;
 }

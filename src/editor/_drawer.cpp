@@ -120,8 +120,7 @@ void Drawer::lightControlsGui()
             }
             if (ImGui::TreeNode(c.c_str()))
             {
-                ImGui::DragFloat("Linear", &m_PointLights[i].linear, 0.01, 0.0f, 1.0f);
-                ImGui::DragFloat("Quadratic", &m_PointLights[i].quadratic, 0.01, 0.0f, 1.0f);
+                ImGui::DragFloat("Linear", &m_PointLights[i].strength, 0.01, 1.0f, 10.0f);
                 ImGui::TreePop();
             }
             ImGui::TreePop();
@@ -176,15 +175,14 @@ void Drawer::lightControlsGui()
             }
             if (ImGui::TreeNode(c.c_str()))
             {
-                ImGui::DragFloat("Linear", &m_SpotLights[i].linear, 0.01, 0.0f, 1.0f);
-                ImGui::DragFloat("Quadratic", &m_SpotLights[i].quadratic, 0.01, 0.0f, 1.0f);
+                ImGui::DragFloat("Linear", &m_SpotLights[i].strength, 0.01, 1.0f, 10.0f);
                 ImGui::TreePop();
             }
             if (ImGui::TreeNode(o.c_str()))
             {
-                ImGui::DragFloat("Inner Cutoff", &m_SpotLights[i].innerCutOff, 0.01, 0.01f, 1.0f);
-                ImGui::DragFloat("Outer Cutoff", &m_SpotLights[i].outerCutOff, 0.01, 0.0f, 0.99f);
-                m_SpotLights[i].outerCutOff = std::min(m_SpotLights[i].outerCutOff, m_SpotLights[i].innerCutOff - 0.01f);
+                ImGui::DragFloat("Inner Cutoff", &m_SpotLights[i].innerCutOff, 0.01, 0.0f, 179.99f);
+                ImGui::DragFloat("Outer Cutoff", &m_SpotLights[i].outerCutOff, 0.01, 0.01f, 180.0f);
+                m_SpotLights[i].outerCutOff = std::max(m_SpotLights[i].outerCutOff, m_SpotLights[i].innerCutOff + 0.01f);
                 ImGui::TreePop();
             }
             ImGui::Checkbox("Follow Camera", &m_SpotLights[i].follow);
@@ -293,7 +291,7 @@ void Drawer::init()
     m_Matrices = new UniformBuffer(2 * sizeof(glm::mat4));
     m_Matrices->bindBufferBase(1);
 
-    m_Lights = new UniformBuffer(2506);
+    m_Lights = new UniformBuffer(2156);
     m_Lights->bindBufferBase(0);
 
     m_MousePickingBuffer = new FrameBuffer();
@@ -447,11 +445,11 @@ void Drawer::update(const unsigned int width, const unsigned int height)
             m_SpotLights[i] = m_SpotLights[i].setPosition(Camera::getCameraPos());
             m_SpotLights[i] = m_SpotLights[i].setDirection(Camera::getCameraFront());
         }
-        m_Lights->subData(64 * 1 + 80 * 20 + 112 * i, sizeof(SpotLight) - sizeof(bool), &m_SpotLights[i]);
+        m_Lights->subData(64 * 1 + 80 * 20 + 96 * i, sizeof(SpotLight) - sizeof(bool), &m_SpotLights[i]);
     }
-    m_Lights->subData(64 * 1 + 112 * 5 + 80 * 20, 4, &dirLightCount);
-    m_Lights->subData(64 * 1 + 112 * 5 + 80 * 20 + 4 * 1, 4, &pointLightCount);
-    m_Lights->subData(64 * 1 + 112 * 5 + 80 * 20 + 4 * 2, 4, &spotLightCount);
+    m_Lights->subData(64 * 1 + 96 * 5 + 80 * 20, 4, &dirLightCount);
+    m_Lights->subData(64 * 1 + 96 * 5 + 80 * 20 + 4 * 1, 4, &pointLightCount);
+    m_Lights->subData(64 * 1 + 96 * 5 + 80 * 20 + 4 * 2, 4, &spotLightCount);
 }
 
 void Drawer::enqueue(const ModelLoader &loader)

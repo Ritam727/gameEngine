@@ -88,10 +88,7 @@ void Model::loadTextureImages(aiMaterial *mat, aiTextureType type, const std::st
         types.push_back(typeName);
         if (Texture::getLoadedImages().find(filePath) == Texture::getLoadedImages().end())
         {
-            if (typeName == "diffuse")
-                images.push_back(Texture::loadImage(filePath, false, false));
-            else
-                images.push_back(Texture::loadImage(filePath, false));
+            images.push_back(Texture::loadImage(filePath, true, false));
             Texture::getLoadedImages()[filePath] = *images.rbegin();
             continue;
         }
