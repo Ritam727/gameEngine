@@ -20,7 +20,7 @@ void Model::processNode(aiNode *node, const aiScene *scene, const bool skipTextu
     for (unsigned int i = 0; i < node->mNumMeshes; i++)
     {
         aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-        m_Meshes.insert(processMesh(mesh, scene, skipTextures));
+        m_Meshes.push_back(processMesh(mesh, scene, skipTextures));
     }
 
     for (unsigned int i = 0; i < node->mNumChildren; i++)
@@ -89,9 +89,9 @@ void Model::loadTextureImages(aiMaterial *mat, aiTextureType type, const std::st
         if (Texture::getLoadedImages().find(filePath) == Texture::getLoadedImages().end())
         {
             if (typeName == "diffuse")
-                images.push_back(Texture::loadImage(filePath, true));
+                images.push_back(Texture::loadImage(filePath, false, false));
             else
-                images.push_back(Texture::loadImage(filePath));
+                images.push_back(Texture::loadImage(filePath, false));
             Texture::getLoadedImages()[filePath] = *images.rbegin();
             continue;
         }
@@ -134,7 +134,7 @@ Model::Model(const std::string &path, const bool skipTextures)
 Model::Model(const Model &model)
 {
     for (const Mesh *mesh : model.getMeshes())
-        this->m_Meshes.insert(new Mesh(*mesh));
+        this->m_Meshes.push_back(new Mesh(*mesh));
 }
 
 Model::~Model()
@@ -167,7 +167,7 @@ void Model::draw(Shader &shader, unsigned int mode, unsigned int drawGui) const
     }
 }
 
-const std::unordered_set<Mesh *> Model::getMeshes() const
+const std::vector<Mesh *> Model::getMeshes() const
 {
     return m_Meshes;
 }

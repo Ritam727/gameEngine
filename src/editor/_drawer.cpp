@@ -428,7 +428,7 @@ void Drawer::update(const unsigned int width, const unsigned int height)
         m_Queue.pop();
     }
 
-    glm::mat4 proj = glm::perspective(glm::radians(45.0f - Camera::getZoom() * 10.0f), (float)width / (float)height, 0.1f, 100.0f);
+    glm::mat4 proj = glm::perspective(glm::radians(45.0f - Camera::getZoom() * 10.0f), (float)width / (float)height, 0.1f, 50000.0f);
     glm::mat4 view = Camera::getViewMatrix();
     m_Matrices->subData(0, sizeof(glm::mat4), glm::value_ptr(proj));
     m_Matrices->subData(sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(view));

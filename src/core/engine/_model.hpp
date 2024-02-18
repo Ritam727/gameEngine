@@ -16,7 +16,7 @@
 class Model
 {
 private:
-    std::unordered_set<Mesh *> m_Meshes;
+    std::vector<Mesh *> m_Meshes;
     std::string m_Directory;
 
     void loadModel(const std::string &path, const bool skipTextures);
@@ -33,7 +33,7 @@ public:
 
     void draw(Shader &shader, unsigned int mode = 0, unsigned int drawGui = 1) const;
 
-    const std::unordered_set<Mesh *> getMeshes() const;
+    const std::vector<Mesh *> getMeshes() const;
 };
 
 #endif

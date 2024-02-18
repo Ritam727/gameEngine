@@ -12,43 +12,19 @@ in VS_OUT
 
 void main()
 {
-	for (int i = 0; i < 3; i++)
+	for (float x = -1.0f; x < 2.0f; x += 2.0f)
 	{
-		vec3 dir = normalize(vec3(gl_in[i].gl_Position) - gs_in[i].cen);
-		gl_Position = gl_in[i].gl_Position + vec4(1.0f, 0.0f, 0.0f, 0.0f) * 0.02;
-		EmitVertex();
-	}
-	for (int i = 0; i < 3; i++)
-	{
-		vec3 dir = normalize(vec3(gl_in[i].gl_Position) - gs_in[i].cen);
-		gl_Position = gl_in[i].gl_Position - vec4(1.0f, 0.0f, 0.0f, 0.0f) * 0.02;
-		EmitVertex();
-	}
-
-	for (int i = 0; i < 3; i++)
-	{
-		vec3 dir = normalize(vec3(gl_in[i].gl_Position) - gs_in[i].cen);
-		gl_Position = gl_in[i].gl_Position + vec4(0.0f, 1.0f, 0.0f, 0.0f) * 0.02;
-		EmitVertex();
-	}
-	for (int i = 0; i < 3; i++)
-	{
-		vec3 dir = normalize(vec3(gl_in[i].gl_Position) - gs_in[i].cen);
-		gl_Position = gl_in[i].gl_Position - vec4(0.0f, 1.0f, 0.0f, 0.0f) * 0.02;
-		EmitVertex();
-	}
-
-	for (int i = 0; i < 3; i++)
-	{
-		vec3 dir = normalize(vec3(gl_in[i].gl_Position) - gs_in[i].cen);
-		gl_Position = gl_in[i].gl_Position + vec4(0.0f, 0.0f, 1.0f, 0.0f) * 0.02;
-		EmitVertex();
-	}
-	for (int i = 0; i < 3; i++)
-	{
-		vec3 dir = normalize(vec3(gl_in[i].gl_Position) - gs_in[i].cen);
-		gl_Position = gl_in[i].gl_Position - vec4(0.0f, 0.0f, 1.0f, 0.0f) * 0.02;
-		EmitVertex();
+		for (float y = -1.0f; y < 2.0f ; y += 2.0f)
+		{
+			for (float z = -1.0f; z < 2.0f; z += 2.0f)
+			{
+				for (int i = 0; i < 3; i++)
+				{
+					gl_Position = gl_in[i].gl_Position + vec4(x, y, z, 0.0f) * 0.02;
+					EmitVertex();
+				}
+			}
+		}
 	}
 
 	EndPrimitive();
